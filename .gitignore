@@ -1,0 +1,24 @@
+# Local environment
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.vscode/
+.idea/
+
+# Power BI Desktop local state
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+*.pbix
+
+# Build and export artifacts
+artifacts/
+dist/
+build/
+*.log
+
+# Operating system
+.DS_Store
+Thumbs.db
