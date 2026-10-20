@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -90,13 +91,18 @@ def check_repository(root: Path) -> list[str]:
         if not (root / name).is_file():
             issues.append(f"{name}: required file missing")
 
-    for path in root.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
-            continue
-        relative = path.relative_to(root).as_posix()
+    try:
+        tracked = subprocess.check_output(
+            ["git", "ls-files", "--cached", "-z"], cwd=root
+        ).decode("utf-8").split("\0")
+    except (OSError, subprocess.CalledProcessError, UnicodeDecodeError):
+        issues.append("unable to inspect Git-tracked files")
+        tracked = []
+
+    for relative in filter(None, tracked):
+        path = root / relative
         if path.name in BLOCKED_FILENAMES or path.suffix.lower() in BLOCKED_SUFFIXES:
-            if "__pycache__" not in path.parts:
-                issues.append(f"{relative}: local or binary artifact must not be committed")
+            issues.append(f"{relative}: local or binary artifact must not be committed")
 
     for path in maintained_files(root):
         if not path.exists():

@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.check_repository import validate_links, validate_text
+from scripts.check_repository import check_repository, validate_links, validate_text
 
 
 class TextValidationTests(unittest.TestCase):
@@ -20,6 +20,19 @@ class TextValidationTests(unittest.TestCase):
     def test_rejects_windows_line_endings(self):
         self.assertIn("CR line endings are not allowed", validate_text("line\r\n"))
 
+
+
+    def test_does_not_reject_ignored_local_environment_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            import subprocess
+
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            (root / ".env").write_text("LOCAL_ONLY=test\\n", encoding="utf-8")
+            issues = check_repository(root)
+            self.assertFalse(
+                any("local or binary artifact" in issue for issue in issues)
+            )
 
 class LinkValidationTests(unittest.TestCase):
     def test_resolves_relative_link(self):
