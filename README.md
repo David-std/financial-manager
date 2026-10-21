@@ -20,6 +20,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 | Scope and exclusions | [Scope](docs/scope.md) |
 | Components and data flow | [Architecture](docs/architecture.md) |
 | Tables and integrity rules | [Data model](docs/data-model.md) |
+| Validation implementation options | [Validation strategy](docs/validation-strategy.md) |
 | Internal expense codes | [Category catalog](docs/category-catalog.md) |
 | Indicators and Power BI report pages | [Reporting](docs/reporting.md) |
 | Power Apps navigation and interactions | [Screens](docs/screens.md) |
