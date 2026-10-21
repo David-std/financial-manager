@@ -1,53 +1,70 @@
 # Project scope
 
-## Problem
+## Purpose
 
-The requested product is a small internal management tool for recording financial movements and understanding income, expenses, and their difference over time. Existing customer management, billing, and telecommunications operations remain outside the system.
+Deliver a lightweight internal financial control and budgeting application for a small Peruvian internet service provider operating in two locations. The system supplements existing customer and billing software; it does not replace it.
 
-This document describes the proposed scope, not an approved requirements baseline. The current operational process has not been observed.
+This is a **proposed design baseline**, not a confirmed description of the current business process. The reference dashboards illustrate analytical capabilities, not a mandate to replicate their design or accounting terminology. The public repository must not identify the customer or contain production financial records.
 
-## Proposed users
+## Business outcomes
 
-| Role | Primary need |
-| --- | --- |
-| Administrator | Maintain reference data, permissions, and exceptions |
-| Operator | Enter and review permitted transactions |
-| Manager | View authorized summaries and transaction details |
+1. Record, review, and trace cash receipts and payments.
+2. Understand the financial performance of each operating location and the business as a whole.
+3. Plan spending by month, category, and location, with an annual consolidated view.
+4. Compare actuals against approved budgets and prior periods.
+5. Separate operational spending from equipment investment and other non-operating cash outflows.
+6. Make authorized changes and decisions traceable across multiple users.
 
-Final role definitions and user counts require discovery.
+## Functional scope
 
-## MVP capabilities
+| ID | Capability | Initial release |
+| --- | --- | --- |
+| FM-01 | Authenticated access and role-based permissions | Required |
+| FM-02 | Financial movement entry, posting, voiding, and searchable history | Required |
+| FM-03 | Expense and income category management | Required |
+| FM-04 | Branch/location attribution and consolidated reporting | Required |
+| FM-05 | Internal cash and bank-label accounts, without bank connections | Required |
+| FM-06 | Annual budget with monthly category allocations and approval | Required |
+| FM-07 | Budget-versus-actual tracking and variance alerts in reports | Required |
+| FM-08 | Daily/monthly/annual management reports and drill-through | Required |
+| FM-09 | Recent business activities and Dataverse auditing | Required |
+| FM-10 | Document reference and optional receipt attachment | Candidate; validate storage needs |
+| FM-11 | iOS Shortcut through an authenticated Power Apps deep link | Later |
+| FM-12 | Read-only conversational reporting | Later |
+| FM-13 | External messaging, banking, or billing-system integration | Out of scope |
 
-1. Register income and expenses with dates, positive amounts, categories, accounts, and optional notes.
-2. Maintain active and inactive income and expense categories.
-3. Maintain the internal account list without connecting to banks.
-4. Review, filter, and inspect financial movements.
-5. Show period totals, trends, and category breakdowns in Power BI.
-6. Apply Dataverse permissions, input validation, and record auditing.
-7. Confirm and void transactions with traceable reasons; never hard-delete posted records.
+## Financial boundary
 
-## Exclusions
+This release is **cash-oriented management control**: receipts and payments are posted when money moves. It must not label those totals as revenue recognized, sales invoiced, net invoicing, gross profit, or statutory net profit. A paid equipment acquisition is a cash outflow and may be classified as capital expenditure; it is not automatically an operating expense.
 
-- ISP/customer-management integration
-- Banking and payment initiation
-- Electronic invoicing and tax filing
-- General ledger, accrual accounting, and statutory financial statements
-- Payroll, inventory, and accounts receivable/payable
-- WhatsApp, autonomous AI, and direct HTTP transaction creation in the first release
+The approved category catalog is a management taxonomy, not the Peruvian Plan Contable General Empresarial (PCGE). No accounting entries, tax declarations, receivable/payable ledgers, or official financial statements are generated.
 
-iOS shortcuts and conversational reporting are optional follow-on integrations, not prerequisites for the core application.
+Expenses, payments, purchases, taxes, and investments are distinguished in data and reports. A purchase not yet paid is not represented as a payment; future purchase requests or financial commitments require a separate workflow decision.
 
-## Discovery required before implementation
+## Users and authorization
 
-- How are income and expenses recorded and verified today?
-- Who registers, reviews, corrects, and reads movements?
-- Which categories and internal cash accounts are actually needed?
-- What is the reporting currency, timezone, and period cut-off?
-- Are transactions recorded when paid, invoiced, or approved?
-- Do opening balances, transfers, or attachments matter?
-- What reporting questions must management answer?
-- What retention, backup, licensing, and approval requirements apply?
+Proposed business functions are Finance Manager, Treasury Clerk, Branch Operator, Branch Manager, Executive Viewer, and Auditor. Technical platform administration is a separate privileged responsibility. Permissions are enforced by Dataverse roles and record ownership, not client-side visibility alone.
 
-## Release boundary
+Two branches will exist in production; test environments use synthetic branch names. A shared/corporate movement must be explicitly classified rather than automatically duplicated across branches.
 
-The MVP is complete only after operational access rules and the acceptance tests in [Verification](verification.md) pass in a non-production environment. A functional screen alone is not sufficient for release.
+## Out of scope
+
+- Customer records, ISP operations, network inventory, subscriptions, and MikroWisp integration
+- Banking authentication, payment transfers, and automatic statement reconciliation
+- Electronic invoicing, SUNAT submissions, electronic payroll, and formal accounting
+- Customer, employee, and supplier master-data management beyond any minimal non-sensitive transaction description
+- Forecasts presented as certain outcomes, unauthorized AI access, and unrestricted financial query generation
+
+## Confirm before production
+
+- The cash-basis assumption and whether any previously invoiced amounts must be shown separately
+- Exactly which movement types count toward each management result
+- Opening balances, transfers between internal accounts, and how to represent shared expenses
+- Budget owner, approval threshold, revision policy, and overspend behavior
+- Whether proof-of-payment attachments are necessary, including retention rules
+- Local reporting currency (proposed PEN), date cut-off (proposed America/Lima), and reporting periods
+- Which roles may view both branches, approve budgets, or void posted movements
+- Any employee compensation confidentiality requirements
+- Existing source of periodic income figures and whether individual receipts are entered or summarized
+
+See [Data model](data-model.md), [Reporting](reporting.md), [Screens](screens.md), and [Verification](verification.md).

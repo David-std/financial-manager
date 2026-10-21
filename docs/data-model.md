@@ -1,66 +1,75 @@
-# Data model
+# Dataverse data model
 
-The table and column names below are a **proposed contract**, subject to the AS-IS review. All custom Dataverse schema names use the solution publisher prefix `fmg`. Display labels may be localized without changing schema names.
+Status: **Proposed**, not deployed. Names are preliminary logical contracts. Use the solution publisher prefix `fmg` for custom schema names; use platform-generated primary IDs, owners, created/modified users and timestamps. Display names may be localized for Spanish-speaking users.
 
-## Tables
+## Core tables
+
+| Table | Purpose | Representative custom columns |
+| --- | --- | --- |
+| `fmg_branch` | Operating location | `fmg_code` (Text, unique), `fmg_name` (Text), `fmg_isactive` (Yes/No) |
+| `fmg_category` | Management income and expenditure taxonomy | `fmg_code` (Text, unique), `fmg_name` (Text), `fmg_parentcategory` (Lookup), `fmg_direction` (Choice), `fmg_isactive` (Yes/No) |
+| `fmg_cashaccount` | Internal label for source/destination of payments | `fmg_name` (Text), `fmg_type` (Choice), `fmg_isactive` (Yes/No) |
+| `fmg_financialtransaction` | Posted or draft cash-oriented transaction | See below |
+| `fmg_budget` | Annual budget header with controlled versions | `fmg_year` (Whole Number), `fmg_scope` (Choice), `fmg_branch` (Lookup, conditional), `fmg_version` (Whole Number), `fmg_status` (Choice) |
+| `fmg_budgetallocation` | Month/category spending allocation in one budget version | `fmg_budget` (Lookup), `fmg_month` (Whole Number), `fmg_category` (Lookup), `fmg_amount` (Currency) |
+| `fmg_activityevent` | Read-only business workflow feed | `fmg_eventtype` (Choice), `fmg_recordtype` (Text), `fmg_recordid` (Text), `fmg_summary` (Text), `fmg_actor` (User Lookup), `fmg_eventtime` (Date and Time) |
+
+The activity-event table is **not** a substitute for built-in Dataverse audit history. Write access must be restricted to trusted business operations; ordinary users can view only authorized events.
 
 ### `fmg_financialtransaction`
 
-| Column | Dataverse type | Requirement |
+| Column | Dataverse type | Validation |
 | --- | --- | --- |
-| Primary ID | GUID (platform generated) | Unique identity |
-| `fmg_transactiondate` | Date Only | Required; business date |
-| `fmg_direction` | Choice | Required: Income or Expense |
-| `fmg_amount` | Currency | Required, strictly positive |
-| `fmg_category` | Lookup to category | Required; matching direction |
-| `fmg_cashaccount` | Lookup to cash account | Required; active |
+| `fmg_transactiondate` | Date Only | Required, locally defined transaction date |
+| `fmg_direction` | Choice | Receipt or Payment |
+| `fmg_flowclass` | Choice | OperatingReceipt, OperatingPayment, CapitalPayment, TaxPayment, or OtherPayment |
+| `fmg_amount` | Currency | Required and greater than zero; reporting currency PEN |
+| `fmg_category` | Lookup | Required active leaf category, consistent with direction/class |
+| `fmg_scope` | Choice | Branch or Shared |
+| `fmg_branch` | Lookup | Required if Branch; empty if Shared |
+| `fmg_cashaccount` | Lookup | Required active account |
+| `fmg_description` | Multiline text | Optional, length limited, no secrets |
+| `fmg_documentreference` | Text | Optional external receipt/document reference |
 | `fmg_status` | Choice | Draft, Posted, or Voided |
-| `fmg_description` | Multiple lines of text | Optional; length limited |
-| `fmg_voidreason` | Text | Required if a posted item is voided |
-| `fmg_externalrequestid` | Text | Optional unique ingestion key for future integrations |
+| `fmg_voidreason` | Text | Required for an authorized void |
+| `fmg_externalrequestid` | Text | Optional idempotency key for future integrations |
 
-Use the platform-generated created/modified timestamps and user attribution. If an integration operates through a service identity, it must record the authenticated initiating user separately.
+Use Dataverse currency precision appropriate for PEN and enforce a single transaction currency for this release. A payment for equipment can be a CapitalPayment; it is still included in total cash outflows but must not be silently treated as an operating expense. An expense allocation belongs to a leaf category; the 100–900 group labels are hierarchy nodes.
 
-### `fmg_category`
+An optional document attachment requires separate decisions about storage, file type limits, malware scanning, permissions, and retention.
 
-| Column | Dataverse type | Requirement |
-| --- | --- | --- |
-| `fmg_code` | Text | Unique, stable category code |
-| `fmg_name` | Text | Required |
-| `fmg_direction` | Choice | Income or Expense |
-| `fmg_parentcategory` | Self lookup | Optional, consistent direction |
-| `fmg_isactive` | Yes/No | New entries use active categories |
+## Budget model
 
-Existing transactions retain references to inactive categories. Do not delete referenced categories.
+One `fmg_budget` identifies **year + scope + optional branch + version**. Its status is Draft, Submitted, Approved, Rejected, or Superseded. Monthly allocations are stored as `fmg_budgetallocation` rows; annual totals are derived, not independently edited.
 
-### `fmg_cashaccount`
+A budget allocation is unique per budget version, month, and leaf category. An approved version and its lines are immutable. A change creates a subsequent version; reports select exactly one approved effective version per applicable period. No double counting across versions.
 
-| Column | Dataverse type | Requirement |
-| --- | --- | --- |
-| `fmg_name` | Text | Required, unique among active accounts |
-| `fmg_type` | Choice | Cash, Bank, Wallet, or Other |
-| `fmg_isactive` | Yes/No | New entries use active accounts |
+Only payment categories approved as budgetable participate in allocations. An over-budget posting generates a warning and requires the agreed override path; the reporting layer alone cannot authorize overspending. The initial design does not reserve budgets for unpaid purchases.
 
-An account is an internal reporting label, not a connection to a financial institution. No bank account numbers or credentials are required.
+## Relational rules
 
-## Relationships
+- Branch 1:N FinancialTransaction, Budget
+- Category 1:N FinancialTransaction, BudgetAllocation; Category 1:N child Categories
+- CashAccount 1:N FinancialTransaction
+- Budget 1:N BudgetAllocation
+- SystemUser and owner teams determine creation and record visibility; do not build a second credentials table.
 
-- Category (1) to financial transaction (many)
-- Cash account (1) to financial transaction (many)
-- Parent category (1) to child categories (many)
+Transactions assigned Shared scope are not counted twice in each branch. A separate allocation method would be necessary to apportion shared spending; do not invent it.
 
-## Invariants
+## Integrity controls
 
-1. Currency values represent non-negative magnitude; direction determines income or expense. Zero and negative amounts are rejected.
-2. The first release supports one configured reporting currency. Summing different transaction currencies is invalid.
-3. A transaction may become Posted only after server-side validation. Posted amounts, dates, categories, and account assignments are immutable.
-4. Voiding a Posted transaction requires an authorized user, a reason, and audit evidence; it is excluded from current totals. Any effect on historical reports must be explicit.
-5. An inactive category or account remains readable but cannot be assigned to a new posted movement.
-6. Repeated submissions with the same external request ID must not create duplicate movements.
-7. Reports use only Posted transactions and one consistently defined date boundary.
+1. Every posted movement has an authenticated actor, valid amount, active account, valid category, flow classification, and correctly scoped branch.
+2. A posted movement is immutable. A correction is an authorized void plus a new movement, preserving traceability.
+3. Voiding requires a reason and appropriate permissions; totals exclude voided movements.
+4. Drafts do not appear in approved reporting measures.
+5. Unknown/unclassified codes (including temporary categories) must be reviewed before posting.
+6. Reusing a submitted external request ID must not create duplicate movements.
+7. Approved budget versions and allocations cannot be silently edited.
+8. Receipt totals, payment totals, and budget actuals are derived from clearly specified classes; neither capital purchases nor tax remittances are automatically treated as operating expense.
+9. All cross-record, posting, and approval invariants require server-side enforcement. Power Fx or business rules alone are insufficient if records can be changed through another client.
 
-Column requiredness and UI rules alone do not establish all cross-table or state-transition invariants. Server-side enforcement must be implemented and tested across Power Apps and every additional ingestion route before production.
+## Deferred entities
 
-## Deferred decisions
+Opening balances and transfers, accounts payable, invoices/sales, supplier master data, payroll, fixed-asset registers, cost center splits, commitment/reservation workflows, and multi-currency exchange rates are **not** silently implemented by these seven tables. Each needs a separate scoped decision.
 
-Transfers, opening balances, attachments, budgets, approval workflows, multi-currency conversion, and formal reconciliation are not included until required by discovery.
+See [Category catalog](category-catalog.md), [Reporting](reporting.md), and [Verification](verification.md).

@@ -1,11 +1,11 @@
 # Power Platform solution
 
-The unmanaged development solution will be tracked here after it has been created in Dataverse and cloned using Power Platform CLI.
+Source-controlled platform components will appear here after the unmanaged solution is created in Dataverse and cloned using a supported Power Platform CLI version.
 
-- Unique name: `FinancialManager`
+- Solution unique name: `FinancialManager`
 - Publisher prefix: `fmg`
-- Expected components: Dataverse tables, choices, security roles, Canvas App, and approved cloud flows
+- Intended components: financial and budgeting tables, relationships, option sets, security roles, Canvas App, and approved flows
 
-This directory intentionally contains no invented `solution.yml`, Canvas App source, or exported solution ZIP. The canonical source hierarchy must be generated from a real environment.
+There is currently no deployed solution or generated application source. Do not handwrite surrogate `solution.yml` or Canvas App files to make the repository appear implemented.
 
-See [Development](../docs/development.md) and [Data model](../docs/data-model.md).
+Follow [Development](../docs/development.md), [Data model](../docs/data-model.md), and [Screens](../docs/screens.md).

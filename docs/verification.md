@@ -1,29 +1,71 @@
-# Verification plan
+# Verification and acceptance
 
-These scenarios are acceptance criteria for the eventual implementation. They have not yet been executed against a Power Platform environment.
+This is the planned validation baseline. No Power Apps, Dataverse, or Power BI business components have been deployed or tested yet.
 
-| ID | Scenario | Expected outcome |
+## Transaction and data integrity
+
+| ID | Scenario | Expected result |
 | --- | --- | --- |
-| FIN-001 | Create a valid income or expense | Saved with correct amount, period, category, account, and attribution |
-| FIN-002 | Submit zero or negative amount through app and other ingestion paths | Rejected without a persisted transaction |
-| FIN-003 | Post an expense under an income category | Rejected at the data boundary |
-| FIN-004 | Use an inactive category or account for a new posting | Rejected; historical records remain readable |
-| FIN-005 | Edit amount, date, or category of a posted record | Rejected; a correction workflow is required |
-| FIN-006 | Void a posted record without a reason or permission | Rejected and audited |
-| FIN-007 | Re-submit an identical external request ID | Exactly one recorded transaction |
-| SEC-001 | Read or modify restricted data as an unauthorized user | Denied in both UI and direct data access |
-| SEC-002 | Access a report or semantic model without authorization | Denied, including export and underlying data |
-| BI-001 | Compare report totals to a controlled transaction set | Exact agreement; drafts and voided entries excluded |
-| BI-002 | Select dates across month and year boundaries | Totals follow the documented business-date semantics |
-| BI-003 | Introduce mismatched transaction currencies | Reporting rejects or separates incompatible amounts |
-| OPS-001 | Restore sample data from a documented backup | Recovery succeeds within the agreed target |
+| TX-01 | Post a complete receipt/payment | Saved with correct direction, flow class, period, branch scope, account, and creator |
+| TX-02 | Submit zero, negative, excessively precise or invalid amount | Rejected with a clear message; no posted row |
+| TX-03 | Post under a group code, inactive category, or mismatched receipt/payment category | Rejected |
+| TX-04 | Post to an unauthorized branch | Rejected by Dataverse security, not only the UI |
+| TX-05 | Edit amount/date/classification of a posted movement | Rejected; corrections follow void and re-entry |
+| TX-06 | Void without permission or an explanation | Rejected and traceable |
+| TX-07 | Attempt to post `999` unclassified | Rejected pending a valid category |
+| TX-08 | Submit a repeated integration request ID | Exactly one persisted movement |
+| TX-09 | Submit a future amount through an alternate connector | Same checks as the Canvas App |
+| TX-10 | Post payment of an equipment asset | Included in cash outflow, excluded from operating expense |
 
-## Delivery checks
+## Budget control
 
-- Review role assignments, connection owners, and security policies.
-- Verify supported solution export/import in an isolated environment.
-- Confirm Power BI refresh behavior, source credentials, and licensing.
-- Review the current financial definitions with the business owner.
-- Record test execution, failures, and remediation before production release.
+| ID | Scenario | Expected result |
+| --- | --- | --- |
+| BG-01 | Allocate approved categories by month and location | Annual totals equal monthly detail totals |
+| BG-02 | Enter negative allocation or duplicate category/month/version | Rejected |
+| BG-03 | Edit an approved allocation | Rejected; new revision required |
+| BG-04 | Compare posted payments and approved budget | Exact match in relevant month, branch and category |
+| BG-05 | Exceed approved allocation | Flagged as overspent; posting follows agreed override control |
+| BG-06 | Record a payment without approved budget | Marked Unbudgeted; never silently treated as 0% use |
+| BG-07 | Revise a budget in a later month | Only one effective approved version per month; no double count |
+| BG-08 | Submit and approve the same budget without an approved exception | Rejected or flagged for compensating review |
 
-CI currently validates repository hygiene and documentation links only. It is not a substitute for Dataverse solution checks, application testing, security evaluation, or Power BI model validation.
+## Security and audit
+
+| ID | Scenario | Expected result |
+| --- | --- | --- |
+| SEC-01 | Branch user reads another branch's restricted record | Denied through direct Dataverse and application access |
+| SEC-02 | Viewer tries to create, post, void, or approve | Denied |
+| SEC-03 | Flow executes under elevated service credentials on behalf of an unauthorized user | Operation denied, not silently elevated |
+| SEC-04 | Posted movement is voided or budget approval changes | Actor, time, and relevant before/after state appear in audit history |
+| SEC-05 | User without permission accesses Power BI detail, export or underlying model | Denied |
+| SEC-06 | Disable a category used by past transactions | Past transactions remain intact; new postings cannot select it |
+| SEC-07 | Try to alter curated activity records | Denied to ordinary users |
+
+## Financial reporting
+
+| ID | Scenario | Expected result |
+| --- | --- | --- |
+| BI-01 | Reconcile reports against a fixed transaction fixture | Every measure agrees exactly with source data |
+| BI-02 | Include draft and voided transactions | Excluded from all approved actuals |
+| BI-03 | Compare month and prior-year counterpart | Correct dates and denominator handling; PY=0 displays N/A |
+| BI-04 | Filter a specific branch vs consolidated scope | Shared movements counted only once; unauthorized rows excluded |
+| BI-05 | Report operating expense and capital payment | Classified separately; combined only in total cash payments |
+| BI-06 | Visualize spending exceeding budget | Text and formatting indicate overrun; not color alone |
+| BI-07 | Request a period before the latest dataset refresh | Clear refresh timestamp; no implied real-time guarantee |
+| BI-08 | Attempt to derive invoice revenue or official profit from cash receipts | Metric is not presented under an inaccurate accounting label |
+
+## Operations
+
+| ID | Scenario | Expected result |
+| --- | --- | --- |
+| OPS-01 | Export/import a solution between controlled environments | Components and required dependencies deploy correctly |
+| OPS-02 | Recover a documented sample dataset | Recovery completes and reconciles within the approved target |
+| OPS-03 | Re-run repository workflow | Formatting, required files and docs links pass |
+| OPS-04 | Create new financial master-data values | Role access, validity and historical referential integrity preserved |
+
+## Evidence
+
+Attach test fixture definitions, dates, environment, execution results, defects, and remediation links to release records. CI currently checks repository hygiene and documentation only; it does **not** claim to test Dataverse or DAX.
+
+See [Data model](data-model.md), [Reporting](reporting.md), and [Security](security.md).

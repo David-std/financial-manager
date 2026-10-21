@@ -1,15 +1,14 @@
 # Power BI reporting
 
-Save the financial reporting project here using the Power BI Project (PBIP) format. The report and semantic model should remain editable and versioned as text files.
+Reports will be stored in Power BI Project (PBIP) format after creation in Power BI Desktop. This directory currently holds no report source.
 
-## Proposed reporting pages
+## Planned pages
 
-1. Executive summary: period income, expenses, and management result
-2. Expense analysis: category, account, and period breakdowns
-3. Trends: monthly comparison and movement over time
+1. Executive Overview — receipts, payments, operating cash result, budget position
+2. Expense Analysis — hierarchical account matrix with current/prior-period variance
+3. Budget Control — monthly category allocations, overruns and exceptions
+4. Income and Trends — receipt evolution by day, month, year and operating location
 
-Use a reviewed calendar table, explicit measures, consistent transaction-state filters, and defined date boundaries. Do not report cash balance without validated opening balances and transfers.
+Definitions, allowed financial terminology, and controlled reconciliation cases are maintained in [Reporting](../docs/reporting.md). Report data must be subject to role-appropriate visibility and have an explicit refresh timestamp.
 
-The PBIP project has not yet been created. Do not commit business exports, local cache files, or credentials.
-
-See [Architecture](../docs/architecture.md) and [Verification](../docs/verification.md).
+Do not commit PBIX exports, dataset extracts, financial figures, local cache files or data-source credentials.

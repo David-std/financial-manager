@@ -1,46 +1,63 @@
 # Security baseline
 
-Financial information is business-sensitive even if no banking credentials are stored.
+Financial records and budgets are business-sensitive even when the application does not store banking credentials.
 
-## Identity and authorization
+## Authentication and record access
 
-- Use Microsoft Entra ID for organizational sign-in and require MFA under the tenant policy.
-- Configure Dataverse security roles rather than relying on Power Apps visibility rules.
-- Use least-privilege access for application users, flow connections, and report consumers.
-- Do not introduce a custom user/password table.
-- Verify record access through direct Dataverse and integration paths, not only through the app.
-- Do not expose an anonymous HTTP-triggered flow that creates or reads transactions.
+- Authenticate with Microsoft Entra ID. Use tenant MFA and Conditional Access policies appropriate to the production licenses.
+- Enforce access in Dataverse through security roles and tested record ownership/team membership.
+- Application navigation and hidden controls are **not** authorization controls.
+- Do not create local username/password tables or store banking credentials.
+- Separate non-production environments and synthetic records from production business data.
+- Review Power BI report sharing, export, semantic-model access, and any row-level security independently from the Canvas App.
+- A corporate/shared record is not automatically readable by every branch user.
 
-## Proposed permissions
+## Proposed responsibility matrix
 
-| Operation | Administrator | Operator | Manager |
-| --- | --- | --- | --- |
-| Read authorized transactions | Yes | Yes | Yes |
-| Create draft | Yes | Yes | No |
-| Post permitted draft | Yes | Yes, if assigned | No |
-| Void posted transaction | Yes | No | No |
-| Manage categories and accounts | Yes | No | No |
-| Configure roles and integration identities | Yes | No | No |
-| View authorized Power BI reports | Yes | As approved | Yes |
+Business roles reflect responsibilities, not arbitrary privilege levels. Real staffing and segregation constraints must be approved before implementation.
 
-Scope of record visibility, posting rights, and separation of duties must be confirmed with stakeholders before creating roles.
+| Action | Finance Manager | Treasury Clerk | Branch Operator | Branch Manager | Executive Viewer | Auditor |
+| --- | --- | --- | --- | --- | --- | --- |
+| Create draft movement | All scopes | Assigned scopes | Assigned branch | Assigned branch | No | No |
+| Post verified movement | All scopes | Authorized scopes | No | No | No | No |
+| Void posted movement with reason | Yes | No | No | No | No | No |
+| Edit category/account reference data | Yes | No | No | No | No | No |
+| Draft budget | Yes | No | No | Assigned branch | No | No |
+| Approve budget | Yes, subject to separation of duties | No | No | No | No | No |
+| View financial reports | All scopes | Authorized scopes | Limited | Assigned branch | All approved scopes | All approved scopes |
+| View full audit history | Restricted | No | No | No | No | Yes |
 
-## Data handling
+Technical Power Platform administration is **not** a routine finance-user role. Use documented separate administrative access. If the same person prepares and approves a budget in a small organization, record an explicit exception and compensating review instead of silently treating it as segregation of duties.
 
-- Enable Dataverse auditing for financial transactions, category changes, and security-relevant configuration.
-- Prevent hard deletion of posted financial records through role permissions and business rules.
-- Keep development data synthetic and separate from live data.
-- Keep tenant identifiers, connection references with secrets, tokens, personal details, and real financial exports out of Git.
-- Configure backups, retention, restore exercises, and access reviews for production.
-- Apply Power Platform data policies to limit unauthorized connector combinations.
-- Limit Power BI workspace permissions and use row-level security when different audiences need different views.
+## Branch enforcement
 
-## External channels
+Proposed: branch-specific Dataverse owner teams and one authorized shared/corporate scope. Users can belong to multiple teams when approved. Test direct table reads, updates, flow connections, Power BI access, and cross-branch filtering against that boundary.
 
-A deep link retains the interactive Power Apps authentication boundary. For a future direct iOS shortcut, require an authenticated identity, token management, request validation, replay protection, and an idempotency key.
+Dataverse business units are an alternative if confirmed requirements justify organizational security boundaries. Do not create an elaborate business-unit tree solely because two branches exist.
 
-Conversational access must use explicit allowed queries, validate parameters, apply row-level authorization, limit the detail returned, and reject unsupported questions. WhatsApp numbers are not sufficient proof of identity by themselves.
+## Change and audit history
 
-## Production gate
+- Enable Dataverse auditing at environment, table, and relevant column levels for transactions, budget approval/version changes, categories, and account labels.
+- Preserve built-in Created By, Modified By, and timestamps.
+- Do not allow ordinary users to delete posted movements, alter approved budgets, or modify audit settings.
+- A curated `fmg_activityevent` feed supports the latest-business-events screen; it is not a complete security audit.
+- Only trusted, server-validated operations can create activity events. Protect against client-submitted audit-event forgery.
+- Define audit log retention and storage requirements for production; Git history and Canvas App telemetry do not replace financial record auditing.
 
-Perform authorization, auditing, restoration, data-leakage, and report-access tests before the first real financial record is entered. This document is a policy baseline, not evidence that controls are already configured.
+## Validations and workflow
+
+Cross-table category checks, immutable posted records, branch ownership, budget approvals, and expense overrides cannot rely only on Power Fx validation. Implement server-side enforcement using supported Dataverse capabilities and test against direct data updates and Power Automate connections.
+
+All privileged posting/approval actions require authenticated attribution. When a flow uses a service account, store the initiator and verify the action against the initiator's permissions.
+
+## Sensitive data and public repository
+
+The repository must not include organization identity, employee compensation details, customer lists, production tenant IDs, connection tokens, bank account numbers, actual financial figures, or exported reports from production. Screenshots and sample records must use synthetic data.
+
+Apply connector data policies and classify integration endpoints. An iOS direct-write flow requires OAuth, idempotency, replay resistance, and least-privilege connections. WhatsApp numbers alone are not identities for financial disclosure.
+
+## Production acceptance
+
+Validate authorization from both the application and direct Dataverse access; test cross-branch isolation, audit history, approval separation, Power BI sharing/export, backup and restore, environment migration, and incident recovery.
+
+See [Verification](verification.md) and [Architecture](architecture.md).
