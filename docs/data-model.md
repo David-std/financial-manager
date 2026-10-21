@@ -7,10 +7,10 @@ Status: **Proposed**, not deployed. Names are preliminary logical contracts. Use
 | Table | Purpose | Representative custom columns |
 | --- | --- | --- |
 | `fmg_branch` | Operating location | `fmg_code` (Text, unique), `fmg_name` (Text), `fmg_isactive` (Yes/No) |
-| `fmg_category` | Management income and expenditure taxonomy | `fmg_code` (Text, unique), `fmg_name` (Text), `fmg_parentcategory` (Lookup), `fmg_direction` (Choice), `fmg_isactive` (Yes/No) |
+| `fmg_category` | Management income and expenditure taxonomy | `fmg_code` (Text, unique), `fmg_name` (Text), `fmg_parentcategory` (Lookup), `fmg_direction` (Choice), `fmg_defaultflowclass` (Choice), `fmg_isbudgetable` (Yes/No), `fmg_isgroup` (Yes/No), `fmg_acronym` (Text), `fmg_isactive` (Yes/No) |
 | `fmg_cashaccount` | Internal label for source/destination of payments | `fmg_name` (Text), `fmg_type` (Choice), `fmg_isactive` (Yes/No) |
 | `fmg_financialtransaction` | Posted or draft cash-oriented transaction | See below |
-| `fmg_budget` | Annual budget header with controlled versions | `fmg_year` (Whole Number), `fmg_scope` (Choice), `fmg_branch` (Lookup, conditional), `fmg_version` (Whole Number), `fmg_status` (Choice) |
+| `fmg_budget` | Annual budget header with controlled versions | `fmg_year` (Whole Number), `fmg_scope` (Choice), `fmg_branch` (Lookup, conditional), `fmg_version` (Whole Number), `fmg_effectivefrommonth` (Whole Number, 1–12), `fmg_status` (Choice), `fmg_approvedby` (User Lookup), `fmg_approvedon` (Date and Time) |
 | `fmg_budgetallocation` | Month/category spending allocation in one budget version | `fmg_budget` (Lookup), `fmg_month` (Whole Number), `fmg_category` (Lookup), `fmg_amount` (Currency) |
 | `fmg_activityevent` | Read-only business workflow feed | `fmg_eventtype` (Choice), `fmg_recordtype` (Text), `fmg_recordid` (Text), `fmg_summary` (Text), `fmg_actor` (User Lookup), `fmg_eventtime` (Date and Time) |
 
@@ -42,9 +42,9 @@ An optional document attachment requires separate decisions about storage, file 
 
 One `fmg_budget` identifies **year + scope + optional branch + version**. Its status is Draft, Submitted, Approved, Rejected, or Superseded. Monthly allocations are stored as `fmg_budgetallocation` rows; annual totals are derived, not independently edited.
 
-A budget allocation is unique per budget version, month, and leaf category. An approved version and its lines are immutable. A change creates a subsequent version; reports select exactly one approved effective version per applicable period. No double counting across versions.
+A budget allocation is unique per budget version, month, and leaf category. An approved version and its lines are immutable. A change creates a subsequent version with an explicit effective-from month; reports use the budget version effective for each month and never count more than one version for the same month, branch/scope and category. Version changes must not silently rewrite past period allocations. Historical restatements require separate review.
 
-Only payment categories approved as budgetable participate in allocations. An over-budget posting generates a warning and requires the agreed override path; the reporting layer alone cannot authorize overspending. The initial design does not reserve budgets for unpaid purchases.
+Only payment categories flagged as budgetable participate in allocations. The default flow classification attached to each leaf category is validated on posting; changes to classification rules must not silently alter past transactions. An over-budget posting generates a warning and requires the agreed override path; the reporting layer alone cannot authorize overspending. The initial design does not reserve budgets for unpaid purchases.
 
 ## Relational rules
 
