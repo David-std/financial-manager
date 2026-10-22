@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{6c6ddd19-a664-4571-a778-0b66effc43b3}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{8846FF04-2C44-484C-BD4B-3115D6C188BE}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="3082" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{B7270F7D-6285-4923-9A35-DC8A6CE3123E}">
+                  <labels>
+                    <label description="General" languagecode="3082" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{FDE13F26-42BD-40A0-A80E-D79B6359E84F}">
+                        <labels>
+                          <label description="Name" languagecode="3082" />
+                        </labels>
+                        <control id="fmg_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="fmg_name" />
+                      </cell>
+                    </row>
+                    <row></row>
+                    <row>
+                      <cell id="{19d3f7c2-8301-4ac3-891c-4d71b88c0167}">
+                        <labels>
+                          <label description="Type" languagecode="3082" />
+                        </labels>
+                        <control id="fmg_type" classid="{3ef39988-22bb-4f0b-bbbe-64b5a3748aee}" datafieldname="fmg_type" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f385f30a-2c1a-4edb-8b75-95d79b950e12}">
+                        <labels>
+                          <label description="IsActive" languagecode="3082" />
+                        </labels>
+                        <control id="fmg_isactive" classid="{67fac785-cd58-4f9f-abb3-4b7ddc6ed5ed}" datafieldname="fmg_isactive" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Información" languagecode="3082" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Formulario para esta entidad." languagecode="3082" />
+    </Descriptions>
+  </systemform>
+</forms>

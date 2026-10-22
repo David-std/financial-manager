@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{ec24f589-93c3-4a66-b510-8162aa294e48}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{54AF370F-C546-4760-BB22-775A1F1D1ECF}" IsUserDefined="1">
+          <labels>
+            <label description="" languagecode="3082" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{B7A576B0-D2FD-4C32-A2E8-E91A7EEAFF89}">
+                  <labels>
+                    <label description="GENERAL" languagecode="3082" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{BA0BEA2D-B581-4696-A9B3-0F76887DDA81}">
+                        <labels>
+                          <label description="Name" languagecode="3082" />
+                        </labels>
+                        <control id="fmg_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="fmg_name" />
+                      </cell>
+                    </row>
+                    <row></row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Información" languagecode="3082" />
+    </LocalizedNames>
+  </systemform>
+</forms>

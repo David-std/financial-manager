@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Workflow WorkflowId="{2634db3c-49ce-f111-b618-70a8a5aca0ae}" Name="FT_RequireBranchOnPost" Description="Haga clic para agregar una descripción" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <XamlFileName>/Workflows/FT_RequireBranchOnPost-2634DB3C-49CE-F111-B618-70A8A5ACA0AE.xaml</XamlFileName>
+  <Type>1</Type>
+  <Subprocess>0</Subprocess>
+  <Category>2</Category>
+  <Mode>1</Mode>
+  <Scope>4</Scope>
+  <OnDemand>0</OnDemand>
+  <TriggerOnCreate>0</TriggerOnCreate>
+  <TriggerOnDelete>0</TriggerOnDelete>
+  <AsyncAutodelete>0</AsyncAutodelete>
+  <SyncWorkflowLogOnFailure>0</SyncWorkflowLogOnFailure>
+  <StateCode>1</StateCode>
+  <StatusCode>2</StatusCode>
+  <RunAs>1</RunAs>
+  <IsTransacted>1</IsTransacted>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <BusinessProcessType>0</BusinessProcessType>
+  <IsCustomProcessingStepAllowedForOtherPublishers>1</IsCustomProcessingStepAllowedForOtherPublishers>
+  <ProcessTriggerScope>2</ProcessTriggerScope>
+  <ModernFlowType>0</ModernFlowType>
+  <PrimaryEntity>fmg_financialtransaction</PrimaryEntity>
+  <LocalizedNames>
+    <LocalizedName languagecode="3082" description="FT_RequireBranchOnPost" />
+  </LocalizedNames>
+  <Descriptions>
+    <Description languagecode="3082" description="Haga clic para agregar una descripción" />
+  </Descriptions>
+  <labels>
+    <steplabels id="{08a21561-3ebc-4215-909b-3480d6188202}" />
+  </labels>
+</Workflow>

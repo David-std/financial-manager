@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="business_unit_fmg_financialtransaction" />
+  <EntityRelationship Name="fmg_CashAccount_Branch" />
+  <EntityRelationship Name="fmg_Category_ParentCategory" />
+  <EntityRelationship Name="fmg_financialtransaction_branch" />
+  <EntityRelationship Name="fmg_financialtransaction_cashaccount" />
+  <EntityRelationship Name="fmg_financialtransaction_category" />
+  <EntityRelationship Name="lk_fmg_branch_createdby" />
+  <EntityRelationship Name="lk_fmg_branch_modifiedby" />
+  <EntityRelationship Name="lk_fmg_cashaccount_createdby" />
+  <EntityRelationship Name="lk_fmg_cashaccount_modifiedby" />
+  <EntityRelationship Name="lk_fmg_category_createdby" />
+  <EntityRelationship Name="lk_fmg_category_modifiedby" />
+  <EntityRelationship Name="lk_fmg_financialtransaction_createdby" />
+  <EntityRelationship Name="lk_fmg_financialtransaction_modifiedby" />
+  <EntityRelationship Name="organization_fmg_branch" />
+  <EntityRelationship Name="organization_fmg_cashaccount" />
+  <EntityRelationship Name="organization_fmg_category" />
+  <EntityRelationship Name="owner_fmg_financialtransaction" />
+  <EntityRelationship Name="team_fmg_financialtransaction" />
+  <EntityRelationship Name="TransactionCurrency_fmg_financialtransaction" />
+  <EntityRelationship Name="user_fmg_financialtransaction" />
+</EntityRelationships>

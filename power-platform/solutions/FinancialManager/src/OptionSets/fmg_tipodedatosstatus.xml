@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="fmg_tipodedatosstatus" localizedName="Tipo de datos status" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <ExternalTypeName></ExternalTypeName>
+  <displaynames>
+    <displayname description="Tipo de datos status" languagecode="3082" />
+  </displaynames>
+  <Descriptions>
+    <Description description="" languagecode="3082" />
+  </Descriptions>
+  <options>
+    <option value="797280000" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Draft" languagecode="3082" />
+      </labels>
+      <Descriptions>
+        <Description description="" languagecode="3082" />
+      </Descriptions>
+    </option>
+    <option value="797280001" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Posted" languagecode="3082" />
+      </labels>
+      <Descriptions>
+        <Description description="" languagecode="3082" />
+      </Descriptions>
+    </option>
+    <option value="797280002" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Voided" languagecode="3082" />
+      </labels>
+      <Descriptions>
+        <Description description="" languagecode="3082" />
+      </Descriptions>
+    </option>
+  </options>
+</optionset>

@@ -1,0 +1,242 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "fmg_sharedcommondataserviceforapps_720c0"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "4745bbb3-0799-491f-9152-aa78d67992a8"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        }
+      },
+      "actions": {
+        "ListChildCategories": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "7643a650-f226-47de-9580-55a818a93ae3"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "fmg_categories",
+              "$filter": "fmg_isgroup eq false and fmg_parentcode ne null and _fmg_parentcategory_value eq null",
+              "$top": 100
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        },
+        "ForEachChild": {
+          "foreach": "@body('ListChildCategories')?['value']",
+          "actions": {
+            "FindParentEach": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "entityName": "fmg_categories",
+                  "$select": "fmg_categoryid,fmg_code,fmg_name,fmg_isgroup,fmg_isactive",
+                  "$filter": "@concat(\r\n  'fmg_code eq ''',\r\n  items('ForEachChild')?['fmg_parentcode'],\r\n  ''' and fmg_isgroup eq true and fmg_isactive eq true'\r\n)",
+                  "$top": 2
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "connectionName": "shared_commondataserviceforapps"
+                }
+              }
+            },
+            "ValidateParentCountEach": {
+              "actions": {
+                "ValidateParentEach": {
+                  "actions": {
+                    "UpdateChildCategoryEach": {
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "parameters": {
+                          "entityName": "fmg_categories",
+                          "recordId": "@items('ForEachChild')?['fmg_categoryid']",
+                          "item/fmg_parentcategory@odata.bind": "@concat(\r\n  'fmg_categories(',\r\n  first(body('FindParentEach')?['value'])?['fmg_categoryid'],\r\n  ')'\r\n)"
+                        },
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "operationId": "UpdateOnlyRecord",
+                          "connectionName": "shared_commondataserviceforapps"
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "actions": {
+                      "RecordParentValidationError": {
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                          "name": "HierarchyErrors",
+                          "value": "@concat(\r\n  'Invalid parent relationship for category ',\r\n  items('ForEachChild')?['fmg_code'],\r\n  ' -> ',\r\n  items('ForEachChild')?['fmg_parentcode']\r\n)"
+                        }
+                      }
+                    }
+                  },
+                  "expression": {
+                    "and": [
+                      {
+                        "equals": [
+                          "@and(\r\n  equals(items('ForEachChild')?['fmg_isgroup'], false),\r\n  equals(items('ForEachChild')?['fmg_isactive'], true),\r\n  not(empty(items('ForEachChild')?['fmg_categoryid'])),\r\n  empty(items('ForEachChild')?['_fmg_parentcategory_value']),\r\n  equals(\r\n    items('ForEachChild')?['fmg_parentcode'],\r\n    first(body('FindParentEach')?['value'])?['fmg_code']\r\n  ),\r\n  equals(first(body('FindParentEach')?['value'])?['fmg_isgroup'], true),\r\n  equals(first(body('FindParentEach')?['value'])?['fmg_isactive'], true),\r\n  not(equals(\r\n    items('ForEachChild')?['fmg_categoryid'],\r\n    first(body('FindParentEach')?['value'])?['fmg_categoryid']\r\n  ))\r\n)",
+                          true
+                        ]
+                      }
+                    ]
+                  },
+                  "type": "If"
+                }
+              },
+              "runAfter": {
+                "FindParentEach": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "RecordParentLookupError": {
+                    "type": "AppendToArrayVariable",
+                    "inputs": {
+                      "name": "HierarchyErrors",
+                      "value": "@concat(\r\n  'Parent lookup failed for category ',\r\n  items('ForEachChild')?['fmg_code'],\r\n  ' (expected parent ',\r\n  items('ForEachChild')?['fmg_parentcode'],\r\n  ')'\r\n)"
+                    }
+                  }
+                }
+              },
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@equals(\r\n  length(body('FindParentEach')?['value']),\r\n  1\r\n)",
+                      true
+                    ]
+                  }
+                ]
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "InitializeHierarchyErrors": [
+              "Succeeded"
+            ]
+          },
+          "type": "Foreach"
+        },
+        "InitializeHierarchyErrors": {
+          "runAfter": {
+            "ListChildCategories": [
+              "Succeeded"
+            ]
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "HierarchyErrors",
+                "type": "array",
+                "value": "@json('[]')"
+              }
+            ]
+          }
+        },
+        "VerifyPendingCategories": {
+          "runAfter": {
+            "ForEachChild": [
+              "Succeeded"
+            ]
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "fmg_categories",
+              "$filter": "fmg_isgroup eq false and fmg_parentcode ne null and _fmg_parentcategory_value eq null",
+              "$top": 100
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        },
+        "ValidateCompletion": {
+          "actions": {
+            "HierarchyCompleted": {
+              "type": "Compose",
+              "inputs": "Category hierarchy initialization completed successfully."
+            }
+          },
+          "runAfter": {
+            "VerifyPendingCategories": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Failed": {
+                "type": "Terminate",
+                "inputs": {
+                  "runStatus": "Failed",
+                  "runError": {
+                    "code": "CATEGORY_HIERARCHY_INCOMPLETE",
+                    "message": "@concat(\r\n  'Validation errors: ',\r\n  string(length(variables('HierarchyErrors'))),\r\n  '. Pending categories: ',\r\n  string(length(body('VerifyPendingCategories')?['value'])),\r\n  '. Details: ',\r\n  join(variables('HierarchyErrors'), ' | ')\r\n)"
+                  }
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@and(\r\n  equals(length(variables('HierarchyErrors')), 0),\r\n  equals(length(body('VerifyPendingCategories')?['value']), 0)\r\n)",
+                  true
+                ]
+              }
+            ]
+          },
+          "type": "If"
+        }
+      }
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
