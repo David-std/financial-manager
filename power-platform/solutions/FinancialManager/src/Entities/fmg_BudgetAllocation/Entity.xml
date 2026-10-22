@@ -1036,6 +1036,22 @@
           </Descriptions>
         </attribute>
       </attributes>
+      <EntityKeys>
+        <EntityKey>
+          <Name>fmg_BA_UniqueMonthlyCategory</Name>
+          <LogicalName>fmg_ba_uniquemonthlycategory</LogicalName>
+          <IntroducedVersion>0.1.0.0</IntroducedVersion>
+          <IsCustomizable>0</IsCustomizable>
+          <EntityKeyAttributes>
+            <AttributeName>fmg_budget</AttributeName>
+            <AttributeName>fmg_category</AttributeName>
+            <AttributeName>fmg_month</AttributeName>
+          </EntityKeyAttributes>
+          <displaynames>
+            <displayname description="Unique monthly category per budget" languagecode="3082" />
+          </displaynames>
+        </EntityKey>
+      </EntityKeys>
       <EntitySetName>fmg_budgetallocations</EntitySetName>
       <IsDuplicateCheckSupported>1</IsDuplicateCheckSupported>
       <IsBusinessProcessEnabled>0</IsBusinessProcessEnabled>

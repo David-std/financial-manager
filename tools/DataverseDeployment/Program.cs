@@ -11,13 +11,13 @@ const string PluginClass = "FinancialManager.Validation.FT_EnforcePaymentIntegri
 const string Table = "fmg_financialtransaction";
 
 string mode = args.Length > 0 ? args[0] : "inspect";
-if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema")
+if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && !mode.StartsWith("budget-", StringComparison.Ordinal))
 {
-    Console.Error.WriteLine("Usage: inspect | inspect-schema | verify-schema | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
+    Console.Error.WriteLine("Usage: inspect | inspect-schema | verify-schema | budget-inspect | budget-key-status | budget-key --apply | budget-register --apply | budget-steps --apply | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
     return 2;
 }
 bool apply = args.Length > 1 && args[1] == "--apply";
-if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && !apply)
+if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && !apply)
 {
     Console.Error.WriteLine("Mutation requires explicit --apply.");
     return 2;
@@ -59,6 +59,7 @@ Console.WriteLine("Authenticated into expected FinancialManager organization.");
 Console.WriteLine("Plugin packages found: " + packages.Entities.Count + "; plug-in classes found: " + types.Entities.Count);
 
 if (mode == "inspect") return 0;
+if (mode.StartsWith("budget-", StringComparison.Ordinal)) return BudgetDeployment.Run(client, mode);
 if (mode == "inspect-schema" || mode == "schema")
     return SchemaDeployment.Run(client, mode == "schema");
 if (mode == "verify-schema") return SchemaVerifier.Run(client);

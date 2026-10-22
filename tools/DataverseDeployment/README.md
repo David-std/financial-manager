@@ -82,3 +82,23 @@ The commands require the same `FM_ENV_URL` and `FM_ORGANIZATION_ID` environment 
 On 2026-10-22, `verify-schema` verified **21 expected columns, five related Lookups and 13 Choice values** against published Dataverse metadata. A fresh solution export included all seven Financial Manager custom tables. A local ZIP repack succeeded, but the pre-existing PluginAssembly root-component warning persists; **cross-environment import remains unverified**.
 
 **IMPORTANT:** These three tables are *structural only*. The budget approval lifecycle, duplicate monthly allocation protection, authorization inheritance, immutable approved versions, and curated Activity Event write authorization are **not yet implemented**. Do not populate financial approvals or interpret an `Approved` option as trusted until synchronous server-side controls and tests are in place. The second-identity authorization tests remain deferred by project decision.
+
+
+## Budget integrity package and enforcement
+
+The independently packaged `fmg_BudgetIntegrity` plug-in enforces the budget and allocation lifecycle in the **same** `financial-manager-dev` environment; it does not modify or replace the payment plug-in. The `fmg_BA_UniqueMonthlyCategory` Dataverse alternate key must report `Active` before registration.
+
+Commands (set `FM_ENV_URL` and `FM_ORGANIZATION_ID` in the **local** shell first):
+
+```powershell
+dotnet test tests/FinancialManager.BudgetIntegrity.Tests/FinancialManager.BudgetIntegrity.Tests.csproj -c Release
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-inspect
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-key-status
+# Initial creation only: budget-key --apply; budget-register --apply; budget-steps --apply
+# Controlled same-version update only (FM_BUDGET_PACKAGE_PATH required): budget-upgrade --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-verify --apply
+```
+
+The initial NuGet package registration is `fmg_BudgetIntegrity` version `1.0.0`. Dataverse rejects attempts to update an already registered `PluginPackage.version` from 1.0.0 to 1.0.1. The approved update mechanism replaces **only the package contents**, preserving registered package identity and version, then verifies the three classes and nine active steps. Do not delete/recreate the package: that can remove dependent processing steps.
+
+Budget approvals intentionally remain **disabled**; ordinary direct writes to Activity Event are blocked. A passing `budget-verify` run means the nine rollback-only development integration tests succeeded. **Live authorization for non-admin identities and version-based approvals remain unverified.**

@@ -99,10 +99,20 @@
       <RootComponent type="9" schemaName="fmg_tipodedatos" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosscope" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosstatus" behavior="0" />
+      <RootComponent type="91" id="{1abe5a6c-68ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.BudgetIntegrity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
       <RootComponent type="91" id="{31965de4-59ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.Validation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="92" id="{6979d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{6c79d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{7079d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{7479d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{7779d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{7a79d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{9e6e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{a16e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{a56e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{a8033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{ab033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{af033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
     </RootComponents>
     <MissingDependencies />
   </SolutionManifest>

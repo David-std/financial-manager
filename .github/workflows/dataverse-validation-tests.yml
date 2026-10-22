@@ -5,14 +5,18 @@ on:
     branches: [develop]
     paths:
       - "plugins/FinancialManager.Validation/**"
+      - "plugins/FinancialManager.BudgetIntegrity/**"
       - "tests/FinancialManager.Validation.Tests/**"
+      - "tests/FinancialManager.BudgetIntegrity.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
   pull_request:
     paths:
       - "plugins/FinancialManager.Validation/**"
+      - "plugins/FinancialManager.BudgetIntegrity/**"
       - "tests/FinancialManager.Validation.Tests/**"
+      - "tests/FinancialManager.BudgetIntegrity.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -36,5 +40,7 @@ jobs:
           }
       - name: Build Dataverse deployment and integration verifier
         run: dotnet build tools/DataverseDeployment/DataverseDeployment.csproj --configuration Release --nologo
-      - name: Run tests
+      - name: Test payments
         run: dotnet test tests/FinancialManager.Validation.Tests/FinancialManager.Validation.Tests.csproj --configuration Release --verbosity normal
+      - name: Test budgets and activity events
+        run: dotnet test tests/FinancialManager.BudgetIntegrity.Tests/FinancialManager.BudgetIntegrity.Tests.csproj --configuration Release --verbosity normal
