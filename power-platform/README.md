@@ -7,8 +7,8 @@ This directory contains the **actual unmanaged Dataverse solution source** expor
 - Solution unique name: `FinancialManager` (version `0.1.0.0` at initial export)
 - Publisher prefix: `fmg`
 - Source project: [`solutions/FinancialManager/`](solutions/FinancialManager/)
-- Current exported components: `Branch`, `Category`, `Cash Account`, `Financial Transaction`, nine table-scoped business rules, `Initialize Category Hierarchy` flow, relationships, choices, forms and views, the `fmg_FinancialManagerValidation` plug-in package, and its three synchronous PreValidation steps
-- The enforcement plug-in **is deployed** in `financial-manager-dev` and passed six rolled-back integration checks on 2026-10-22. Budget tables and the expense app are **not yet** deployed. This source has not been import-tested into a second Dataverse environment.
+- Current exported components: seven custom tables (`Branch`, `Category`, `Cash Account`, `Financial Transaction`, `Budget`, `Budget Allocation`, `Activity Event`), nine table-scoped transaction business rules, `Initialize Category Hierarchy` flow, relationships, choices, forms and views, the `fmg_FinancialManagerValidation` plug-in package, and its three synchronous PreValidation steps
+- The payment enforcement plug-in **is deployed** in `financial-manager-dev` and passed six rolled-back integration checks on 2026-10-22. The three budget/activity tables and five new lookup relationships were deployed and their published metadata verified (21 columns, 5 lookups, 13 choice options). **Budget submission/approval, allocation edits, and Activity Event writes are not yet protected by server-side workflow rules**; they must remain unused until authorization and integrity guards are implemented and tested. The expense app is not yet deployed. This source has not been import-tested into a second Dataverse environment.
 
 ## Update source from Dataverse
 

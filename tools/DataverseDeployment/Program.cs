@@ -11,13 +11,13 @@ const string PluginClass = "FinancialManager.Validation.FT_EnforcePaymentIntegri
 const string Table = "fmg_financialtransaction";
 
 string mode = args.Length > 0 ? args[0] : "inspect";
-if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify")
+if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema")
 {
-    Console.Error.WriteLine("Usage: inspect | register --apply | steps --apply | verify --apply");
+    Console.Error.WriteLine("Usage: inspect | inspect-schema | verify-schema | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
     return 2;
 }
 bool apply = args.Length > 1 && args[1] == "--apply";
-if (mode != "inspect" && !apply)
+if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && !apply)
 {
     Console.Error.WriteLine("Mutation requires explicit --apply.");
     return 2;
@@ -59,6 +59,17 @@ Console.WriteLine("Authenticated into expected FinancialManager organization.");
 Console.WriteLine("Plugin packages found: " + packages.Entities.Count + "; plug-in classes found: " + types.Entities.Count);
 
 if (mode == "inspect") return 0;
+if (mode == "inspect-schema" || mode == "schema")
+    return SchemaDeployment.Run(client, mode == "schema");
+if (mode == "verify-schema") return SchemaVerifier.Run(client);
+if (mode == "publish-schema")
+{
+    SchemaDeployment.Run(client, false);
+    client.Execute(new PublishXmlRequest { ParameterXml =
+        "<importexportxml><entities><entity>fmg_budget</entity><entity>fmg_budgetallocation</entity><entity>fmg_activityevent</entity></entities></importexportxml>" });
+    Console.WriteLine("PUBLISHED THREE FINANCIAL MANAGER TABLES");
+    return 0;
+}
 
 if (mode == "verify")
 {

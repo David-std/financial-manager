@@ -53,3 +53,32 @@ Do **not** run `register` for updates: the current tool intentionally does not r
 - Pack/repack generated a **PluginAssembly root-component warning** despite producing a ZIP. This needs independent import validation before treating the Git export as a deployment-ready release artifact.
 
 Source of truth: [Dataverse plug-in](../../plugins/FinancialManager.Validation/) and [validation strategy](../../docs/validation-strategy.md).
+
+
+## Deploying the core spending-budget schema (2026-10-22)
+
+The read-only `inspect-schema` checks whether the expected tables already exist. `schema --apply` **creates missing metadata only** and does not overwrite existing definitions or touch business rows. Each operation verifies the target Dataverse Organization ID and the `FinancialManager` solution first.
+
+```powershell
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- inspect-schema
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- schema --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- publish-schema --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- verify-schema
+```
+
+The commands require the same `FM_ENV_URL` and `FM_ORGANIZATION_ID` environment variables as the plug-in verification (set locally, never committed).
+
+### Actual Dataverse schema introduced
+
+- `fmg_budget`: Name, Year, Scope (Branch/Shared), Branch, Version, Effective From Month, Status (Draft/Submitted/Approved/Rejected/Superseded), Approved By and Approved On.
+- `fmg_budgetallocation`: Name, Budget, Month (1–12), Category, Amount (PEN, 2 decimals, nonnegative).
+- `fmg_activityevent`: Name, Event Type, Record Type, Record ID, Summary, Actor and Event Time.
+- Five lookup relationships: `fmg_BG_Branch`, `fmg_BG_Approver`, `fmg_BA_Budget`, `fmg_BA_Category`, `fmg_AE_Actor`.
+- All three tables use Dataverse User/Team ownership and have table-level auditing enabled.
+- Budget Scope choice values: `Branch=797280300`, `Shared=797280301`.
+- Budget Status values: `Draft=797280400`, `Submitted=797280401`, `Approved=797280402`, `Rejected=797280403`, `Superseded=797280404`.
+- Activity Event Type values `797280500`–`797280505`, in the order `TransactionCreated`, `TransactionPosted`, `TransactionVoided`, `BudgetSubmitted`, `BudgetApproved`, `CategoryDeactivated`.
+
+On 2026-10-22, `verify-schema` verified **21 expected columns, five related Lookups and 13 Choice values** against published Dataverse metadata. A fresh solution export included all seven Financial Manager custom tables. A local ZIP repack succeeded, but the pre-existing PluginAssembly root-component warning persists; **cross-environment import remains unverified**.
+
+**IMPORTANT:** These three tables are *structural only*. The budget approval lifecycle, duplicate monthly allocation protection, authorization inheritance, immutable approved versions, and curated Activity Event write authorization are **not yet implemented**. Do not populate financial approvals or interpret an `Approved` option as trusted until synchronous server-side controls and tests are in place. The second-identity authorization tests remain deferred by project decision.

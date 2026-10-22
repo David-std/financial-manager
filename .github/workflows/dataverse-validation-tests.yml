@@ -7,12 +7,14 @@ on:
       - "plugins/FinancialManager.Validation/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tools/DataverseDeployment/**"
+      - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
   pull_request:
     paths:
       - "plugins/FinancialManager.Validation/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tools/DataverseDeployment/**"
+      - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
 
 jobs:
@@ -25,6 +27,13 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
+      - name: Verify source-controlled financial tables
+        shell: pwsh
+        run: |
+          foreach ($name in @("fmg_Budget", "fmg_BudgetAllocation", "fmg_ActivityEvent")) {
+            $path = "power-platform/solutions/FinancialManager/src/Entities/$name/Entity.xml"
+            if (-not (Test-Path $path)) { throw "Missing exported table: $name" }
+          }
       - name: Build Dataverse deployment and integration verifier
         run: dotnet build tools/DataverseDeployment/DataverseDeployment.csproj --configuration Release --nologo
       - name: Run tests

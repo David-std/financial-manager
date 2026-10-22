@@ -78,10 +78,14 @@
       </Addresses>
     </Publisher>
     <RootComponents>
+      <RootComponent type="1" schemaName="fmg_activityevent" behavior="0" />
       <RootComponent type="1" schemaName="fmg_branch" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_budget" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_budgetallocation" behavior="0" />
       <RootComponent type="1" schemaName="fmg_cashaccount" behavior="0" />
       <RootComponent type="1" schemaName="fmg_category" behavior="0" />
       <RootComponent type="1" schemaName="fmg_financialtransaction" behavior="0" />
+      <RootComponent type="1" schemaName="systemuser" behavior="1" />
       <RootComponent type="29" id="{2634db3c-49ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="29" id="{2bd19da0-48ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="29" id="{300a5fba-a6cd-f111-b377-70a8a5aca0ae}" behavior="0" />

@@ -1,13 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="business_unit_fmg_activityevent" />
+  <EntityRelationship Name="business_unit_fmg_budget" />
+  <EntityRelationship Name="business_unit_fmg_budgetallocation" />
   <EntityRelationship Name="business_unit_fmg_financialtransaction" />
+  <EntityRelationship Name="fmg_AE_Actor" />
+  <EntityRelationship Name="fmg_BA_Budget" />
+  <EntityRelationship Name="fmg_BA_Category" />
+  <EntityRelationship Name="fmg_BG_Approver" />
+  <EntityRelationship Name="fmg_BG_Branch" />
   <EntityRelationship Name="fmg_CashAccount_Branch" />
   <EntityRelationship Name="fmg_Category_ParentCategory" />
   <EntityRelationship Name="fmg_financialtransaction_branch" />
   <EntityRelationship Name="fmg_financialtransaction_cashaccount" />
   <EntityRelationship Name="fmg_financialtransaction_category" />
+  <EntityRelationship Name="lk_fmg_activityevent_createdby" />
+  <EntityRelationship Name="lk_fmg_activityevent_modifiedby" />
   <EntityRelationship Name="lk_fmg_branch_createdby" />
   <EntityRelationship Name="lk_fmg_branch_modifiedby" />
+  <EntityRelationship Name="lk_fmg_budget_createdby" />
+  <EntityRelationship Name="lk_fmg_budget_modifiedby" />
+  <EntityRelationship Name="lk_fmg_budgetallocation_createdby" />
+  <EntityRelationship Name="lk_fmg_budgetallocation_modifiedby" />
   <EntityRelationship Name="lk_fmg_cashaccount_createdby" />
   <EntityRelationship Name="lk_fmg_cashaccount_modifiedby" />
   <EntityRelationship Name="lk_fmg_category_createdby" />
@@ -17,8 +31,18 @@
   <EntityRelationship Name="organization_fmg_branch" />
   <EntityRelationship Name="organization_fmg_cashaccount" />
   <EntityRelationship Name="organization_fmg_category" />
+  <EntityRelationship Name="owner_fmg_activityevent" />
+  <EntityRelationship Name="owner_fmg_budget" />
+  <EntityRelationship Name="owner_fmg_budgetallocation" />
   <EntityRelationship Name="owner_fmg_financialtransaction" />
+  <EntityRelationship Name="team_fmg_activityevent" />
+  <EntityRelationship Name="team_fmg_budget" />
+  <EntityRelationship Name="team_fmg_budgetallocation" />
   <EntityRelationship Name="team_fmg_financialtransaction" />
+  <EntityRelationship Name="TransactionCurrency_fmg_BudgetAllocation" />
   <EntityRelationship Name="TransactionCurrency_fmg_financialtransaction" />
+  <EntityRelationship Name="user_fmg_activityevent" />
+  <EntityRelationship Name="user_fmg_budget" />
+  <EntityRelationship Name="user_fmg_budgetallocation" />
   <EntityRelationship Name="user_fmg_financialtransaction" />
 </EntityRelationships>

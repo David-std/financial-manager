@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{fbc2520f-b8ab-44fc-884f-b32f78191307}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="fmg_name" select="1" icon="1" preview="1">
+        <row name="result" id="fmg_budgetid">
+          <cell name="fmg_name" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>1</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="fmg_budget">
+          <attribute name="fmg_budgetid" />
+          <attribute name="fmg_name" />
+          <attribute name="createdon" />
+          <order attribute="fmg_name" descending="false" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Vista de búsqueda avanzada de Budget" languagecode="3082" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>
