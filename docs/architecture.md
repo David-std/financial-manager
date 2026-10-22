@@ -41,17 +41,17 @@ Never handwrite fake Canvas App, Dataverse, or solution export artifacts merely 
 
 ## Cash-oriented reporting
 
-- Posted receipts and payments drive cash-flow measures.
-- Operating cash result excludes capital acquisitions and other separately defined non-operating payment classes.
+- Posted expense payments drive spending measures; income and complete net cash flow are outside the MVP.
+- Operating paid spending excludes capital acquisitions and other payment classes unless explicitly approved.
 - Budget utilization compares approved allocation values with qualifying posted payments only; unpaid commitments do not appear in actual payments.
-- Financial measures use a declared reporting calendar, PEN currency, and explicit movement-class mappings.
+- Spending measures use a declared reporting calendar, PEN currency, and explicit expense-payment class mappings.
 - Summary totals must reconcile with the drill-through movements; missing source data must not be silently replaced with zero.
 
 If balances are requested, account transfers and opening balances require explicit modeling before they can be reported credibly.
 
 ## Power BI model
 
-Prefer a star-schema semantic model with transaction facts, approved budget allocation facts, and shared dimensions (date, branch, category, cash account where relevant). Separate measures for receipts, payments, operating expenditure, capital spending, and cash result.
+Prefer a star-schema semantic model with expense-payment facts, approved budget allocation facts, and shared dimensions (date, branch, category, cash account where relevant). Separate measures for total paid spending, operating payments, capital payments and budget utilization.
 
 Initially favor Import mode with documented refresh timing and security. Reassess DirectQuery only if justified by freshness, scale, licensing, and measured performance. Never assume a report reflects an immediately saved movement.
 

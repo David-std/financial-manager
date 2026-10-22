@@ -24,7 +24,7 @@ Power BI
 ├── Executive Overview
 ├── Expense Analysis
 ├── Budget Control
-└── Income and Trends
+└── Spending Trends
 ```
 
 Navigation and controls are shown according to role, but access is enforced by Dataverse security. User-facing labels may be in Spanish; source names follow the project's English naming conventions.
@@ -34,20 +34,20 @@ Navigation and controls are shown according to role, but access is enforced by D
 Purpose: immediate operational overview, not a duplicate of the full Power BI report.
 
 - Current period and accessible branch scope.
-- Receipt total, payment total, net cash movement, and budget remaining.
+- Paid spending, operating/capital breakdown, and budget remaining.
 - Unposted draft queue and recent assigned actions for authorized staff.
-- Shortcuts: New receipt, New payment, Transactions, Budget.
+- Shortcuts: New expense payment, Transactions, Budget.
 - Last data refresh timestamp if embedding or linking to imported Power BI.
 
 ## Transactions
 
 ### List
 
-Search by reference or description; filter by period, status, branch, category, and flow class. Display direction, amount, date, status, category, branch/scope, and last modifier. Default to current period rather than loading the entire history.
+Search by reference or description; filter by period, status, branch, category, and payment class. Display amount, date, status, category, branch/scope, payment account, and last modifier. Default to current period rather than loading the entire history.
 
 ### Form
 
-Required inputs: date, receipt/payment, flow class, amount, category, internal cash account, and location scope. Optional: description, document reference. Select group then leaf category. On save, show validation errors without losing entries.
+Required before posting: payment date, payment class, amount, active leaf category, internal cash account, and location scope. Optional: description, document reference. Select group then leaf category. On save, show validation errors without losing entries.
 
 Actions are role-specific: Save draft, Post, Void with reason, View audit context. Posted transactions are read-only. A correction creates a new entry linked operationally to the voided record if that relationship is introduced.
 
@@ -61,7 +61,7 @@ Actions are role-specific: Save draft, Post, Void with reason, View audit contex
 
 ## Master data
 
-Administrators maintain codes, descriptions, hierarchy, active status, and allowed cash-flow classification. Prevent duplicates and posting to non-leaf/inactive categories. Keep cash-account labels free of bank account credentials.
+Administrators maintain expense codes, descriptions, hierarchy and active status. The implemented Category table has no `Direction` or default payment-class column. Prevent duplicates and posting to non-leaf/inactive categories. Keep cash-account labels free of bank account credentials.
 
 ## Activity
 

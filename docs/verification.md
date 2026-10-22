@@ -1,14 +1,14 @@
 # Verification and acceptance
 
-This is the planned validation baseline. No Power Apps, Dataverse, or Power BI business components have been deployed or tested yet.
+This is the planned validation baseline. Branch, Category, and Cash Account reference tables have been configured in the developer environment. Expense payment, budget and reporting capabilities have not been deployed or validated.
 
 ## Transaction and data integrity
 
 | ID | Scenario | Expected result |
 | --- | --- | --- |
-| TX-01 | Post a complete receipt/payment | Saved with correct direction, flow class, period, branch scope, account, and creator |
+| TX-01 | Post a complete expense payment | Saved with correct payment class, period, branch scope, account, and creator |
 | TX-02 | Submit zero, negative, excessively precise or invalid amount | Rejected with a clear message; no posted row |
-| TX-03 | Post under a group code, inactive category, or mismatched receipt/payment category | Rejected |
+| TX-03 | Post under a group code, inactive category, or unclassified code `999` | Rejected |
 | TX-04 | Post to an unauthorized branch | Rejected by Dataverse security, not only the UI |
 | TX-05 | Edit amount/date/classification of a posted movement | Rejected; corrections follow void and re-entry |
 | TX-06 | Void without permission or an explanation | Rejected and traceable |
@@ -53,7 +53,7 @@ This is the planned validation baseline. No Power Apps, Dataverse, or Power BI b
 | BI-05 | Report operating expense and capital payment | Classified separately; combined only in total cash payments |
 | BI-06 | Visualize spending exceeding budget | Text and formatting indicate overrun; not color alone |
 | BI-07 | Request a period before the latest dataset refresh | Clear refresh timestamp; no implied real-time guarantee |
-| BI-08 | Attempt to derive invoice revenue or official profit from cash receipts | Metric is not presented under an inaccurate accounting label |
+| BI-08 | Attempt to derive invoice revenue, profit, margin, or actual bank balances from expense payments | Metric is unavailable and not presented under an inaccurate accounting label |
 
 ## Operations
 

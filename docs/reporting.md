@@ -1,92 +1,82 @@
-# Financial reporting specification
+# Expense and budget reporting specification
 
-These are management reports, not statutory financial statements. All figures must be traceable to authorized Dataverse records.
+These are management reports, not statutory financial statements. The MVP includes **expense payments and spending budgets only**. Income, customer receipts, sales, margins, profit and complete net cash flow are not available or inferable.
 
 ## Dataset scope
 
-- Reporting currency: PEN for the first release.
-- Business date: `fmg_transactiondate`; reporting timezone: America/Lima for timestamps.
-- Transactions included: `Posted` only.
-- Dimensions: Date, Branch/Shared, Category hierarchy, Account, Flow Class.
-- Budget data: monthly allocations from the effective approved budget version only.
+- Reporting currency: PEN; confirm transaction currency explicitly.
+- Payment date: proposed `fmg_transactiondate`; reporting timezone: America/Lima for timestamps.
+- Actuals include `Posted` expense payments only. Exclude Draft and Voided.
+- Dimensions: Date, authorized Branch/Shared scope, Category hierarchy, Cash Account, and expense Flow Class.
+- Budget values derive only from effective approved monthly allocations.
 - Periods: day, month, quarter, year, and selected range.
-- Every page shows the selected date range, location scope, data refresh timestamp, and whether shared/corporate movements are included.
+- All pages show active filters, Shared inclusion and data refresh timestamp.
 
-## KPI definitions
+## Measures
 
-Let `amount(t)` be the positive PEN magnitude of an eligible posted transaction in the selected date range and authorized scope.
+Let `amount(t)` be the positive PEN amount of an eligible posted payment in the authorized scope.
 
-| Measure | Definition | Exclusions / notes |
-| --- | --- | --- |
-| Cash receipts | Sum of Receipt transactions | No assumption of invoiced or accrued revenue |
-| Cash payments | Sum of Payment transactions | Includes operating and non-operating payments |
-| Net cash movement | Cash receipts minus cash payments | Not a statutory net profit |
-| Operating cash payments | Sum of Payment transactions classified OperatingPayment | Excludes capital, tax, and other classes unless explicitly approved |
-| Operating cash result | Operating receipts minus operating cash payments | Cash-oriented proxy, **not gross/net margin** |
-| Capital spending | Sum of CapitalPayment transactions | Shown separately from operating payments |
-| Approved budget | Sum of effective approved allocation amounts | Filtered by month, category, and branch/scope |
-| Budget used | Qualifying posted payments matched to their approved budget category and period | Define whether Shared can be budgeted separately |
-| Budget remaining | Approved budget minus budget used | Negative means overspend |
-| Budget use % | Budget used / approved budget | Undefined when budget is zero; show N/A, not 0% |
-| Prior-year variance | Actual selected period minus comparable prior-year period | Labels and signs depend on metric direction |
-| Prior-year variance % | (Actual - Prior year) / ABS(Prior year) | When prior-year value is zero, show N/A |
+| Measure | Definition |
+| --- | --- |
+| Total paid spending | Sum of all posted expense-payment amounts, including non-operating outflows |
+| Operating payments | Sum of `OperatingPayment` class; no automatic inclusion of capital/tax payments |
+| Capital payments | Sum of `CapitalPayment` class, shown separately |
+| Tax payments | Sum of `TaxPayment` class; not a tax determination |
+| Other payments | Sum of `OtherPayment` class, reviewed separately |
+| Approved budget | Effective approved allocation amounts in matching month, category and scope |
+| Budget used | Qualifying posted payments matched to approved allocation |
+| Budget remaining | Approved budget minus budget used |
+| Budget use % | Budget used / approved budget; display N/A when approved budget is zero |
+| Prior-year difference | Current paid spending minus comparable prior-year paid spending |
+| Prior-year difference % | (Current - Prior year) / ABS(Prior year); display N/A when prior year is zero |
 
-Avoid summing ratios, mixing receipts with invoice totals, or using green/red indiscriminately. For expense metrics, an increase may be unfavorable; for receipts, an increase may be favorable. A negative variance is not automatically bad without business context.
+Do not sum percentages, treat missing information as zero, or interpret red/green without numerical and textual context. An increase in spending is not automatically favorable. Payments with no approved allocation are `Unbudgeted`, not 0% utilized.
 
-### Prior-year comparison
+### Period comparisons
 
-Use a proper continuous calendar dimension, matching selected dates against the comparable prior-year dates. Show `AC` (actual current period), `PY` (prior year), `Δ PY`, and `Δ PY %`. If the reporting calendar and selected month yield incomplete periods, label the comparison as such.
+Use a continuous calendar and comparable periods. Labels `AC`, `PY`, `Δ PY`, and `Δ PY %` must match the actual dates. Show when the current reporting period is incomplete.
 
 ### Budget health
 
-Color bands are configurable business rules, not financial truths. Proposed initial convention: green within plan, amber near the limit, red only after a confirmed overspend. Do not assign a cutoff (e.g. 80%, 90%) before the budget owner approves it. When a category has spending but no approved allocation, display `Unbudgeted`, not an invented 0% utilization.
+Color bands and override thresholds require business approval. Showing an overspend warning does not itself establish an enforced spending limit.
 
-## Pages
+## Report pages
 
-### Executive overview
+### Executive spending overview
 
-- Receipt, payment, net cash movement, approved budget, used budget, remaining budget.
-- Monthly receipt/payment trends and annual comparison.
-- Top expenditure groups by value.
-- Exception strip for unbudgeted payments and overspent categories.
-- Filters for date period and branch scope; cross-filtered drill-through to source movements.
+- Total spending, operating/capital split, approved budget, budget used and remaining.
+- Monthly trend, prior-period comparison, top categories and branch distribution.
+- Unbudgeted and overspent exceptions; drill-through to original payment records.
 
 ### Expense analysis
 
-- Matrix grouped as Group > Leaf category.
-- Columns: current actual, comparable prior-year actual, absolute and percentage differences.
-- Optional account and flow-class slices.
-- Expand/collapse hierarchy; conditional formatting and data bars.
-- Drill-through reveals transaction date, reference, authorized description, amount, account and scope.
+- Expandable Group > Leaf category matrix with current, prior-year, absolute and percentage variances.
+- Filters for date range, branch/shared scope, category, payment class and cash account.
+- Accessible data bars and conditional formatting with textual meaning.
+- Drill-through shows authorized date, reference, amount, description, payment account and scope.
 
 ### Budget control
 
-- Budget by group/category, month and branch; actual vs approved allocation.
-- Committed future spending is **not** included unless a separate commitment process is later implemented.
-- Overspent, unbudgeted and inactive allocation exceptions.
-- Version and approval status visible; do not silently blend draft budgets.
+- Approved allocations versus qualifying posted payments by month, category and branch/shared scope.
+- Version, effective period and approval status visible.
+- Overspent, unbudgeted and categorization exceptions.
+- Unpaid commitments are not payments and do not consume actuals in the initial design.
 
-### Income and trends
+### Spending trends
 
-- Daily/monthly/yearly receipts and their distribution by approved income category.
-- Paid receipts trend by branch; values must be clearly called **receipts**, not net invoicing or net sales.
-- Comparison of comparable periods; no seller/customer/product reporting without corresponding data.
+- Daily/monthly/yearly payment evolution and category distribution.
+- Operating, capital, tax and other approved spending classes.
+- Branch and Shared comparisons with security enforced outside visuals.
+- No customer, seller, sales, invoices, receipts, or income reports without separate approved data.
 
-## Reconciliation examples
+## Reconciliation example
 
-Suppose a controlled period contains:
+If posted operating payments total S/ 11,000, posted equipment purchases total S/ 4,000, and the matching approved operating allocation totals S/ 13,000, the result is S/ 15,000 in total paid spending, S/ 11,000 in operating payments, S/ 4,000 in capital payments, and S/ 2,000 operating budget remaining. This assumes exact alignment of approved category, month and scope. It does not establish bank balance or profit.
 
-- Posted operating receipts: S/ 20,000
-- Posted operating payments: S/ 11,000
-- Posted equipment acquisition: S/ 4,000
-- Approved operating allocation: S/ 13,000
-
-Expected: total payments S/ 15,000; net cash movement S/ 5,000; operating cash result S/ 9,000; operating budget remaining S/ 2,000 (subject to category matching). The S/ 4,000 equipment purchase does not enter operating payments.
-
-Shared movements appear only once in consolidated totals. They are not copied into each branch total absent an approved allocation policy.
+Shared payments appear once in consolidated reporting and are not duplicated in branch totals unless an approved allocation method is introduced.
 
 ## Technical notes
 
-Use an appropriately defined star schema and explicit DAX measures. Consider matrix visual with row hierarchy and built-in conditional formatting. Track refresh timestamps; verify all aggregations against controlled transaction sets. Authorization for report and detail views must be tested independently from Canvas App access.
+Use a star-schema semantic model with explicit validated DAX measures. Reconcile against controlled Dataverse fixtures, show refresh timestamps, and test Power BI report, export and detail access independently from Power Apps.
 
-See [Data model](data-model.md), [Screens](screens.md), and [Verification](verification.md).
+See [Data model](data-model.md), [Screens](screens.md), [Scope](scope.md), and [Verification](verification.md).

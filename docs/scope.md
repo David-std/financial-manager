@@ -8,8 +8,8 @@ This is a **proposed design baseline**, not a confirmed description of the curre
 
 ## Business outcomes
 
-1. Record, review, and trace cash receipts and payments.
-2. Understand the financial performance of each operating location and the business as a whole.
+1. Record, review, and trace expense payments.
+2. Understand paid spending by operating location and for the business as a whole.
 3. Plan spending by month, category, and location, with an annual consolidated view.
 4. Compare actuals against approved budgets and prior periods.
 5. Separate operational spending from equipment investment and other non-operating cash outflows.
@@ -20,13 +20,13 @@ This is a **proposed design baseline**, not a confirmed description of the curre
 | ID | Capability | Initial release |
 | --- | --- | --- |
 | FM-01 | Authenticated access and role-based permissions | Required |
-| FM-02 | Financial movement entry, posting, voiding, and searchable history | Required |
-| FM-03 | Expense and income category management | Required |
+| FM-02 | Expense payment entry, posting, voiding, and searchable history | Required |
+| FM-03 | Expense category management | Required |
 | FM-04 | Branch/location attribution and consolidated reporting | Required |
 | FM-05 | Internal cash and bank-label accounts, without bank connections | Required |
 | FM-06 | Annual budget with monthly category allocations and approval | Required |
 | FM-07 | Budget-versus-actual tracking and variance alerts in reports | Required |
-| FM-08 | Daily/monthly/annual management reports and drill-through | Required |
+| FM-08 | Daily/monthly/annual expense and budget reports with drill-through | Required |
 | FM-09 | Recent business activities and Dataverse auditing | Required |
 | FM-10 | Document reference and optional receipt attachment | Candidate; validate storage needs |
 | FM-11 | iOS Shortcut through an authenticated Power Apps deep link | Later |
@@ -35,7 +35,7 @@ This is a **proposed design baseline**, not a confirmed description of the curre
 
 ## Financial boundary
 
-This release is **cash-oriented management control**: receipts and payments are posted when money moves. It must not label those totals as revenue recognized, sales invoiced, net invoicing, gross profit, or statutory net profit. A paid equipment acquisition is a cash outflow and may be classified as capital expenditure; it is not automatically an operating expense.
+This release is **expense-side, cash-oriented management control**: payments are posted when funds leave an internal account. Income, receipts, invoicing and complete cash-flow accounting are deferred. Spending must not be presented as revenue recognized, net invoicing, gross profit or statutory net profit. A paid equipment acquisition may be a capital outflow rather than an operating expense.
 
 The approved category catalog is a management taxonomy, not the Peruvian Plan Contable General Empresarial (PCGE). No accounting entries, tax declarations, receivable/payable ledgers, or official financial statements are generated.
 
@@ -51,20 +51,20 @@ Two branches will exist in production; test environments use synthetic branch na
 
 - Customer records, ISP operations, network inventory, subscriptions, and MikroWisp integration
 - Banking authentication, payment transfers, and automatic statement reconciliation
-- Electronic invoicing, SUNAT submissions, electronic payroll, and formal accounting
+- Income/receipt entry, electronic invoicing, SUNAT submissions, electronic payroll, and formal accounting
 - Customer, employee, and supplier master-data management beyond any minimal non-sensitive transaction description
 - Forecasts presented as certain outcomes, unauthorized AI access, and unrestricted financial query generation
 
 ## Confirm before production
 
 - The cash-basis assumption and whether any previously invoiced amounts must be shown separately
-- Exactly which movement types count toward each management result
+- Exactly which payment classes count toward each management spending measure
 - Opening balances, transfers between internal accounts, and how to represent shared expenses
 - Budget owner, approval threshold, revision policy, and overspend behavior
 - Whether proof-of-payment attachments are necessary, including retention rules
 - Local reporting currency (proposed PEN), date cut-off (proposed America/Lima), and reporting periods
 - Which roles may view both branches, approve budgets, or void posted movements
 - Any employee compensation confidentiality requirements
-- Existing source of periodic income figures and whether individual receipts are entered or summarized
+- Whether a separate income/receipts module should be considered after the expense-only MVP
 
 See [Data model](data-model.md), [Reporting](reporting.md), [Screens](screens.md), and [Verification](verification.md).

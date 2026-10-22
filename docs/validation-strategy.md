@@ -11,7 +11,7 @@ Power Apps validates for user experience. Dataverse must independently enforce d
 | Nonempty required fields, field types, positive values | Dataverse columns and table-scoped business rules | Confirm where a rule executes, particularly in Canvas Apps |
 | Code uniqueness and external request deduplication | Dataverse alternate keys where compatible | Test duplicate concurrent submissions, not only sequential saves |
 | Basic role and branch access | Dataverse security roles and tested owner/team privileges | UI conditions do not authorize access |
-| Active category, direction, leaf validation across lookups | Server-side validation when posting | Cross-record invariants are not assured by a dropdown filter |
+| Active category, leaf status, and expense-payment class validation across lookups | Server-side validation when posting | Cross-record invariants are not assured by a dropdown filter |
 | Posted transactions cannot be modified | Security permissions and synchronous server-side guards | A status-based rule must withstand direct table updates |
 | Budget approval and immutable approved versions | Privileged operation, enforced transition rules and auditing | Do not trust a client-supplied approval flag |
 | Approved-versus-actual reporting | Validated DAX measures and controlled fixtures | Power BI is read-only; never use report colors as authorization |

@@ -43,10 +43,10 @@ Codes ending in `00` identify **groups only** and cannot be assigned to posted f
 
 - Codes are stored as **text**, not numerical account identifiers.
 - Group code and leaf code are distinct records linked by parent lookup.
-- Validate code uniqueness, active state, leaf status, receipt/payment direction, and the permitted cash-flow classification before posting.
+- Validate code uniqueness, active state, leaf status, and approved expense-payment class before posting. The configured Category table contains neither `Direction` nor a default flow-class field.
 - Restrict `999` to drafts pending review; an administrator must reclassify before posting.
 - Prevent deletion of referenced categories; deactivate them instead.
-- New income categories require a separate approved catalog, not reuse of expense groups.
+- Income and receipt categories are outside the MVP; any future model requires separate approval. Do not add prefixed receipt codes to this expense catalog.
 
 ## Items requiring review
 
