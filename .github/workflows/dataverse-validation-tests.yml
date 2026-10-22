@@ -6,11 +6,13 @@ on:
     paths:
       - "plugins/FinancialManager.Validation/**"
       - "tests/FinancialManager.Validation.Tests/**"
+      - "tools/DataverseDeployment/**"
       - ".github/workflows/dataverse-validation-tests.yml"
   pull_request:
     paths:
       - "plugins/FinancialManager.Validation/**"
       - "tests/FinancialManager.Validation.Tests/**"
+      - "tools/DataverseDeployment/**"
       - ".github/workflows/dataverse-validation-tests.yml"
 
 jobs:
@@ -23,5 +25,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
+      - name: Build Dataverse deployment and integration verifier
+        run: dotnet build tools/DataverseDeployment/DataverseDeployment.csproj --configuration Release --nologo
       - name: Run tests
         run: dotnet test tests/FinancialManager.Validation.Tests/FinancialManager.Validation.Tests.csproj --configuration Release --verbosity normal

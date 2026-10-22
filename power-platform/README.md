@@ -7,8 +7,8 @@ This directory contains the **actual unmanaged Dataverse solution source** expor
 - Solution unique name: `FinancialManager` (version `0.1.0.0` at initial export)
 - Publisher prefix: `fmg`
 - Source project: [`solutions/FinancialManager/`](solutions/FinancialManager/)
-- Current exported components: `Branch`, `Category`, `Cash Account`, `Financial Transaction`, nine table-scoped business rules, `Initialize Category Hierarchy` flow, relationships, choices, forms and views
-- Budget tables, expense app, and enforcement plug-in are **not yet** deployed; do not assume they exist because they are specified in `docs/`
+- Current exported components: `Branch`, `Category`, `Cash Account`, `Financial Transaction`, nine table-scoped business rules, `Initialize Category Hierarchy` flow, relationships, choices, forms and views, the `fmg_FinancialManagerValidation` plug-in package, and its three synchronous PreValidation steps
+- The enforcement plug-in **is deployed** in `financial-manager-dev` and passed six rolled-back integration checks on 2026-10-22. Budget tables and the expense app are **not yet** deployed. This source has not been import-tested into a second Dataverse environment.
 
 ## Update source from Dataverse
 
@@ -43,7 +43,8 @@ Only import packages to an explicitly approved target environment after dependen
 - The solution is **publicly visible on GitHub**. Inspect every export for secrets, personally identifiable information, tokens, endpoints, and unexpected components before committing.
 - A solution export includes configuration and flow/connection **references**, but not usable connection credentials. Configure and authorize connections separately in each environment.
 - Table rows (two branches, 41 categories, three cash accounts, payments, audit history) are **not** backed up or versioned by this source export. Use a reviewed data migration strategy for non-sensitive reference data.
-- The presence of nine business rules does **not** mean Posted/Voided operations have complete server-side authorization and immutability protection. See [`plugins/FinancialManager.Validation`](../plugins/FinancialManager.Validation/) and [`docs/validation-strategy.md`](../docs/validation-strategy.md).
+- The plug-in enforces server-side Posted/Voided immutability and cross-record validity. **Only System Administrators may Post or Void** until actual finance roles and branch teams are designed and verified with a second identity. See [`plugins/FinancialManager.Validation`](../plugins/FinancialManager.Validation/) and [`tools/DataverseDeployment`](../tools/DataverseDeployment/).
+- Local `pac solution pack` logs a **PluginAssembly root-component warning** despite producing a ZIP. Treat the exported files as versioned source, not as independently import-verified release artifacts.
 - `Initialize Category Hierarchy` is a one-time setup flow: keep it disabled in normal operations and confirm its state after deployment.
 
 See [Data model](../docs/data-model.md), [Development](../docs/development.md), and [Screens](../docs/screens.md).

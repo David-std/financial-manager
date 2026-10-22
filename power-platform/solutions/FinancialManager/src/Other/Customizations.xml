@@ -10,6 +10,7 @@
   <OrganizationSettings />
   <optionsets />
   <CustomControls />
+  <SdkMessageProcessingSteps />
   <EntityDataProviders />
   <connectionreferences>
     <connectionreference connectionreferencelogicalname="fmg_sharedcommondataserviceforapps_720c0">

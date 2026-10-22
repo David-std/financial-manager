@@ -17,6 +17,10 @@ __pycache__/
 artifacts/
 dist/
 build/
+**/bin/
+**/obj/
+**/.vs/
+TestResults/
 *.log
 
 # Operating system

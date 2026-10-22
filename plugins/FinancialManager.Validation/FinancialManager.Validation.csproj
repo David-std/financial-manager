@@ -15,7 +15,7 @@
     https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets
   -->
   <PropertyGroup>
-    <PackageId>FinancialManager.Validation</PackageId>
+    <PackageId>fmg_FinancialManagerValidation</PackageId>
     <Version>$(FileVersion)</Version>
     <Authors>Financial Manager contributors</Authors>
     <Company>Financial Manager</Company>

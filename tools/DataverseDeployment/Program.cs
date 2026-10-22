@@ -1,0 +1,167 @@
+using Microsoft.PowerPlatform.Dataverse.Client;
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Crm.Sdk.Messages;
+using System.IO;
+
+const string Solution = "FinancialManager";
+const string AssemblyName = "fmg_FinancialManagerValidation";
+const string PluginClass = "FinancialManager.Validation.FT_EnforcePaymentIntegrity";
+const string Table = "fmg_financialtransaction";
+
+string mode = args.Length > 0 ? args[0] : "inspect";
+if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify")
+{
+    Console.Error.WriteLine("Usage: inspect | register --apply | steps --apply | verify --apply");
+    return 2;
+}
+bool apply = args.Length > 1 && args[1] == "--apply";
+if (mode != "inspect" && !apply)
+{
+    Console.Error.WriteLine("Mutation requires explicit --apply.");
+    return 2;
+}
+var url = Environment.GetEnvironmentVariable("FM_ENV_URL");
+var expectedId = Environment.GetEnvironmentVariable("FM_ORGANIZATION_ID");
+if (!Uri.TryCreate(url, UriKind.Absolute, out var u) ||
+    u.Scheme != Uri.UriSchemeHttps || !u.Host.EndsWith(".dynamics.com", StringComparison.OrdinalIgnoreCase) ||
+    !Guid.TryParse(expectedId, out var organizationId))
+{
+    Console.Error.WriteLine("Set FM_ENV_URL and FM_ORGANIZATION_ID to the intended Dataverse dev organization.");
+    return 2;
+}
+var conn = "AuthType=OAuth;Url=" + url +
+    ";AppId=51f81489-12ee-4a9e-aaae-a2591f45987d;RedirectUri=http://localhost;LoginPrompt=Never;SkipDiscovery=true";
+using var client = new ServiceClient(conn);
+if (!client.IsReady) { Console.Error.WriteLine("Authentication failed; no changes. " + client.LastError); return 3; }
+
+var who = (WhoAmIResponse)client.Execute(new WhoAmIRequest());
+if (who.OrganizationId != organizationId)
+{
+    Console.Error.WriteLine("SAFETY STOP: organization ID differs from expected environment.");
+    return 4;
+}
+var sq = new QueryExpression("solution") { ColumnSet = new ColumnSet("uniquename", "version", "isvisible"), TopCount = 2 };
+sq.Criteria.AddCondition("uniquename", ConditionOperator.Equal, Solution);
+var found = client.RetrieveMultiple(sq).Entities;
+if (found.Count != 1) { Console.Error.WriteLine("SAFETY STOP: FinancialManager solution not found exactly once."); return 4; }
+
+EntityCollection List(string name, string attribute, string value, params string[] cols)
+{
+    var q = new QueryExpression(name) { ColumnSet = new ColumnSet(cols), TopCount = 10 };
+    q.Criteria.AddCondition(attribute, ConditionOperator.Equal, value);
+    return client.RetrieveMultiple(q);
+}
+var packages = List("pluginpackage", "name", AssemblyName, "pluginpackageid", "name");
+var types = List("plugintype", "typename", PluginClass, "plugintypeid", "typename");
+Console.WriteLine("Authenticated into expected FinancialManager organization.");
+Console.WriteLine("Plugin packages found: " + packages.Entities.Count + "; plug-in classes found: " + types.Entities.Count);
+
+if (mode == "inspect") return 0;
+
+if (mode == "verify")
+{
+    foreach(var name in new[]{"FT_ValidateCreate","FT_ValidateUpdate","FT_ProtectDeletion"})
+    {
+        var steps = List("sdkmessageprocessingstep", "name", name, "sdkmessageprocessingstepid", "stage", "mode", "statecode");
+        if(steps.Entities.Count != 1) throw new InvalidOperationException("Expected exactly one step: "+name);
+        var step = steps.Entities[0];
+        if(step.GetAttributeValue<OptionSetValue>("stage")?.Value != 10 ||
+           step.GetAttributeValue<OptionSetValue>("mode")?.Value != 0 ||
+           step.GetAttributeValue<OptionSetValue>("statecode")?.Value != 0)
+            throw new InvalidOperationException("Step must be active sync PreValidation: "+name);
+        if(name != "FT_ValidateCreate")
+        {
+            var img = new QueryExpression("sdkmessageprocessingstepimage") {ColumnSet=new ColumnSet("entityalias","imagetype"),TopCount=3};
+            img.Criteria.AddCondition("sdkmessageprocessingstepid", ConditionOperator.Equal, step.Id);
+            var images = client.RetrieveMultiple(img).Entities;
+            if(images.Count!=1 || images[0].GetAttributeValue<string>("entityalias")!="Before" ||
+               images[0].GetAttributeValue<OptionSetValue>("imagetype")?.Value!=0)
+                throw new InvalidOperationException("Required Before image missing: "+name);
+        }
+    }
+    Console.WriteLine("All three active synchronous PreValidation steps and images verified.");
+    Console.WriteLine("LIVE TESTS: "+LiveVerifier.Run(client));
+    return 0;
+}
+
+if (mode == "register")
+{
+    if (packages.Entities.Count > 0)
+    {
+        Console.WriteLine("Package exists; not updating/replacing it. Use steps only after inspecting its type.");
+        return 0;
+    }
+    var path = Environment.GetEnvironmentVariable("FM_PACKAGE_PATH");
+    if (String.IsNullOrWhiteSpace(path) || !File.Exists(path) || !path.EndsWith(".nupkg", StringComparison.OrdinalIgnoreCase))
+    {
+        Console.Error.WriteLine("FM_PACKAGE_PATH must be a validated local NuGet package file.");
+        return 5;
+    }
+    var bytes = File.ReadAllBytes(path);
+    if (bytes.Length > 10_000_000) { Console.Error.WriteLine("Package unexpectedly large."); return 5; }
+    var row = new Entity("pluginpackage");
+    row["name"] = AssemblyName;
+    row["uniquename"] = "fmg_FinancialManager_Validation";
+    row["version"] = "1.0.0";
+    row["content"] = Convert.ToBase64String(bytes);
+    var req = new CreateRequest { Target = row };
+    req.Parameters["SolutionUniqueName"] = Solution;
+    var response = (CreateResponse)client.Execute(req);
+    Console.WriteLine("Package created in solution (id present: " + (response.id != Guid.Empty) + ").");
+    var registeredTypes = List("plugintype", "typename", PluginClass, "plugintypeid");
+    Console.WriteLine("Required plugin type found after registration: " + (registeredTypes.Entities.Count == 1));
+    return registeredTypes.Entities.Count == 1 ? 0 : 6;
+}
+
+if (types.Entities.Count != 1) { Console.Error.WriteLine("Step registration aborted: exact plug-in class not present."); return 6; }
+var typeId = types.Entities[0].Id;
+string[] names = { "FT_ValidateCreate", "FT_ValidateUpdate", "FT_ProtectDeletion" };
+string[] messages = { "Create", "Update", "Delete" };
+string imgCols = String.Join(",", new[]{
+    "fmg_status","fmg_amount","fmg_transactiondate","fmg_flowclass","fmg_scope","fmg_category",
+    "fmg_branch","fmg_cashaccount","fmg_description","fmg_documentreference",
+    "fmg_voidreason","fmg_externalrequestid","transactioncurrencyid"
+});
+for(int i = 0; i < names.Length; i++)
+{
+    var exists = List("sdkmessageprocessingstep","name",names[i], "sdkmessageprocessingstepid","name");
+    if (exists.Entities.Count > 0) { Console.WriteLine(names[i]+": already present; skip"); continue; }
+    var msg = List("sdkmessage", "name", messages[i], "sdkmessageid");
+    if (msg.Entities.Count != 1) throw new InvalidOperationException("Expected unique sdkmessage: "+messages[i]);
+    var filterQuery = new QueryExpression("sdkmessagefilter") { ColumnSet = new ColumnSet("sdkmessagefilterid"), TopCount = 2 };
+    filterQuery.Criteria.AddCondition("sdkmessageid",ConditionOperator.Equal,msg.Entities[0].Id);
+    filterQuery.Criteria.AddCondition("primaryobjecttypecode",ConditionOperator.Equal,Table);
+    var filters = client.RetrieveMultiple(filterQuery).Entities;
+    if(filters.Count!=1) throw new InvalidOperationException("Expected unique SDK message filter for "+messages[i]+" and "+Table);
+
+    var step = new Entity("sdkmessageprocessingstep");
+    step["name"] = names[i];
+    step["eventhandler"] = new EntityReference("plugintype",typeId);
+    step["sdkmessageid"] = new EntityReference("sdkmessage",msg.Entities[0].Id);
+    step["sdkmessagefilterid"] = new EntityReference("sdkmessagefilter",filters[0].Id);
+    step["stage"] = new OptionSetValue(10);
+    step["mode"] = new OptionSetValue(0);
+    step["rank"] = 10;
+    step["supporteddeployment"] = new OptionSetValue(0);
+    var create = new CreateRequest {Target=step};
+    create.Parameters["SolutionUniqueName"]=Solution;
+    var newStep = ((CreateResponse)client.Execute(create)).id;
+    Console.WriteLine("Registered "+names[i]+" as synchronous PreValidation");
+    if(i != 0)
+    {
+        var image = new Entity("sdkmessageprocessingstepimage");
+        image["name"]="Before";
+        image["entityalias"]="Before";
+        image["imagetype"]=new OptionSetValue(0);
+        image["messagepropertyname"]="Target";
+        image["attributes"] = i == 1 ? imgCols : "fmg_status";
+        image["sdkmessageprocessingstepid"]=new EntityReference("sdkmessageprocessingstep",newStep);
+        var createImage = new CreateRequest { Target = image };
+        createImage.Parameters["SolutionUniqueName"]=Solution;
+        client.Execute(createImage);
+        Console.WriteLine("  Before image registered for "+names[i]);
+    }
+}
+return 0;

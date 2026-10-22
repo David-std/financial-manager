@@ -95,6 +95,10 @@
       <RootComponent type="9" schemaName="fmg_tipodedatos" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosscope" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosstatus" behavior="0" />
+      <RootComponent type="91" id="{31965de4-59ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.Validation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="92" id="{9e6e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{a16e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{a56e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
     </RootComponents>
     <MissingDependencies />
   </SolutionManifest>
