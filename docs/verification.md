@@ -1,6 +1,6 @@
 # Verification and acceptance
 
-This is the planned validation baseline. Branch, Category, and Cash Account reference tables have been configured in the developer environment. Expense payment, budget and reporting capabilities have not been deployed or validated.
+This specification defines the acceptance criteria for Dataverse data integrity, workflow permissions, expense reporting, budget approval, auditing, and deployment. A passing repository check does not substitute for functional testing of Power Platform components.
 
 ## Transaction and data integrity
 

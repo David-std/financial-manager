@@ -1,8 +1,8 @@
 # Management expense category catalog
 
-Source: the category structure provided for the project. It is an **internal expense taxonomy**, not a standardized accounting chart and not a direct mapping to the Peruvian PCGE. The proposed labels are preserved for requirements review. Display names remain in Spanish.
+Source: the category structure provided for the project. It is an **internal expense taxonomy**, not a standardized accounting chart and not a direct mapping to the Peruvian PCGE. Display names are retained from the supplied business catalog. Display names remain in Spanish.
 
-Codes ending in `00` identify **groups only** and cannot be assigned to posted financial movements. The leaf codes below are provisional and require business approval.
+Codes ending in `00` identify **groups only** and cannot be assigned to posted financial movements. The leaf codes below define the management expense catalog.
 
 | Group | Group name | Code | Acronym | Category |
 | --- | --- | --- | --- | --- |
@@ -43,7 +43,7 @@ Codes ending in `00` identify **groups only** and cannot be assigned to posted f
 
 - Codes are stored as **text**, not numerical account identifiers.
 - Group code and leaf code are distinct records linked by parent lookup.
-- Validate code uniqueness, active state, leaf status, and approved expense-payment class before posting. The configured Category table contains neither `Direction` nor a default flow-class field.
+- Validate code uniqueness, active state, leaf status, and approved expense-payment class before posting. The Category schema does not include `Direction` or a default flow-class field.
 - Restrict `999` to drafts pending review; an administrator must reclassify before posting.
 - Prevent deletion of referenced categories; deactivate them instead.
 - Income and receipt categories are outside the MVP; any future model requires separate approval. Do not add prefixed receipt codes to this expense catalog.
@@ -59,7 +59,7 @@ Codes ending in `00` identify **groups only** and cannot be assigned to posted f
 
 Do not assign PCGE accounts automatically on the basis of similar names. Any future PCGE mapping must be reviewed by a qualified accountant.
 
-## Proposed input behavior
+## Input behavior
 
 Users select the group to narrow the list of leaves, then select one leaf. The chosen code and name are displayed together. Changing an existing code must not retroactively rewrite the meaning of recorded history without a controlled migration.
 

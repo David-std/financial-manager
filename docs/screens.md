@@ -1,6 +1,6 @@
 # Screen specification
 
-The application is an operational interface; Power BI is the analytical workspace. This is a **functional screen specification**, not implemented UI source.
+The application is an operational interface; Power BI is the analytical workspace. The screens below define operational responsibilities and presentation requirements, independently of their implementation.
 
 ## Navigation
 
@@ -61,7 +61,7 @@ Actions are role-specific: Save draft, Post, Void with reason, View audit contex
 
 ## Master data
 
-Administrators maintain expense codes, descriptions, hierarchy and active status. The implemented Category table has no `Direction` or default payment-class column. Prevent duplicates and posting to non-leaf/inactive categories. Keep cash-account labels free of bank account credentials.
+Administrators maintain expense codes, descriptions, hierarchy and active status. The Category schema has no `Direction` or default payment-class column. Prevent duplicates and posting to non-leaf/inactive categories. Keep cash-account labels free of bank account credentials.
 
 ## Activity
 

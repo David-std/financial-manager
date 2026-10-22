@@ -23,7 +23,7 @@ The solution unique name is `FinancialManager`, with publisher prefix `fmg`. Cus
 | `fmg_cashaccount` | Organization | Internal payment-source labels, optionally associated with a branch |
 | `fmg_financialtransaction` | User or team | Expense payments, lifecycle and audit attribution |
 | `fmg_budget` | User or team | Annual spending plans, revision and approval workflow |
-| `fmg_budgetallocation` | Inherits authorization through its budget | Monthly allocations to expense categories |
+| `fmg_budgetallocation` | User or team | Monthly allocations to expense categories; privileges and parent-budget access must be enforced |
 | `fmg_activityevent` | Restricted writes | Curated business-event feed, supplementary to Dataverse auditing |
 
 Dataverse role privileges, record ownership and parent relationships must be designed together. An organization-owned catalog does not grant all users permission to edit it. The ownership model of each custom table is a creation-time architectural decision.
@@ -141,7 +141,7 @@ An approval operation must verify approver authority and any separation-of-dutie
 | `fmg_category` | Lookup to Category | Required active leaf category |
 | `fmg_amount` | Currency (2 decimals) | Non-negative budget amount in PEN |
 
-Within one budget version, `(month, category)` must be unique. Budget lines are edited only while the owning budget is editable. Annual budget totals are derived from monthly lines; no independent annual amount may diverge from the sum.
+Within one budget version, `(month, category)` must be unique. Users must have authorization for the parent budget before editing its lines; Dataverse does not automatically inherit all record privileges from a parent lookup. Budget lines are edited only while the owning budget is editable. Annual budget totals are derived from monthly lines; no independent annual amount may diverge from the sum.
 
 Budget actuals are qualifying posted payments matched to month, scope, branch and category under an agreed classification policy. The existing Category catalog has no `IsBudgetable` or default flow-class attribute; budget eligibility must be an explicit rule rather than an inferred category property.
 

@@ -4,7 +4,7 @@
 
 Deliver a lightweight internal financial control and budgeting application for a small Peruvian internet service provider operating in two locations. The system supplements existing customer and billing software; it does not replace it.
 
-This is a **proposed design baseline**, not a confirmed description of the current business process. The reference dashboards illustrate analytical capabilities, not a mandate to replicate their design or accounting terminology. The public repository must not identify the customer or contain production financial records.
+This specification defines the business scope and requirements; it does not assert facts about operational processes that have not been established. Reference dashboards illustrate analytical capabilities, not a requirement to replicate their design or accounting terminology. The public repository must not identify the customer or contain production financial records.
 
 ## Business outcomes
 
