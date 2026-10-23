@@ -6,7 +6,7 @@ import type { GeneratedComponentProps, fmg_budget, fmg_budgetallocation, fmg_bra
 type B = fmg_budget;
 type A = fmg_budgetallocation;
 type State = { loading: boolean; budgets: B[]; allocations: A[]; branches: fmg_branch[]; categories: fmg_category[]; currencies: transactioncurrency[]; error: string; limited: boolean };
-const cache = "__financialManagerBudgetPage2026v5";
+const cache = "__financialManagerBudgetPage2026v6";
 const useStyles = makeStyles({
   root: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalXXL, backgroundColor: tokens.colorNeutralBackground2, color: tokens.colorNeutralForeground1, minHeight: "100%", boxSizing: "border-box" },
   heading: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
@@ -76,6 +76,9 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
   const [allocationFeedback,setAllocationFeedback]=useState("");
   const [allocationEditing,setAllocationEditing]=useState("");
   const [reviewBudgetId,setReviewBudgetId]=useState("");
+  const [submitCandidate,setSubmitCandidate]=useState("");
+  const [submitting,setSubmitting]=useState(false);
+  const [submissionFeedback,setSubmissionFeedback]=useState("");
   const ready=!!dataApi;
   useEffect(() => {
     if (!ready) return;
@@ -195,6 +198,25 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
       setAllocationFeedback(err instanceof Error?err.message:"No se pudo crear la asignación.");
     }finally{setAllocationSaving(false);}
   }
+  async function submitDraftBudget():Promise<void>{
+    if(submitting||!submitCandidate)return;
+    const budget=state.budgets.find(b=>b.fmg_budgetid===submitCandidate);
+    const hasLines=state.allocations.some(a=>idFromLookup(a._fmg_budget_value as unknown as string)===submitCandidate.toLowerCase());
+    if(!budget||budget.fmg_status!==797280400||!hasLines){
+      setSubmissionFeedback("Solo puede presentarse un presupuesto borrador con asignaciones.");
+      return;
+    }
+    setSubmitting(true);setSubmissionFeedback("");
+    try{
+      await dataApi.updateRow("fmg_budget",submitCandidate,{fmg_status:797280401});
+      setSubmitCandidate("");
+      setAllocationOpen(false);setAllocationEditing("");
+      setSubmissionFeedback("Presupuesto presentado. Sus asignaciones ahora son de solo lectura.");
+      refresh();
+    }catch(err){
+      setSubmissionFeedback(err instanceof Error?err.message:"No se pudo presentar el presupuesto.");
+    }finally{setSubmitting(false);}
+  }
   async function openBudget(id?:string):Promise<void>{
     setNavigationError("");
     try{
@@ -212,7 +234,16 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
         <Button icon={<ArrowClockwiseRegular/>} onClick={refresh} disabled={state.loading}>Actualizar</Button>
       </div></header>
     {navigationError&&<Text role="alert" className={classes.error}>{navigationError}</Text>}
-    {draftFeedback&&<Text role="status">{draftFeedback}</Text>}
+    {submissionFeedback&&<Text role="status">{submissionFeedback}</Text>}
+    {submitCandidate&&<section className={classes.panel} aria-label="Confirmar presentación del presupuesto">
+      <Text weight="semibold">Presentar presupuesto</Text>
+      <Text size={200}>Al presentarlo, el presupuesto y sus asignaciones dejarán de ser editables. La aprobación sigue restringida.</Text>
+      <div className={classes.actions}>
+        <Button appearance="primary" disabled={submitting} onClick={()=>{void submitDraftBudget();}}>{submitting?"Presentando...":"Confirmar presentación"}</Button>
+        <Button appearance="secondary" disabled={submitting} onClick={()=>setSubmitCandidate("")}>Cancelar</Button>
+      </div>
+    </section>}
+    {draftFeedback&&<Text role="status">{draftFeedback}</Text>
     {draftOpen&&<section className={classes.panel} aria-label="Crear presupuesto borrador">
       <Text weight="semibold">Nuevo presupuesto</Text>
       <div className={classes.formGrid}>
@@ -302,6 +333,7 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
         <td className={classes.cell}>{displayAmount(counts.get(String(row.fmg_budgetid).toLowerCase())||0)}</td>
         <td className={classes.cell}>
           <Button appearance="subtle" onClick={()=>{setReviewBudgetId(row.fmg_budgetid);setAllocationOpen(false);setAllocationEditing("");}}>Asignaciones</Button>
+          {row.fmg_status===797280400&&<Button appearance="subtle" disabled={!state.allocations.some(a=>idFromLookup(a._fmg_budget_value as unknown as string)===row.fmg_budgetid.toLowerCase())} onClick={()=>{setSubmitCandidate(row.fmg_budgetid);setSubmissionFeedback("");}}>Presentar</Button>}
           <Button appearance="subtle" icon={<OpenRegular/>} onClick={()=>{void openBudget(row.fmg_budgetid);}}>Abrir</Button>
         </td>
       </tr>)}</tbody></table></div>}

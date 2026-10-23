@@ -108,7 +108,9 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn('dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount})', source)
         self.assertIn('Solo es posible modificar asignaciones de presupuestos en borrador.', source)
         self.assertNotRegex(source, r'dataApi\.deleteRow\s*\(')
-        self.assertNotIn('dataApi.updateRow("fmg_budget"', source)
+        self.assertIn('dataApi.updateRow("fmg_budget",submitCandidate,{fmg_status:797280401})', source)
+        self.assertIn('Confirmar presentación', source)
+        self.assertIn('La aprobación sigue restringida.', source)
         self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
 
     def test_budget_yes_no_fields_support_boolean_and_choice_forms(self) -> None:

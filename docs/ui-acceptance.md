@@ -119,3 +119,10 @@ The four pages are published and their source/sitemap consistency is checked in 
 - Expanded the existing `Presupuestos` page with a per-budget monthly allocation table. An administrator/owner can select a version, inspect month/category/amount, create allocations for Draft budgets, and edit **only the amount** of an existing Draft allocation. The parent Budget/Category/Month fields remain fixed during edits; the server BudgetIntegrity plug-in remains the source of authority.
 - New allocation editing and display were implemented and transpiled; interactive confirmation and complete access/permissions testing are deferred to the final Power Apps acceptance pass, at the owner's request.
 - No budget approval, Activity Event writing, or update to existing company financial data is introduced.
+
+## Budget presentation workflow — 2026-10-23
+
+- Added explicit **Presentar** workflow to the existing budget page, available only for Draft budgets that have at least one queried allocation. The UI displays an irreversible-state confirmation before calling `dataApi.updateRow("fmg_budget", id, {fmg_status:797280401})`.
+- This is **submission, not approval**: it does not set Approved, ApprovedBy, or ApprovedOn and does not write Activity Event. The existing synchronous BudgetIntegrity server plug-in remains authoritative for owner/role, version uniqueness, nonempty allocation, and transition checks.
+- Submitting a budget makes its allocations read-only within the page; the server blocks direct edits of Submitted allocations. Rejection/approval roles and concurrent-version safety remain deferred for final authorization acceptance.
+- The owner requested to postpone extensive interactive test scripts until completion of the Power Apps layer. Compilation and repository/CI checks continue to be required for every deployment. Do not mark interactive presentation as accepted based only on compilation or publication.
