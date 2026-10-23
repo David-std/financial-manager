@@ -14,7 +14,7 @@ This specification defines the acceptance criteria for Dataverse data integrity,
 | TX-06 | Void without permission or an explanation | Rejected and traceable |
 | TX-07 | Attempt to post `999` unclassified | Rejected pending a valid category |
 | TX-08 | Submit a repeated integration request ID | Exactly one persisted movement |
-| TX-09 | Submit a future amount through an alternate connector | Same checks as the Canvas App |
+| TX-09 | Submit a future amount through an alternate connector | Same server-side integrity checks as the model-driven app |
 | TX-10 | Post payment of an equipment asset | Included in cash outflow, excluded from operating expense |
 
 ## Budget control
@@ -64,8 +64,28 @@ This specification defines the acceptance criteria for Dataverse data integrity,
 | OPS-03 | Re-run repository workflow | Formatting, required files and docs links pass |
 | OPS-04 | Create new financial master-data values | Role access, validity and historical referential integrity preserved |
 
+## Model-driven app acceptance (interactive checks pending)
+
+The following checks belong to the first release of the four-page **Financial Manager** model-driven app. Publishing and source validation are complete, but interaction with the rendered application has not yet been executed.
+
+| ID | Scenario | Expected result |
+| --- | --- | --- |
+| UI-01 | Open Financial Manager navigation | Gastos, Presupuestos, Datos maestros and Detalle del gasto appear with the expected labels |
+| UI-02 | Create a minimal Draft in Gastos | The Dataverse record is created once and opens in Detalle del gasto with its `recordId` |
+| UI-03 | Save a Draft with PEN amount, date, class, category, scope, branch and cash account | Values persist when reopening; lookup values correspond to the chosen records |
+| UI-04 | Change a Draft from Branch to Shared | Branch lookup is cleared and only appropriate shared accounts are selectable |
+| UI-05 | Attempt to Post without a valid category, date, account or other required fields | Dataverse rejects the action and preserves the Draft for correction |
+| UI-06 | Post a fully valid Draft as an authorized administrator | Status becomes Posted and the editor no longer offers draft mutation |
+| UI-07 | Try to modify a Posted payment through the interface or direct API | Server rejects the update; record remains unchanged |
+| UI-08 | Void a Posted payment with and without a reason | Missing reason is rejected; authorized request with reason is accepted and immutable |
+| UI-09 | Open Presupuestos | Versions and draft allocation totals are labeled appropriately; Approve is not offered and remains denied by the server |
+| UI-10 | Open Datos maestros | Categories, branch and accounts display without catalog mutation actions in this page |
+| UI-11 | Open as a non-administrator or branch-restricted user | App access and financial privileges are enforced by Dataverse, not visibility only; **deferred until a second test user is available** |
+
+Do not mark UI-02 through UI-11 as passed merely because `pac model genpage transpile` or `upload` succeeds. The repository has automated **static** tests for UI source and sitemap consistency under `tests/test_model_app.py`, and C# plug-in tests for server-side rules.
+
 ## Evidence
 
-Attach test fixture definitions, dates, environment, execution results, defects, and remediation links to release records. CI currently checks repository hygiene and documentation only; it does **not** claim to test Dataverse or DAX.
+Attach test fixture definitions, dates, environment, execution results, defects, and remediation links to release records. CI now runs repository/source checks, including model-app sitemap contracts, and two C# plug-in unit-test suites. The 15 previously completed Dataverse integration checks used controlled rollback-only transactions in the developer environment; GitHub Actions does **not** connect to live Dataverse and does **not** validate DAX or actual browser interaction.
 
 See [Data model](data-model.md), [Reporting](reporting.md), and [Security](security.md).
