@@ -6,7 +6,7 @@ import type { GeneratedComponentProps, fmg_budget, fmg_budgetallocation, fmg_bra
 type B = fmg_budget;
 type A = fmg_budgetallocation;
 type State = { loading: boolean; budgets: B[]; allocations: A[]; branches: fmg_branch[]; categories: fmg_category[]; currencies: transactioncurrency[]; error: string; limited: boolean };
-const cache = "__financialManagerBudgetPage2026v3";
+const cache = "__financialManagerBudgetPage2026v4";
 const useStyles = makeStyles({
   root: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalXXL, backgroundColor: tokens.colorNeutralBackground2, color: tokens.colorNeutralForeground1, minHeight: "100%", boxSizing: "border-box" },
   heading: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
@@ -27,6 +27,7 @@ const useStyles = makeStyles({
   info: { padding: tokens.spacingHorizontalM, backgroundColor: tokens.colorNeutralBackground1 },
   error: { color: tokens.colorPaletteRedForeground1 }
 });
+function active(value:unknown):boolean{return value===true||value===1;}
 function idFromLookup(value?: string): string {
   if (!value) return "";
   const valueMatch = value.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
@@ -140,7 +141,7 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
   async function saveAllocation():Promise<void>{
     if(allocationSaving)return;
     const budget=state.budgets.find(b=>b.fmg_budgetid===allocationBudget&&b.fmg_status===797280400);
-    const category=state.categories.find(c=>c.fmg_categoryid===allocationCategory&&c.fmg_isactive===1&&c.fmg_isgroup===0&&c.fmg_code!=="999");
+    const category=state.categories.find(c=>c.fmg_categoryid===allocationCategory&&active(c.fmg_isactive)&&!active(c.fmg_isgroup)&&c.fmg_code!=="999");
     const currency=state.currencies.find(c=>c.isocurrencycode==="PEN");
     const month=Number(allocationMonth),amount=Number(allocationAmount);
     if(!budget||!category||!currency||!Number.isInteger(month)||month<1||month>12||
@@ -207,7 +208,7 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
         {draftScope==="797280300"&&<label className={classes.formField}>Sede
           <select className={classes.formControl} value={draftBranch} onChange={e=>setDraftBranch(e.target.value)} aria-label="Sede del presupuesto">
             <option value="">Seleccionar sede</option>
-            {state.branches.filter(b=>b.fmg_isactive===1).map(b=><option key={b.fmg_branchid} value={b.fmg_branchid}>{b.fmg_name}</option>)}
+            {state.branches.filter(b=>active(b.fmg_isactive)).map(b=><option key={b.fmg_branchid} value={b.fmg_branchid}>{b.fmg_name}</option>)}
           </select>
         </label>}
       </div>
@@ -229,7 +230,7 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
         <label className={classes.formField}>Categoría de detalle
           <select className={classes.formControl} value={allocationCategory} onChange={e=>setAllocationCategory(e.target.value)} aria-label="Categoría de la asignación">
             <option value="">Seleccionar categoría</option>
-            {state.categories.filter(c=>c.fmg_isactive===1&&c.fmg_isgroup===0&&c.fmg_code!=="999").map(c=><option key={c.fmg_categoryid} value={c.fmg_categoryid}>{c.fmg_code} · {c.fmg_name}</option>)}
+            {state.categories.filter(c=>active(c.fmg_isactive)&&!active(c.fmg_isgroup)&&c.fmg_code!=="999").map(c=><option key={c.fmg_categoryid} value={c.fmg_categoryid}>{c.fmg_code} · {c.fmg_name}</option>)}
           </select>
         </label>
         <label className={classes.formField}>Mes

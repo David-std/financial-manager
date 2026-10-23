@@ -108,6 +108,15 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertNotRegex(source, r'dataApi\.(updateRow|deleteRow)\s*\(')
         self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
 
+    def test_budget_yes_no_fields_support_boolean_and_choice_forms(self) -> None:
+        source = (PAGES / "budgets.tsx").read_text(encoding="utf-8")
+        self.assertIn("function active(value:unknown):boolean{return value===true||value===1;}", source)
+        self.assertIn("state.branches.filter(b=>active(b.fmg_isactive))", source)
+        self.assertIn("state.categories.filter(c=>active(c.fmg_isactive)&&!active(c.fmg_isgroup)", source)
+        self.assertIn("c.fmg_categoryid===allocationCategory&&active(c.fmg_isactive)&&!active(c.fmg_isgroup)", source)
+        self.assertNotRegex(source, r"fmg_isactive\s*===\s*1")
+        self.assertNotRegex(source, r"fmg_isgroup\s*===\s*0")
+
     def test_master_data_page_is_read_only(self) -> None:
         source = (PAGES / "master-data.tsx").read_text(encoding="utf-8")
         self.assertIsNone(re.search(r"dataApi\.(createRow|updateRow|deleteRow)\s*\(", source))
