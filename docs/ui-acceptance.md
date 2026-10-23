@@ -98,3 +98,9 @@ The four pages are published and their source/sitemap consistency is checked in 
 - The authenticated development table had **zero budget headers** before this rollout (aggregate read only). A successful publish therefore **does not verify the new Create UI workflows**. Test a clearly labeled synthetic Draft and one allocation with Save/Refresh/FetchXML before marking UI-12 passed.
 - A new unmanaged `FinancialManager` solution export completed successfully with `solution.xml` and `customizations.xml`; it was held in TEMP and not committed. This is not an independent import/migration acceptance test.
 - Power BI Desktop was installed locally using the official Microsoft Store package and launched. Authentication inside Power BI is a separate user action; no PBIP report was created or published in this rollout.
+
+## Budget page rendering and server acceptance check — 2026-10-23
+
+- User screenshot shows the **running Presupuestos page** with zero budget versions, zero allocations and zero submitted budgets. The New Budget button is enabled and New Allocation is disabled until a Draft budget exists. This confirms only the **initial list/empty state rendering**; it does not prove successful browser creation.
+- A fresh authenticated SDK `budget-verify --apply` passed **9/9 rollback-only live tests** in `financial-manager-dev`: create-and-submit with allocation allowed, creation directly Approved denied, empty submission denied, approval blocked, duplicate allocations denied, changes to Submitted records denied, direct Activity Event create denied, and administrator rejection allowed. All test transactions were deliberately rolled back. Existing application data was not modified.
+- The next interactive acceptance is a clearly labeled synthetic **Branch/La Merced 2027 Draft budget** and one `601 Energía Eléctrica` monthly allocation in PEN. Confirm persistence via FetchXML and verify UI refresh; do not approve or introduce actual company figures.
