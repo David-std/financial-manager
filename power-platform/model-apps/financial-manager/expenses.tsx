@@ -11,7 +11,6 @@ const cacheKey = "__financialManagerExpenses2026";
 const useStyles = makeStyles({
   root: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalXXL, backgroundColor: tokens.colorNeutralBackground2, color: tokens.colorNeutralForeground1, minHeight: "100%", boxSizing: "border-box" },
   title: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold, lineHeight: tokens.lineHeightHero700 },
-  subheading: { fontSize: tokens.fontSizeBase300, color: tokens.colorNeutralForeground3 },
   header: { display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: tokens.spacingHorizontalM },
   toolbar: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: tokens.spacingHorizontalS },
   stats: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: tokens.spacingHorizontalM },
@@ -141,21 +140,19 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
       <header className={styles.header}>
         <div>
           <Text className={styles.title} as="h1">Gastos</Text>
-          <div className={styles.subheading}>Financial Manager · movimientos de pago · entorno de desarrollo</div>
         </div>
         <div className={styles.toolbar}>
-          <Badge appearance="outline">Solo egresos · PEN</Badge>
           <Button icon={<ArrowClockwiseRegular />} onClick={refresh} disabled={data.loading}>Actualizar</Button>
         </div>
       </header>
       <section className={styles.stats} aria-label="Resumen de movimientos consultados">
-        <Card className={styles.card}><CardHeader image={<WalletRegular />} header={<Text weight="semibold">Gastos confirmados</Text>} /><Text className={styles.statValue}>{formatMoney(total)}</Text><Text size={200}>Total en los registros consultados, no el informe completo</Text></Card>
-        <Card className={styles.card}><CardHeader image={<DocumentRegular />} header={<Text weight="semibold">Borradores</Text>} /><Text className={styles.statValue}>{draftCount}</Text><Text size={200}>Pendientes de completar o revisar</Text></Card>
-        <Card className={styles.card}><CardHeader image={<CalendarRegular />} header={<Text weight="semibold">Movimientos cargados</Text>} /><Text className={styles.statValue}>{data.records.length}</Text><Text size={200}>Hasta 200 registros recientes</Text></Card>
+        <Card className={styles.card}><CardHeader image={<WalletRegular />} header={<Text weight="semibold">Gastos confirmados</Text>} /><Text className={styles.statValue}>{formatMoney(total)}</Text><Text size={200}>Registros cargados</Text></Card>
+        <Card className={styles.card}><CardHeader image={<DocumentRegular />} header={<Text weight="semibold">Borradores</Text>} /><Text className={styles.statValue}>{draftCount}</Text><Text size={200}>Pendientes de confirmar</Text></Card>
+        <Card className={styles.card}><CardHeader image={<CalendarRegular />} header={<Text weight="semibold">Movimientos cargados</Text>} /><Text className={styles.statValue}>{data.records.length}</Text><Text size={200}>Hasta 200 recientes</Text></Card>
       </section>
       <form className={styles.form} onSubmit={createDraft} aria-label="Crear borrador de gasto">
-        <Field label="Descripción inicial del gasto" className={styles.formInput}>
-          <Input value={description} onChange={(_, next) => setDescription(next.value)} maxLength={2000} placeholder="Ej. Servicio de energía, octubre" />
+        <Field label="Descripción" className={styles.formInput}>
+          <Input value={description} onChange={(_, next) => setDescription(next.value)} maxLength={2000} placeholder="Ej. Energía, octubre" />
         </Field>
         <Button type="submit" appearance="primary" icon={<AddRegular />} disabled={saving || !description.trim()}>{saving ? "Guardando..." : "Nuevo borrador"}</Button>
         {feedback && <Text role="status">{feedback}</Text>}
@@ -189,7 +186,6 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
             </table>
           </div>)}
       </section>
-      <Text className={styles.notice}>Los importes confirmados se consultan sin duplicar gastos compartidos. Este resumen es orientativo y no sustituye el informe analítico de Power BI. Confirmación y anulación protegidas por Dataverse; la disponibilidad depende de los permisos reales del usuario.</Text>
       {data.hasMore && <Text className={styles.notice}>Existen movimientos adicionales. Consulte la vista nativa de Dataverse para el historial completo.</Text>}
     </main>
   );

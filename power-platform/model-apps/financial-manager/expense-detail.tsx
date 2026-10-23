@@ -13,11 +13,9 @@ const useStyles=makeStyles({
  root:{display:"flex",flexDirection:"column",gap:tokens.spacingVerticalL,padding:tokens.spacingHorizontalXXL,backgroundColor:tokens.colorNeutralBackground2,minHeight:"100%",boxSizing:"border-box",color:tokens.colorNeutralForeground1},
  header:{display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:tokens.spacingHorizontalM},
  title:{fontSize:tokens.fontSizeHero700,fontWeight:tokens.fontWeightSemibold},
- description:{color:tokens.colorNeutralForeground3,fontSize:tokens.fontSizeBase300},
  form:{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(240px, 1fr))",gap:tokens.spacingHorizontalM},
  panel:{padding:tokens.spacingHorizontalL,backgroundColor:tokens.colorNeutralBackground1},
  toolbar:{display:"flex",flexWrap:"wrap",gap:tokens.spacingHorizontalM,alignItems:"center"},
- note:{color:tokens.colorNeutralForeground3,fontSize:tokens.fontSizeBase200},
  error:{color:tokens.colorPaletteRedForeground1},
  select:{width:"100%",padding:"10px",borderRadius:"5px",border:"1px solid #aaa",backgroundColor:"#fff"},
  wide:{gridColumn:"1/-1"}
@@ -144,9 +142,9 @@ const ExpenseDetail=(props:GeneratedComponentProps)=>{
    }catch(err){setFeedback(err instanceof Error?err.message:"No se pudo anular. Comprueba permisos y motivo.");}
    finally{setBusy(false);setPendingVoid(false);}
  }
- if(!recordId)return <main className={css.root}><Text as="h1" className={css.title}>Detalle de gasto</Text><Card>Abre un movimiento desde la lista de Gastos. No se ha recibido un identificador.</Card></main>;
+ if(!recordId)return <main className={css.root}><Text as="h1" className={css.title}>Detalle de gasto</Text><Card>Selecciona un movimiento en Gastos para ver su detalle.</Card></main>;
  return <main className={css.root} aria-label="Editar o consultar pago">
-   <header className={css.header}><div><Text as="h1" className={css.title}>Detalle de gasto</Text><p className={css.description}>Registro de pagos y remediación de borradores · solo egresos PEN</p></div>
+   <header className={css.header}><div><Text as="h1" className={css.title}>Detalle de gasto</Text></div>
      <Button icon={<ArrowClockwiseRegular/>} onClick={reload} disabled={busy||data.loading}>Actualizar</Button></header>
    {data.loading&&<Spinner label="Cargando movimiento y catálogos..."/>}
    {data.error&&<Text role="alert" className={css.error}>{data.error}</Text>}
@@ -187,7 +185,6 @@ const ExpenseDetail=(props:GeneratedComponentProps)=>{
      {pendingVoid&&<Card className={css.panel}><Field label="Motivo obligatorio de anulación"><Textarea value={inputs.voidReason} onChange={(_,v)=>change("voidReason",v.value)} rows={3}/></Field>
        <div className={css.toolbar}><Button appearance="primary" disabled={busy||!inputs.voidReason.trim()} onClick={()=>{void voidPayment()}}>Anular movimiento</Button><Button disabled={busy} onClick={()=>setPendingVoid(false)}>Cancelar</Button></div></Card>}
      {feedback&&<Text role="status" className={feedback.toLowerCase().includes("correctamente")?"":css.error}>{feedback}</Text>}
-     <Text className={css.note}>La validación final de categoría, cuenta, moneda, ámbito y permisos se ejecuta en el servidor Dataverse. La aplicación nunca omite estas restricciones.</Text>
    </>}
  </main>;
 };

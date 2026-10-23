@@ -58,3 +58,11 @@ The four pages are published and their source/sitemap consistency is checked in 
 - **Not an interactive acceptance pass.** UI-04 through UI-08 still require a disposable Draft, running-app navigation, saving/refreshing, clearing optional values, and checking Branch/Shared persistence. The CLI publish and source round-trip do not establish that `dataApi.updateRow` accepts every nullable lookup binding.
 - No Posted or Voided records were changed, no budget approvals were enabled, and no Activity Event writes were made. Second-user role verification remains deferred.
 - A fresh **unmanaged solution export** completed successfully to a local temporary ZIP (17 archive entries, including `solution.xml` and `customizations.xml`); this is not an independent import test and the ZIP was not added to the public repository.
+
+## UI copy and observed Draft — 2026-10-23
+
+- The user supplied screenshots of the **Power Apps designer previews**: Gastos displayed one Draft, `MOV-000008`; a separate standalone preview of Detalle del gasto displayed the no-record-context message. This standalone preview is not evidence that record-context navigation failed. Live `Abrir` navigation remains untested.
+- A **read-only authenticated FetchXML** query confirmed `MOV-000008` in `fmg_financialtransaction` with description `Energia, octubre`, status `Draft`, and no payment date or amount. No record was created, posted, voided, or edited by the verification script. The user's already-created Draft can be used for UI-05 through UI-08.
+- Removed redundant scope/development badges, internal technical commentary, and long disclaimer text from Gastos and Detalle del gasto. The loaded-row limit remains visibly described in KPI text and the existing `hasMore` notice.
+- Both pages transpiled, were uploaded to their **existing page IDs**, and were published in `financial-manager-dev`. Fresh downloads of each page matched the repository source after normalizing BOM/end-of-file whitespace. The app still has exactly four generated pages.
+- **Acceptance status unchanged** for UI-05–UI-08: run the model-driven application (not individual designer previews), open `MOV-000008` through `Abrir`, save fictitious fields, refresh and compare Dataverse, clear optional fields, then test Branch/Shared. Do not Post or Void.
