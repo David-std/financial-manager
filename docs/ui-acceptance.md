@@ -1,0 +1,50 @@
+# Financial Manager — UI acceptance and release gates
+
+Status: **planned manual/integration verification**, not a completed browser acceptance test.
+Environment: `financial-manager-dev`. Branch: `develop`. Test payment records must be explicitly identifiable, created only in development and cleaned up if still Draft. Do not enter actual business payments during this exercise.
+
+The four pages are published and their source/sitemap consistency is checked in CI. That does **not** establish that a page accepts record context, renders correctly, writes the expected Dataverse payload or enforces authorization for a real user.
+
+## Acceptance scenarios
+
+| ID | Page / action | Required observation | Test status |
+| --- | --- | --- | --- |
+| UI-01 | Open Financial Manager | Gastos, Presupuestos, Datos maestros and Detalle del gasto are present; no page shows a blank error | Not executed |
+| UI-02 | Gastos list | Reference, date, status, class, category/branch and PEN amount render from accessible rows; a blank dataset has an explanatory state | Not executed |
+| UI-03 | Search / status filter | A Draft, Posted and Voided record (when available) appears only in its appropriate filter; query truncation at 200 rows is disclosed | Not executed |
+| UI-04 | Create Draft | Creates **Draft**, never Posted; reference is assigned by Dataverse; response supplies a GUID and opens the intended detail page | Not executed |
+| UI-05 | Record context | Clicking Abrir passes the selected `recordId` and `entityName` to the generative detail page; the page loads the exact record, not a blank or previous one | Not executed |
+| UI-06 | Edit Draft | Date, amount, payment class, scope, active leaf category, branch (where relevant), cash account, description and reference persist after Save and refresh | Not executed |
+| UI-07 | Clear Draft fields | Clearing a previously saved optional field must clear its persisted value or explicitly explain that it cannot be removed; the UI must not silently retain old amounts/relations | Not executed |
+| UI-08 | Branch / Shared transition | Changing to Shared removes the branch from the persisted record and uses a shared account; changing back to Branch requires a valid active branch | Not executed |
+| UI-09 | Post valid Draft | On authorized admin confirmation, the record transitions to Posted exactly once; the page becomes read-only; a stale-edit retry is rejected | Not executed |
+| UI-10 | Reject invalid post | Zero/invalid amount, missing mandatory data, inactive/group/999 category, mismatched/inactive cash account and non-PEN currency are rejected by Dataverse | Server-side tests passed previously; UI not executed |
+| UI-11 | Void valid Posted | Admin must provide a reason, no financial fields change, status becomes Voided and remains immutable | Server-side tests passed previously; UI not executed |
+| UI-12 | Budgets | View annual versions and allocations without an actionable Approve control; an unauthorized direct status change to Approved remains blocked | Server-side approval block verified; UI not executed |
+| UI-13 | Datos maestros | Active/inactive, group/leaf categories, branches and cash accounts render correctly; no accidental creation or mutation occurs in the consultative page | Not executed |
+| UI-14 | Error and loading states | API failure preserves user input, shows an actionable readable error and never reports success for a failed write | Not executed |
+| UI-15 | Responsive and keyboard use | Desktop, narrow/mobile width, tab navigation, form labels, focus and contrast remain usable | Not executed |
+| UI-16 | Non-admin identity | Owner/team and finance role permissions, restrictions on Post/Void and branch access | **Deferred by project decision** |
+
+## Highest-risk test sequence
+
+1. Open Financial Manager through the authenticated Power Apps application, not a manually constructed URL.
+2. From **Gastos**, create one clearly marked disposable Draft. Confirm a reference is created; test whether the editor opens with the same record ID.
+3. Save complete but fictitious data with a valid active leaf category and branch/account pair. Refresh, compare every field and confirm the selected currency is PEN.
+4. Remove one previously saved optional value and refresh. Record whether it truly cleared; if it did not, do not accept UI-07.
+5. Test both the Branch and Shared routes, including cleanup of an old branch association.
+6. Test posting and voiding only when the development account's privileges are known and after verifying the record is explicitly disposable. Posted and Voided records are intentionally immutable and cannot be deleted via ordinary operations, so avoid creating them casually.
+7. Confirm errors and success notifications reflect server responses, not just button clicks.
+
+## Known limitations and immediate release blockers
+
+- Microsoft supports `Xrm.Navigation.navigateTo({pageType:"generative", pageId, recordId, entityName})`, but the target page **must be configured to accept** these input parameters. Verify this inside the running app. Reference: [Microsoft navigateTo](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-navigation/navigateto).
+- The editor currently assembles an `updateRow` payload in two stages: save Draft, then request Posted. Confirm the request really persists and that a failed Post never shows a false success.
+- Clearing some fields from the editor may not currently remove stored Dataverse values; this needs a controlled UI-07 test and remediation before operational acceptance.
+- All summary amounts on generated pages are restricted to loaded records; they are **not** complete financial reports or approved budget-versus-actual metrics.
+- The budget server plug-in deliberately forbids approval. Do not enable it through a button, flow, or modified user role.
+- Direct Activity Event writes are blocked until a trusted server-side event writer is designed and tested. Dataverse native audit remains authoritative.
+- The alternative full user/team role test is explicitly deferred.
+- Solution export packs with known PluginAssembly component warnings; independent cross-environment import verification is still pending.
+
+**Release decision:** no production acceptance until UI-01 through UI-15 pass with evidence, the required authorization tests are eventually completed, and an independently imported solution has been verified. Keep source changes exclusively on `develop` until review.
