@@ -96,6 +96,8 @@
       <RootComponent type="29" id="{cf4a1333-4ace-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="29" id="{e35dd234-48ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="29" id="{e8970d9b-49ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="62" schemaName="financial_manager_bee9f134" behavior="0" />
+      <RootComponent type="80" schemaName="financial_manager_bee9f134" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatos" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosscope" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosstatus" behavior="0" />
@@ -114,6 +116,31 @@
       <RootComponent type="92" id="{ab033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{af033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
     </RootComponents>
-    <MissingDependencies />
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/Images/AppModule_Default_Icon.png" displayName="msdyn_/Images/AppModule_Default_Icon.png" solution="AppModuleWebResources (2.5)">
+          <package appName="AppModule Web Resources Package" version="2.5">AppModuleWebResources (2.5)</package>
+        </Required>
+        <Dependent type="80" schemaName="financial_manager_bee9f134" displayName="Financial Manager" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="SettingDefinition" displayName="AppChannel" solution="msdyn_AppFrameworkInfraExtensions (1.0.0.27)" id.uniquename="AppChannel">
+          <package appName="PowerAppsAppFramework Package" version="1.0.0.27">PowerAppsAppFramework_Anchor (1.0.0.27)</package>
+        </Required>
+        <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=financial_manager_bee9f134,settingdefinitionid.uniquename=AppChannel" id.parentappmoduleid.uniquename="financial_manager_bee9f134" id.settingdefinitionid.uniquename="AppChannel" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="uxagentproject" solution="Active" id="{1a6e3c3e-fb2e-43b0-b5dd-9071483d1a1f}" />
+        <Dependent type="62" schemaName="financial_manager_bee9f134" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="uxagentproject" solution="Active" id="{35a771c0-5cdf-4d5e-a295-6f893ffcf3d4}" />
+        <Dependent type="62" schemaName="financial_manager_bee9f134" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="uxagentproject" solution="Active" id="{92083d36-806a-43dd-b289-2fafd9e3afb1}" />
+        <Dependent type="62" schemaName="financial_manager_bee9f134" />
+      </MissingDependency>
+    </MissingDependencies>
   </SolutionManifest>
 </ImportExportXml>

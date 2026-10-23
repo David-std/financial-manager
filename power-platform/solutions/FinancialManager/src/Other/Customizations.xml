@@ -11,6 +11,8 @@
   <optionsets />
   <CustomControls />
   <SdkMessageProcessingSteps />
+  <AppModuleSiteMaps />
+  <AppModules />
   <EntityDataProviders />
   <connectionreferences>
     <connectionreference connectionreferencelogicalname="fmg_sharedcommondataserviceforapps_720c0">

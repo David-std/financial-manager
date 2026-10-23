@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModule>
+  <UniqueName>financial_manager_bee9f134</UniqueName>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <WebResourceId>953b9fac-1e5e-e611-80d6-00155ded156f</WebResourceId>
+  <OptimizedFor></OptimizedFor>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <FormFactor>1</FormFactor>
+  <ClientType>4</ClientType>
+  <NavigationType>0</NavigationType>
+  <AppModuleComponents>
+    <AppModuleComponent type="26" id="{051cb801-22fa-4690-822c-7dbcde408688}" />
+    <AppModuleComponent type="26" id="{5a3c65e9-3b44-41b6-8bcd-98b88d0dd136}" />
+    <AppModuleComponent type="26" id="{6c780f3b-8a67-4ec4-9b11-a4b7ece177e7}" />
+    <AppModuleComponent type="26" id="{8515a6bd-4fa7-4bef-a399-c7c2ee043622}" />
+    <AppModuleComponent type="26" id="{5a7373c7-c7ee-44c6-8fa1-e4ee67558101}" />
+    <AppModuleComponent type="26" id="{ccf56e22-e390-4d07-9a81-eb73578b5d61}" />
+    <AppModuleComponent type="60" id="{6c6ddd19-a664-4571-a778-0b66effc43b3}" />
+    <AppModuleComponent type="60" id="{2c164c9c-3c6b-4fa7-87ed-1c4e87db9d71}" />
+    <AppModuleComponent type="60" id="{ff03792a-7bd5-425f-8c97-3b4cb9c9ab5b}" />
+    <AppModuleComponent type="60" id="{03b8bf09-aeb5-4ca8-a0bb-5852a3a53637}" />
+    <AppModuleComponent type="60" id="{d8c1f696-ab44-4536-a9d1-92f17059d900}" />
+    <AppModuleComponent type="60" id="{e3624000-c823-4f4f-a824-df3f197c7db7}" />
+    <AppModuleComponent type="62" schemaName="financial_manager_bee9f134" />
+  </AppModuleComponents>
+  <AppModuleRoleMaps>
+    <Role id="{627090ff-40a3-4053-8790-584edc5be201}" />
+    <Role id="{119f245c-3cc8-4b62-b31c-d1a046ced15d}" />
+  </AppModuleRoleMaps>
+  <LocalizedNames>
+    <LocalizedName description="Financial Manager" languagecode="3082" />
+  </LocalizedNames>
+  <Descriptions>
+    <Description description="Operación de gastos, borradores, presupuestos y catálogos del ISP. Aprobaciones presupuestarias deshabilitadas en desarrollo." languagecode="3082" />
+  </Descriptions>
+  <appsettings>
+    <appsetting settingdefinitionid.uniquename="AppChannel">
+      <iscustomizable>1</iscustomizable>
+      <value>1</value>
+    </appsetting>
+  </appsettings>
+</AppModule>
