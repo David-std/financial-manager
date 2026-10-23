@@ -94,11 +94,23 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn('No se conservaron las relaciones:', source)
         self.assertNotRegex(source, r'payload\["[^"]+@odata\.bind"\]')
 
-    def test_budget_and_catalog_pages_are_read_only(self) -> None:
-        for file_name in ("budgets.tsx", "master-data.tsx"):
-            with self.subTest(page=file_name):
-                source = (PAGES / file_name).read_text(encoding="utf-8")
-                self.assertIsNone(re.search(r"dataApi\.(createRow|updateRow|deleteRow)\s*\(", source))
+    def test_budget_editor_creates_drafts_and_allocations_without_approvals(self) -> None:
+        source = (PAGES / "budgets.tsx").read_text(encoding="utf-8")
+        self.assertIn('dataApi.createRow("fmg_budget"', source)
+        self.assertIn('dataApi.createRow("fmg_budgetallocation"', source)
+        self.assertIn('fmg_status:797280400', source)
+        self.assertIn('_fmg_budget_value:', source)
+        self.assertIn('_fmg_category_value:', source)
+        self.assertIn('_transactioncurrencyid_value:', source)
+        self.assertIn('Nueva asignación', source)
+        self.assertIn('await navigateBudget(id)', source)
+        self.assertNotIn('fmg_status:797280402', source)
+        self.assertNotRegex(source, r'dataApi\.(updateRow|deleteRow)\s*\(')
+        self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
+
+    def test_master_data_page_is_read_only(self) -> None:
+        source = (PAGES / "master-data.tsx").read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"dataApi\.(createRow|updateRow|deleteRow)\s*\(", source))
 
     def test_essential_server_components_remain_versioned(self) -> None:
         packages = SOLUTION / "pluginpackages"

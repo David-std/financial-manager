@@ -24,8 +24,8 @@ PAGES = {
 }
 GUID = re.compile(r"^[a-fA-F0-9]{8}-(?:[a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$")
 MUTATION = re.compile(
-    r"\bdataApi\s*\.\s*(?:createRow|updateRow|deleteRow)\s*\(\s*"
-    r"['\"](?:fmg_budget|fmg_budgetallocation|fmg_category|fmg_branch|fmg_cashaccount)['\"]",
+    r"\bdataApi\s*\.\s*(createRow|updateRow|deleteRow)\s*\(\s*"
+    r"['\"](fmg_budget|fmg_budgetallocation|fmg_category|fmg_branch|fmg_cashaccount)['\"]",
     re.MULTILINE,
 )
 
@@ -111,12 +111,21 @@ def check(root: Path = ROOT) -> list[str]:
     if "fmg_voidreason" not in detail:
         errors.append("The detail editor lacks a void reason field")
 
-    # Budgets are not approvable yet. Catalog changes must not be introduced
-    # via an unreviewed client-side write route.
-    for label in ("Presupuestos", "Datos maestros"):
-        value = files.get(label, "")
-        if MUTATION.search(value):
-            errors.append(f"{label} contains an unreviewed direct data mutation")
+    # The budget editor may create Draft headers and allocations; approval,
+    # updates/deletes and any changes to master-data catalogs remain forbidden.
+    budget_source = files.get("Presupuestos", "")
+    for match in MUTATION.finditer(budget_source):
+        operation, table = match.groups()
+        if operation != "createRow" or table not in ("fmg_budget", "fmg_budgetallocation"):
+            errors.append(f"Unreviewed budget operation: {operation} on {table}")
+    if 'fmg_status:797280400' not in budget_source:
+        errors.append("Budget creation must explicitly use Draft status")
+    if re.search(r'fmg_status\s*:\s*797280402', budget_source):
+        errors.append("Budget UI must not set an Approved status")
+
+    catalog_source = files.get("Datos maestros", "")
+    if MUTATION.search(catalog_source):
+        errors.append("Datos maestros contains an unreviewed data mutation")
 
     return errors
 

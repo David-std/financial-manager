@@ -6,6 +6,12 @@ Deliver a lightweight internal financial control and budgeting application for a
 
 This specification defines the business scope and requirements; it does not assert facts about operational processes that have not been established. Reference dashboards illustrate analytical capabilities, not a requirement to replicate their design or accounting terminology. The public repository must not identify the customer or contain production financial records.
 
+## Approved expansion (2026-10-23)
+
+The initial-release requirements below remain the **implemented expense-and-budget baseline**, but they are no longer a permanent product boundary. The project owner authorized phased expansion toward incoming payments, internal transfers, auditable balances and broader financial management. Those additions require their own Dataverse models, server validations, authorization and acceptance before they enter reports. This approval does not imply that revenue, cash balances or profit are already available.
+
+The architectural decision and ordering are defined in [ADR 0003](decisions/0003-expanded-financial-scope.md). No legacy expense payment is reclassified as an incoming payment.
+
 ## Business outcomes
 
 1. Record, review, and trace expense payments.
