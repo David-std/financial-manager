@@ -48,3 +48,13 @@ The four pages are published and their source/sitemap consistency is checked in 
 - Solution export packs with known PluginAssembly component warnings; independent cross-environment import verification is still pending.
 
 **Release decision:** no production acceptance until UI-01 through UI-15 pass with evidence, the required authorization tests are eventually completed, and an independently imported solution has been verified. Keep source changes exclusively on `develop` until review.
+
+## Development deployment evidence — 2026-10-23
+
+- Confirmed the `FinancialManagerDev` PAC profile was already authenticated to `financial-manager-dev`. No interactive sign-in or profile reset was needed.
+- Updated **Detalle del gasto** and **Gastos** in the development model-driven app using their existing generated-page IDs; did not create or reattach pages.
+- Power Platform CLI reported successful publish of both pages. Immediately downloaded each deployed page and compared its normalized TSX content with the source tree; both matched. The app still has four generated pages.
+- All nine model-app source tests passed and both edited pages transpiled. A read-only FetchXML request verified connectivity, without reading business-level financial records.
+- **Not an interactive acceptance pass.** UI-04 through UI-08 still require a disposable Draft, running-app navigation, saving/refreshing, clearing optional values, and checking Branch/Shared persistence. The CLI publish and source round-trip do not establish that `dataApi.updateRow` accepts every nullable lookup binding.
+- No Posted or Voided records were changed, no budget approvals were enabled, and no Activity Event writes were made. Second-user role verification remains deferred.
+- A fresh **unmanaged solution export** completed successfully to a local temporary ZIP (17 archive entries, including `solution.xml` and `customizations.xml`); this is not an independent import test and the ZIP was not added to the public repository.

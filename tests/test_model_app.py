@@ -65,6 +65,9 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn('pageType: "generative"', source)
         self.assertIn("recordId: id", source)
         self.assertIn('dataApi.createRow("fmg_financialtransaction"', source)
+        self.assertIn('await host.Navigation.navigateTo', source)
+        self.assertIn('catch(error => setFeedback', source)
+        self.assertIn('Borrador creado, pero no se pudo abrir el detalle:', source)
 
     def test_detail_accepts_record_context_and_only_updates_transactions(self) -> None:
         source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")

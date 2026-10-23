@@ -54,10 +54,10 @@ function lookupLabel(row: Payment, field: string): string {
   const value = data[field + "@OData.Community.Display.V1.FormattedValue"];
   return typeof value === "string" && value.trim() ? value : "—";
 }
-function openTransaction(id: string): void {
+async function openTransaction(id: string): Promise<void> {
   const host = (window as any).Xrm;
-  if (!host?.Navigation?.navigateTo) return;
-  void host.Navigation.navigateTo({ pageType: "generative", pageId: "4a317af5-b6a8-4a82-a22a-6b56447a082f", entityName: "fmg_financialtransaction", recordId: id }, {target: 1});
+  if (!host?.Navigation?.navigateTo) throw new Error("La navegación a Detalle del gasto no está disponible.");
+  await host.Navigation.navigateTo({ pageType: "generative", pageId: "4a317af5-b6a8-4a82-a22a-6b56447a082f", entityName: "fmg_financialtransaction", recordId: id }, {target: 1});
 }
 
 const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
@@ -121,7 +121,15 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
       setDescription("");
       setFeedback("Borrador creado correctamente. Completa sus datos antes de confirmar.");
       refresh();
-      if (typeof newId === "string" && newId.length > 0) openTransaction(newId);
+      if (typeof newId !== "string" || !newId.trim()) {
+        setFeedback("Se creó el borrador, pero no se recibió el identificador para abrirlo. Localízalo en la lista.");
+      } else {
+        try {
+          await openTransaction(newId);
+        } catch (error) {
+          setFeedback("Borrador creado, pero no se pudo abrir el detalle: " + (error instanceof Error ? error.message : "Error de navegación."));
+        }
+      }
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "No se pudo guardar el borrador.");
     } finally {
@@ -175,7 +183,7 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
                   <td className={styles.cell}>{lookupLabel(record, "_fmg_category_value")}</td>
                   <td className={styles.cell}>{lookupLabel(record, "_fmg_branch_value")}</td>
                   <td className={styles.cell}>{formatMoney(record.fmg_amount)}</td>
-                  <td className={styles.cell}><Button appearance="subtle" icon={<OpenRegular />} onClick={() => openTransaction(record.fmg_financialtransactionid)}>Abrir</Button></td>
+                  <td className={styles.cell}><Button appearance="subtle" icon={<OpenRegular />} onClick={() => {void openTransaction(record.fmg_financialtransactionid).catch(error => setFeedback(error instanceof Error ? error.message : "No se pudo abrir Detalle del gasto."));}}>Abrir</Button></td>
                 </tr>))}
               </tbody>
             </table>
