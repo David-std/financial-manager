@@ -44,4 +44,4 @@ pac model genpage list --app-id <app-id>
 - Data-source access, roles, app sharing and non-admin identity testing are not complete.
 - The source-controlled solution still emits plug-in-assembly warnings when repacked and has not been import-tested into a separate tenant.
 
-Specification: [screen responsibilities](../../../docs/screens.md) and [security](../../../docs/security.md).
+Specification: [screen responsibilities](../../../docs/screens.md), [security](../../../docs/security.md) and [UI acceptance checklist](../../../docs/ui-acceptance.md).
