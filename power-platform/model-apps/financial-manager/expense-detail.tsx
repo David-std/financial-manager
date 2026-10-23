@@ -105,13 +105,26 @@ const ExpenseDetail=(props:GeneratedComponentProps)=>{
    payload.fmg_amount=inputs.amount?Number(inputs.amount):null;
    payload.fmg_flowclass=inputs.flow?Number(inputs.flow):null;
    payload.fmg_scope=inputs.scope?Number(inputs.scope):null;
-   payload["fmg_category@odata.bind"]=inputs.category?"/fmg_category("+inputs.category+")":null;
-   payload["fmg_cashaccount@odata.bind"]=inputs.account?"/fmg_cashaccount("+inputs.account+")":null;
-   payload["fmg_branch@odata.bind"]=inputs.scope==="797280001"?null:(inputs.branch?"/fmg_branch("+inputs.branch+")":null);
-   if(data.pen)payload["transactioncurrencyid@odata.bind"]="/transactioncurrency("+data.pen+")";
+   // Generated-page dataApi writes lookups through typed foreign-key columns, not @odata.bind.
+   payload._fmg_category_value=inputs.category?"/fmg_category("+inputs.category+")":null;
+   payload._fmg_cashaccount_value=inputs.account?"/fmg_cashaccount("+inputs.account+")":null;
+   payload._fmg_branch_value=inputs.scope==="797280001"?null:(inputs.branch?"/fmg_branch("+inputs.branch+")":null);
+   if(data.pen)payload._transactioncurrencyid_value="/transactioncurrency("+data.pen+")";
    setBusy(true);setFeedback("");
    try{
      await dataApi.updateRow("fmg_financialtransaction",recordId,payload as any);
+     const saved=await dataApi.retrieveRow("fmg_financialtransaction",{id:recordId,select:[
+       "_fmg_category_value","_fmg_cashaccount_value","_fmg_branch_value","_transactioncurrencyid_value"
+     ]});
+     const mismatches:string[]=[];
+     if(guid(saved._fmg_category_value)!==inputs.category)mismatches.push("categoría");
+     if(guid(saved._fmg_cashaccount_value)!==inputs.account)mismatches.push("cuenta de origen");
+     if(guid(saved._fmg_branch_value)!==(inputs.scope==="797280001"?"":inputs.branch))mismatches.push("sede");
+     if(data.pen && guid(saved._transactioncurrencyid_value)!==data.pen)mismatches.push("moneda");
+     if(mismatches.length){
+       setFeedback("No se conservaron las relaciones: "+mismatches.join(", ")+". El borrador debe revisarse antes de confirmar.");
+       return false;
+     }
      setFeedback("Borrador guardado correctamente.");
      return true;
    }catch(err){setFeedback(err instanceof Error?err.message:"No se pudo guardar el borrador.");return false;}

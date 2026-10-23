@@ -84,9 +84,15 @@ class ModelAppContractTests(unittest.TestCase):
         for field in ("fmg_transactiondate", "fmg_amount", "fmg_flowclass", "fmg_scope"):
             with self.subTest(field=field):
                 self.assertRegex(source, rf'payload\.{field}\s*=.+:null;')
+        runtime_types = (PAGES / "RuntimeTypes.ts").read_text(encoding="utf-8")
         for field in ("fmg_category", "fmg_cashaccount", "fmg_branch"):
             with self.subTest(field=field):
-                self.assertRegex(source, rf'payload\["{field}@odata\.bind"\]\s*=.+:null')
+                self.assertRegex(source, rf'payload\._{field}_value\s*=.+:null')
+                self.assertIn(f'_{field}_value: `/{field}(${{string}})`', runtime_types)
+        self.assertIn('payload._transactioncurrencyid_value=', source)
+        self.assertIn('dataApi.retrieveRow("fmg_financialtransaction",{id:recordId,select:[', source)
+        self.assertIn('No se conservaron las relaciones:', source)
+        self.assertNotRegex(source, r'payload\["[^"]+@odata\.bind"\]')
 
     def test_budget_and_catalog_pages_are_read_only(self) -> None:
         for file_name in ("budgets.tsx", "master-data.tsx"):
