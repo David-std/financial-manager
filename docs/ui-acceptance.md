@@ -112,3 +112,10 @@ The four pages are published and their source/sitemap consistency is checked in 
 - Root cause identified in `budgets.tsx`: the selectors and allocation validation compared Dataverse Yes/No fields with `===1`, which excludes `true` values returned by some generated-page DataAPI paths. The already accepted expense-detail page uses `active(v) => v===1 || v===true`.
 - Updated budget Branch and active-leaf Category selectors and allocation validation to handle either representation, and changed the page cache key to load the new revision. Added a regression test. This change affects only client read/filter logic; no budget, allocation, approval or payment record is written during diagnosis.
 - **Interactive acceptance is still pending**: refresh the running app, select Scope Branch, check LM/SR dropdown, and create the synthetic Draft budget only after confirming expected branch availability. Then verify the newly persisted lookup in Dataverse.
+
+## Budget allocation workspace implementation — 2026-10-23
+
+- The user-created `UI-TEST-BUDGET-2027-LM` was found in Dataverse: 2027, version 1, Branch/La Merced, effective from month 1, status Draft. This was a read-only check.
+- Expanded the existing `Presupuestos` page with a per-budget monthly allocation table. An administrator/owner can select a version, inspect month/category/amount, create allocations for Draft budgets, and edit **only the amount** of an existing Draft allocation. The parent Budget/Category/Month fields remain fixed during edits; the server BudgetIntegrity plug-in remains the source of authority.
+- New allocation editing and display were implemented and transpiled; interactive confirmation and complete access/permissions testing are deferred to the final Power Apps acceptance pass, at the owner's request.
+- No budget approval, Activity Event writing, or update to existing company financial data is introduced.

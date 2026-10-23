@@ -6,7 +6,7 @@ import type { GeneratedComponentProps, fmg_budget, fmg_budgetallocation, fmg_bra
 type B = fmg_budget;
 type A = fmg_budgetallocation;
 type State = { loading: boolean; budgets: B[]; allocations: A[]; branches: fmg_branch[]; categories: fmg_category[]; currencies: transactioncurrency[]; error: string; limited: boolean };
-const cache = "__financialManagerBudgetPage2026v4";
+const cache = "__financialManagerBudgetPage2026v5";
 const useStyles = makeStyles({
   root: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalL, padding: tokens.spacingHorizontalXXL, backgroundColor: tokens.colorNeutralBackground2, color: tokens.colorNeutralForeground1, minHeight: "100%", boxSizing: "border-box" },
   heading: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
@@ -74,6 +74,8 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
   const [allocationAmount,setAllocationAmount]=useState("");
   const [allocationSaving,setAllocationSaving]=useState(false);
   const [allocationFeedback,setAllocationFeedback]=useState("");
+  const [allocationEditing,setAllocationEditing]=useState("");
+  const [reviewBudgetId,setReviewBudgetId]=useState("");
   const ready=!!dataApi;
   useEffect(() => {
     if (!ready) return;
@@ -138,28 +140,56 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
       setDraftFeedback(err instanceof Error?err.message:"No se pudo crear el presupuesto.");
     }finally{setDraftSaving(false);}
   }
+  function editAllocation(row:A):void{
+    const budgetId=idFromLookup(row._fmg_budget_value as unknown as string);
+    const budget=state.budgets.find(b=>b.fmg_budgetid.toLowerCase()===budgetId);
+    if(!budget||budget.fmg_status!==797280400){
+      setAllocationFeedback("Solo es posible modificar asignaciones de presupuestos en borrador.");
+      return;
+    }
+    setAllocationEditing(row.fmg_budgetallocationid);
+    setAllocationBudget(budget.fmg_budgetid);
+    setAllocationCategory(idFromLookup(row._fmg_category_value as unknown as string));
+    setAllocationMonth(String(row.fmg_month));
+    setAllocationAmount(String(row.fmg_amount));
+    setAllocationFeedback("");
+    setDraftOpen(false);
+    setAllocationOpen(true);
+  }
+  function newAllocation():void{
+    setAllocationEditing("");setAllocationCategory("");setAllocationAmount("");
+    setAllocationBudget(reviewBudgetId&&state.budgets.some(b=>b.fmg_budgetid===reviewBudgetId&&b.fmg_status===797280400)?reviewBudgetId:"");
+    setAllocationOpen(true);setDraftOpen(false);setAllocationFeedback("");
+  }
   async function saveAllocation():Promise<void>{
     if(allocationSaving)return;
     const budget=state.budgets.find(b=>b.fmg_budgetid===allocationBudget&&b.fmg_status===797280400);
     const category=state.categories.find(c=>c.fmg_categoryid===allocationCategory&&active(c.fmg_isactive)&&!active(c.fmg_isgroup)&&c.fmg_code!=="999");
     const currency=state.currencies.find(c=>c.isocurrencycode==="PEN");
+    const original=state.allocations.find(a=>a.fmg_budgetallocationid===allocationEditing);
     const month=Number(allocationMonth),amount=Number(allocationAmount);
     if(!budget||!category||!currency||!Number.isInteger(month)||month<1||month>12||
-       !/^\d+(?:\.\d{1,2})?$/.test(allocationAmount.trim())||!Number.isFinite(amount)||amount<0){
-      setAllocationFeedback("Selecciona un presupuesto borrador, una categoría activa y un importe PEN válido con hasta dos decimales.");
+       !/^\d+(?:\.\d{1,2})?$/.test(allocationAmount.trim())||!Number.isFinite(amount)||amount<0||
+       (allocationEditing&&(!original||idFromLookup(original._fmg_budget_value as unknown as string)!==budget.fmg_budgetid.toLowerCase()))){
+      setAllocationFeedback("Revisa el presupuesto borrador, la categoría y el importe PEN (máximo dos decimales).");
       return;
     }
     setAllocationSaving(true);setAllocationFeedback("");
     try{
-      await dataApi.createRow("fmg_budgetallocation",{
-        fmg_name:budget.fmg_name+" · "+category.fmg_code+" · "+String(month).padStart(2,"0"),
-        fmg_month:month,fmg_amount:amount,
-        _fmg_budget_value:"/fmg_budget("+budget.fmg_budgetid+")",
-        _fmg_category_value:"/fmg_category("+category.fmg_categoryid+")",
-        _transactioncurrencyid_value:"/transactioncurrency("+currency.transactioncurrencyid+")"
-      } as any);
-      setAllocationOpen(false);setAllocationAmount("");setAllocationCategory("");
-      setAllocationFeedback("Asignación creada en el presupuesto borrador.");
+      if(allocationEditing){
+        await dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount});
+      }else{
+        await dataApi.createRow("fmg_budgetallocation",{
+          fmg_name:budget.fmg_name+" · "+category.fmg_code+" · "+String(month).padStart(2,"0"),
+          fmg_month:month,fmg_amount:amount,
+          _fmg_budget_value:"/fmg_budget("+budget.fmg_budgetid+")",
+          _fmg_category_value:"/fmg_category("+category.fmg_categoryid+")",
+          _transactioncurrencyid_value:"/transactioncurrency("+currency.transactioncurrencyid+")"
+        } as any);
+      }
+      setAllocationOpen(false);setAllocationAmount("");setAllocationCategory("");setAllocationEditing("");
+      setReviewBudgetId(budget.fmg_budgetid);
+      setAllocationFeedback(allocationEditing?"Importe actualizado.":"Asignación creada en el presupuesto borrador.");
       refresh();
     }catch(err){
       setAllocationFeedback(err instanceof Error?err.message:"No se pudo crear la asignación.");
@@ -178,7 +208,7 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
     <header className={classes.top}><div><Text as="h1" className={classes.heading}>Presupuestos</Text><p className={classes.description}>Planificación anual y asignaciones por categoría y mes · PEN</p></div>
       <div className={classes.toolbar}>
         <Button appearance="primary" onClick={()=>{setDraftOpen(x=>!x);setAllocationOpen(false);setDraftFeedback("");}}>{draftOpen?"Cerrar formulario":"Nuevo presupuesto"}</Button>
-        <Button appearance="secondary" disabled={!state.budgets.some(b=>b.fmg_status===797280400)||state.loading} onClick={()=>{setAllocationOpen(x=>!x);setDraftOpen(false);setAllocationFeedback("");}}>{allocationOpen?"Cerrar asignación":"Nueva asignación"}</Button>
+        <Button appearance="secondary" disabled={!state.budgets.some(b=>b.fmg_status===797280400)||state.loading} onClick={()=>{if(allocationOpen){setAllocationOpen(false);setAllocationEditing("");}else newAllocation();}}>{allocationOpen?"Cerrar asignación":"Nueva asignación"}</Button>
         <Button icon={<ArrowClockwiseRegular/>} onClick={refresh} disabled={state.loading}>Actualizar</Button>
       </div></header>
     {navigationError&&<Text role="alert" className={classes.error}>{navigationError}</Text>}
@@ -219,22 +249,22 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
     </section>}
     {allocationFeedback&&<Text role="status">{allocationFeedback}</Text>}
     {allocationOpen&&<section className={classes.panel} aria-label="Crear asignación mensual">
-      <Text weight="semibold">Asignación mensual</Text>
+      <Text weight="semibold">{allocationEditing?"Editar importe mensual":"Nueva asignación mensual"}</Text>
       <div className={classes.formGrid}>
         <label className={classes.formField}>Presupuesto borrador
-          <select className={classes.formControl} value={allocationBudget} onChange={e=>setAllocationBudget(e.target.value)} aria-label="Presupuesto de la asignación">
+          <select className={classes.formControl} disabled={!!allocationEditing} value={allocationBudget} onChange={e=>setAllocationBudget(e.target.value)} aria-label="Presupuesto de la asignación">
             <option value="">Seleccionar presupuesto</option>
             {state.budgets.filter(b=>b.fmg_status===797280400).map(b=><option key={b.fmg_budgetid} value={b.fmg_budgetid}>{b.fmg_name} · {b.fmg_year} · v{b.fmg_version}</option>)}
           </select>
         </label>
         <label className={classes.formField}>Categoría de detalle
-          <select className={classes.formControl} value={allocationCategory} onChange={e=>setAllocationCategory(e.target.value)} aria-label="Categoría de la asignación">
+          <select className={classes.formControl} disabled={!!allocationEditing} value={allocationCategory} onChange={e=>setAllocationCategory(e.target.value)} aria-label="Categoría de la asignación">
             <option value="">Seleccionar categoría</option>
             {state.categories.filter(c=>active(c.fmg_isactive)&&!active(c.fmg_isgroup)&&c.fmg_code!=="999").map(c=><option key={c.fmg_categoryid} value={c.fmg_categoryid}>{c.fmg_code} · {c.fmg_name}</option>)}
           </select>
         </label>
         <label className={classes.formField}>Mes
-          <select className={classes.formControl} value={allocationMonth} onChange={e=>setAllocationMonth(e.target.value)} aria-label="Mes de asignación">
+          <select className={classes.formControl} disabled={!!allocationEditing} value={allocationMonth} onChange={e=>setAllocationMonth(e.target.value)} aria-label="Mes de asignación">
             {Array.from({length:12},(_,i)=>i+1).map(m=><option key={m} value={String(m)}>{m}</option>)}
           </select>
         </label>
@@ -243,8 +273,8 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
         </label>
       </div>
       <div className={classes.actions}>
-        <Button appearance="primary" disabled={allocationSaving||state.loading} onClick={()=>{void saveAllocation();}}>{allocationSaving?"Guardando...":"Guardar asignación"}</Button>
-        <Button appearance="secondary" disabled={allocationSaving} onClick={()=>setAllocationOpen(false)}>Cancelar</Button>
+        <Button appearance="primary" disabled={allocationSaving||state.loading} onClick={()=>{void saveAllocation();}}>{allocationSaving?"Guardando...":allocationEditing?"Guardar importe":"Guardar asignación"}</Button>
+        <Button appearance="secondary" disabled={allocationSaving} onClick={()=>{setAllocationOpen(false);setAllocationEditing("");}}>Cancelar</Button>
       </div>
     </section>}
     <section className={classes.cards} aria-label="Resumen de presupuestos">
@@ -270,8 +300,39 @@ const BudgetPage = ({dataApi}:GeneratedComponentProps) => {
         <td className={classes.cell}>{row.fmg_version}</td><td className={classes.cell}>{row.fmg_effectivefrommonth}</td>
         <td className={classes.cell}><Badge appearance="outline">{displayStatus(row.fmg_status)}</Badge></td>
         <td className={classes.cell}>{displayAmount(counts.get(String(row.fmg_budgetid).toLowerCase())||0)}</td>
-        <td className={classes.cell}><Button appearance="subtle" icon={<OpenRegular/>} onClick={()=>{void openBudget(row.fmg_budgetid);}}>Abrir</Button></td>
+        <td className={classes.cell}>
+          <Button appearance="subtle" onClick={()=>{setReviewBudgetId(row.fmg_budgetid);setAllocationOpen(false);setAllocationEditing("");}}>Asignaciones</Button>
+          <Button appearance="subtle" icon={<OpenRegular/>} onClick={()=>{void openBudget(row.fmg_budgetid);}}>Abrir</Button>
+        </td>
       </tr>)}</tbody></table></div>}
+    {!state.loading&&!state.error&&reviewBudgetId&&(()=>{
+      const budget=state.budgets.find(b=>b.fmg_budgetid===reviewBudgetId);
+      if(!budget)return null;
+      const lines=state.allocations.filter(a=>idFromLookup(a._fmg_budget_value as unknown as string)===reviewBudgetId.toLowerCase())
+        .sort((a,b)=>a.fmg_month-b.fmg_month);
+      return <section className={classes.panel} aria-label="Asignaciones del presupuesto">
+        <div className={classes.top}>
+          <div><Text weight="semibold">Asignaciones · {budget.fmg_name}</Text>
+            <Text size={200}>Total consultado: {displayAmount(counts.get(reviewBudgetId.toLowerCase())||0)} · {lines.length} líneas</Text></div>
+          <Button onClick={()=>setReviewBudgetId("")}>Cerrar</Button>
+        </div>
+        {lines.length===0?<Text size={200}>Este presupuesto todavía no tiene asignaciones.</Text>:
+        <div className={classes.tableContainer}><table className={classes.table}>
+          <thead><tr>{["Mes","Categoría","Importe (PEN)","Acción"].map(label=><th className={classes.cell+" "+classes.th} key={label}>{label}</th>)}</tr></thead>
+          <tbody>{lines.map(line=>{
+            const category=state.categories.find(c=>c.fmg_categoryid.toLowerCase()===idFromLookup(line._fmg_category_value as unknown as string));
+            return <tr key={line.fmg_budgetallocationid}>
+              <td className={classes.cell}>{line.fmg_month}</td>
+              <td className={classes.cell}>{category?category.fmg_code+" · "+category.fmg_name:"Categoría no disponible"}</td>
+              <td className={classes.cell}>{displayAmount(Number(line.fmg_amount)||0)}</td>
+              <td className={classes.cell}>{budget.fmg_status===797280400?
+                <Button appearance="subtle" onClick={()=>editAllocation(line)}>Editar importe</Button>:
+                <Text size={200}>Solo lectura</Text>}</td>
+            </tr>;
+          })}</tbody>
+        </table></div>}
+      </section>;
+    })()}
     {state.limited&&<Text size={200}>Listado parcial por paginación. Use la vista nativa para consultar el conjunto completo de registros.</Text>}
   </main>;
 };

@@ -111,13 +111,19 @@ def check(root: Path = ROOT) -> list[str]:
     if "fmg_voidreason" not in detail:
         errors.append("The detail editor lacks a void reason field")
 
-    # The budget editor may create Draft headers and allocations; approval,
-    # updates/deletes and any changes to master-data catalogs remain forbidden.
+    # Draft budget headers may be created. Draft allocations may be created or
+    # have their amount changed; their parent lifecycle is enforced in Dataverse.
+    # Approval, deletion and master-catalog mutations remain prohibited.
     budget_source = files.get("Presupuestos", "")
+    allowed = {("createRow", "fmg_budget"),
+               ("createRow", "fmg_budgetallocation"),
+               ("updateRow", "fmg_budgetallocation")}
     for match in MUTATION.finditer(budget_source):
         operation, table = match.groups()
-        if operation != "createRow" or table not in ("fmg_budget", "fmg_budgetallocation"):
+        if (operation, table) not in allowed:
             errors.append(f"Unreviewed budget operation: {operation} on {table}")
+    if 'dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount})' not in budget_source:
+        errors.append("Budget allocation edits must change amount only")
     if 'fmg_status:797280400' not in budget_source:
         errors.append("Budget creation must explicitly use Draft status")
     if re.search(r'fmg_status\s*:\s*797280402', budget_source):
