@@ -6,6 +6,7 @@ export interface TableRegistrations extends BaseTableRegistrations {
     "fmg_cashaccount": fmg_cashaccount,
     "fmg_category": fmg_category,
     "fmg_financialtransaction": fmg_financialtransaction,
+    "transactioncurrency": transactioncurrency,
 }
 export interface EnumRegistrations extends BaseEnumRegistrations {
     "fmg_branch-fmg_isactive": fmg_branch_fmg_isactive,
@@ -30,6 +31,9 @@ export interface EnumRegistrations extends BaseEnumRegistrations {
     "fmg_financialtransaction-fmg_status": fmg_financialtransaction_fmg_status,
     "fmg_financialtransaction-statecode": fmg_financialtransaction_statecode,
     "fmg_financialtransaction-statuscode": fmg_financialtransaction_statuscode,
+    "transactioncurrency-currencytype": transactioncurrency_currencytype,
+    "transactioncurrency-statecode": transactioncurrency_statecode,
+    "transactioncurrency-statuscode": transactioncurrency_statuscode,
 }
 export type fmg_branch = TableRow<{
     // Primary Key Column
@@ -108,7 +112,7 @@ export type fmg_budgetallocation = TableRow<{
     statecode: fmg_budgetallocation_statecode,
     statuscode: fmg_budgetallocation_statuscode,
     // Foreign Key Column
-    readonly _transactioncurrencyid_value: `/transactioncurrency(${string})`,
+    _transactioncurrencyid_value: `/transactioncurrency(${string})`,
     readonly transactioncurrencyidname: string,
 }>
 
@@ -200,8 +204,37 @@ export type fmg_financialtransaction = TableRow<{
     statecode: fmg_financialtransaction_statecode,
     statuscode: fmg_financialtransaction_statuscode,
     // Foreign Key Column
-    readonly _transactioncurrencyid_value: `/transactioncurrency(${string})`,
+    _transactioncurrencyid_value: `/transactioncurrency(${string})`,
     readonly transactioncurrencyidname: string,
+}>
+
+export type transactioncurrency = TableRow<{
+    // Primary Key Column
+    readonly transactioncurrencyid: string,
+    readonly createdbyname: string,
+    readonly createdbyyominame: string,
+    readonly createdonbehalfbyname: string,
+    readonly createdonbehalfbyyominame: string,
+    currencyname: string,
+    currencyprecision: number,
+    currencysymbol: string,
+    currencytype: transactioncurrency_currencytype,
+    // This is an image encoded as a base64 string
+    entityimage: string,
+    readonly entityimage_timestamp: number,
+    readonly entityimage_url: string,
+    readonly entityimageid: string,
+    exchangerate: number,
+    readonly isocurrencycode: string,
+    readonly modifiedbyname: string,
+    readonly modifiedbyyominame: string,
+    readonly modifiedonbehalfbyname: string,
+    readonly modifiedonbehalfbyyominame: string,
+    // Foreign Key Column
+    readonly _organizationid_value: `/organization(${string})`,
+    statecode: transactioncurrency_statecode,
+    statuscode: transactioncurrency_statuscode,
+    readonly uniquedscid: string,
 }>
 
 const enum fmg_branch_fmg_isactive {
@@ -297,6 +330,18 @@ const enum fmg_financialtransaction_statecode {
 "Inactivo" = 1,
 }
 const enum fmg_financialtransaction_statuscode {
+"Activo" = 1,
+"Inactivo" = 2,
+}
+const enum transactioncurrency_currencytype {
+"System" = 0,
+"Custom" = 1,
+}
+const enum transactioncurrency_statecode {
+"Activo" = 0,
+"Inactivo" = 1,
+}
+const enum transactioncurrency_statuscode {
 "Activo" = 1,
 "Inactivo" = 2,
 }

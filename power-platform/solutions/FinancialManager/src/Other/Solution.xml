@@ -138,6 +138,10 @@
         <Dependent type="62" schemaName="financial_manager_bee9f134" />
       </MissingDependency>
       <MissingDependency>
+        <Required type="uxagentproject" solution="Active" id="{4a317af5-b6a8-4a82-a22a-6b56447a082f}" />
+        <Dependent type="62" schemaName="financial_manager_bee9f134" />
+      </MissingDependency>
+      <MissingDependency>
         <Required type="uxagentproject" solution="Active" id="{92083d36-806a-43dd-b289-2fafd9e3afb1}" />
         <Dependent type="62" schemaName="financial_manager_bee9f134" />
       </MissingDependency>

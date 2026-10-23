@@ -13,6 +13,7 @@
     <AppModuleComponent type="26" id="{051cb801-22fa-4690-822c-7dbcde408688}" />
     <AppModuleComponent type="26" id="{5a3c65e9-3b44-41b6-8bcd-98b88d0dd136}" />
     <AppModuleComponent type="26" id="{6c780f3b-8a67-4ec4-9b11-a4b7ece177e7}" />
+    <AppModuleComponent type="26" id="{c8f16d88-e49c-48dd-af54-a6bd5102c439}" />
     <AppModuleComponent type="26" id="{8515a6bd-4fa7-4bef-a399-c7c2ee043622}" />
     <AppModuleComponent type="26" id="{5a7373c7-c7ee-44c6-8fa1-e4ee67558101}" />
     <AppModuleComponent type="26" id="{ccf56e22-e390-4d07-9a81-eb73578b5d61}" />
@@ -20,6 +21,7 @@
     <AppModuleComponent type="60" id="{2c164c9c-3c6b-4fa7-87ed-1c4e87db9d71}" />
     <AppModuleComponent type="60" id="{ff03792a-7bd5-425f-8c97-3b4cb9c9ab5b}" />
     <AppModuleComponent type="60" id="{03b8bf09-aeb5-4ca8-a0bb-5852a3a53637}" />
+    <AppModuleComponent type="60" id="{b56b6d35-1e69-436b-ba86-78127d36e8aa}" />
     <AppModuleComponent type="60" id="{d8c1f696-ab44-4536-a9d1-92f17059d900}" />
     <AppModuleComponent type="60" id="{e3624000-c823-4f4f-a824-df3f197c7db7}" />
     <AppModuleComponent type="62" schemaName="financial_manager_bee9f134" />

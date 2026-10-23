@@ -57,7 +57,7 @@ function lookupLabel(row: Payment, field: string): string {
 function openTransaction(id: string): void {
   const host = (window as any).Xrm;
   if (!host?.Navigation?.navigateTo) return;
-  void host.Navigation.navigateTo({ pageType: "entityrecord", entityName: "fmg_financialtransaction", entityId: id });
+  void host.Navigation.navigateTo({ pageType: "generative", pageId: "4a317af5-b6a8-4a82-a22a-6b56447a082f", entityName: "fmg_financialtransaction", recordId: id }, {target: 1});
 }
 
 const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
@@ -117,10 +117,11 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
     if (saving || !description.trim()) return;
     setSaving(true); setFeedback("");
     try {
-      await dataApi.createRow("fmg_financialtransaction", { fmg_description: description.trim(), fmg_status: 797280000 });
+      const newId = await dataApi.createRow("fmg_financialtransaction", { fmg_description: description.trim(), fmg_status: 797280000 });
       setDescription("");
-      setFeedback("Borrador creado correctamente. Complétalo antes de confirmar.");
+      setFeedback("Borrador creado correctamente. Completa sus datos antes de confirmar.");
       refresh();
+      if (typeof newId === "string" && newId.length > 0) openTransaction(newId);
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "No se pudo guardar el borrador.");
     } finally {

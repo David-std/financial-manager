@@ -80,6 +80,7 @@ def maintained_files(root: Path) -> list[Path]:
             for path in (root / directory).rglob("*")
             if path.is_file()
             and "__pycache__" not in path.parts
+            and not {"bin", "obj"}.intersection(path.parts)
             and path.suffix in {".md", ".py", ".yml", ".yaml", ".json"}
         )
     return sorted(set(paths))

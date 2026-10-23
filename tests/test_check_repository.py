@@ -22,6 +22,18 @@ class TextValidationTests(unittest.TestCase):
 
 
 
+    def test_ignores_generated_dotnet_obj_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            import subprocess
+
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            obj_dir = root / "tests" / "Sample" / "obj"
+            obj_dir.mkdir(parents=True)
+            (obj_dir / "project.assets.json").write_text("generated", encoding="utf-8")
+            issues = check_repository(root)
+            self.assertFalse(any("project.assets.json" in issue for issue in issues))
+
     def test_does_not_reject_ignored_local_environment_files(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

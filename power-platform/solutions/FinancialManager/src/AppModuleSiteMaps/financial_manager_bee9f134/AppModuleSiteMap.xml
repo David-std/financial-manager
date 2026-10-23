@@ -29,6 +29,11 @@
             <Title LCID="1033" Title="Datos maestros" />
           </Titles>
         </SubArea>
+        <SubArea Id="subarea_afd6dd88" ResourceId="SitemapDesigner.NewSubArea" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="4a317af5-b6a8-4a82-a22a-6b56447a082f">
+          <Titles>
+            <Title LCID="1033" Title="Detalle del gasto" />
+          </Titles>
+        </SubArea>
       </Group>
     </Area>
   </SiteMap>
