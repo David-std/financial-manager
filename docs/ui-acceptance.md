@@ -90,3 +90,11 @@ The four pages are published and their source/sitemap consistency is checked in 
 - The existing budget Approval action is **not** enabled. No write paths for Approved status, Activity Event, master catalogs, or changes/deletion of existing budget records were added. The native `Abrir` form can still be limited to its system-generated fields and is not treated as full editing of an existing budget.
 - The budget revision passed the repository's 19 static Python tests and generated-page TypeScript transpilation. **Interactive creation, uniqueness rejection, branch/scope authorization and monthly allocation readback remain untested** and must be evidenced before marking UI-12 accepted.
 - UI-08 passed its **Branch → Shared** half with authenticated FetchXML confirming no Branch lookup and a valid shared bank account on `MOV-000008`; the reverse path remains pending. No payment was Posted or Voided.
+
+## Budget-authoring deployment evidence — 2026-10-23
+
+- The existing **Presupuestos** generated page was updated in place to expose **New Draft Budget** and **New Monthly Allocation** forms using typed Dataverse `dataApi.createRow` calls. Added active-branch and active-leaf selectors, PEN currency lookup and basic format validation. No approval button, history rewrite or Activity Event mutation was added.
+- The page was transpiled successfully and published to the original budget page ID; a fresh download from the environment exactly matched the source committed on `develop`.
+- The authenticated development table had **zero budget headers** before this rollout (aggregate read only). A successful publish therefore **does not verify the new Create UI workflows**. Test a clearly labeled synthetic Draft and one allocation with Save/Refresh/FetchXML before marking UI-12 passed.
+- A new unmanaged `FinancialManager` solution export completed successfully with `solution.xml` and `customizations.xml`; it was held in TEMP and not committed. This is not an independent import/migration acceptance test.
+- Power BI Desktop was installed locally using the official Microsoft Store package and launched. Authentication inside Power BI is a separate user action; no PBIP report was created or published in this rollout.
