@@ -1,14 +1,30 @@
 # Power BI reporting
 
-Reports will be stored in Power BI Project (PBIP) format after creation in Power BI Desktop. This directory currently holds no report source.
+Financial Manager's reporting workspace will be maintained as a **Power BI Project (PBIP)**, with report definitions in PBIR and a source-controlled semantic model. The directory currently contains **no Power BI report or semantic model**; the reporting specification is in [docs/reporting.md](../docs/reporting.md).
 
-## Planned pages
+## MVP reporting pages
 
-1. Executive Overview — receipts, payments, operating cash result, budget position
-2. Expense Analysis — hierarchical account matrix with current/prior-period variance
-3. Budget Control — monthly category allocations, overruns and exceptions
-4. Income and Trends — receipt evolution by day, month, year and operating location
+1. **Executive Spending Overview** — paid spending, operating/capital classification, monthly trend, and authorized scope.
+2. **Expense Analysis** — category group/leaf matrix, comparable periods, branch/shared filters, and record drill-through.
+3. **Budget Control** — effective approved monthly allocations versus qualifying posted payments, with unbudgeted and overspend exceptions.
+4. **Spending Trends** — daily, monthly, and yearly paid spending by payment class, category, and scope.
 
-Definitions, allowed financial terminology, and controlled reconciliation cases are maintained in [Reporting](../docs/reporting.md). Report data must be subject to role-appropriate visibility and have an explicit refresh timestamp.
+## Source and accounting boundaries
 
-Do not commit PBIX exports, dataset extracts, financial figures, local cache files or data-source credentials.
+- Source: authorized Financial Manager Dataverse tables. Actual spending includes only **Posted** expense payments; Draft and Voided are excluded.
+- Currency: PEN. Shared movements must be counted **once**, not copied into each branch total.
+- Budget measures must use **approved and effective** allocations. Budget approval is intentionally blocked in the current development environment; do not show Draft/Submitted allocations as approved budgets. Unavailable budget comparisons must be labeled **not available**, not zero.
+- No receipts, income, sales, invoicing, cash balances, net cash flow, margin, or profit metrics are supported by the MVP.
+- Model relationships and DAX measures must be reconciled against controlled synthetic data. Preserve explicit filter context, period comparability, access control, and a data refresh timestamp.
+
+## Delivery gates
+
+1. Confirm Data API/Dataverse metadata and payment state/option codes; validate the source tables and join cardinalities.
+2. Create the star-schema semantic model, a calendar table, and tested DAX measures.
+3. Create the four report pages, with a clear empty/not-available state when there are no eligible posted payments or approved budgets.
+4. Test reconciliation, branch/shared logic, drill-through, RLS/authorized access, and refresh against development fixtures.
+5. Validate the PBIP with Power BI Desktop before any publication and check licensing and distribution requirements separately.
+
+Do **not** commit PBIX exports, actual financial records, extracted datasets, cache files, tenant-specific endpoints, secrets, or credentials. Keep versioned sources exclusively on `develop` until review.
+
+Related specifications: [Reporting](../docs/reporting.md), [Scope](../docs/scope.md), and [Verification](../docs/verification.md).
