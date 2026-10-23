@@ -102,14 +102,14 @@ const ExpenseDetail=(props:GeneratedComponentProps)=>{
    const payload:Record<string,unknown>={
      fmg_description:inputs.description, fmg_documentreference:inputs.reference
    };
-   if(inputs.date)payload.fmg_transactiondate=new Date(inputs.date+"T12:00:00.000Z");
-   if(inputs.amount)payload.fmg_amount=Number(inputs.amount);
-   if(inputs.flow)payload.fmg_flowclass=Number(inputs.flow);
-   if(inputs.scope)payload.fmg_scope=Number(inputs.scope);
-   if(inputs.category)payload["fmg_category@odata.bind"]="/fmg_category("+inputs.category+")";
-   if(inputs.account)payload["fmg_cashaccount@odata.bind"]="/fmg_cashaccount("+inputs.account+")";
-   if(inputs.scope==="797280001" && guid(data.record?._fmg_branch_value))payload["fmg_branch@odata.bind"]=null;
-   else if(inputs.branch)payload["fmg_branch@odata.bind"]="/fmg_branch("+inputs.branch+")";
+   // Omitted fields retain their previous Dataverse values; cleared draft inputs must be explicit.
+   payload.fmg_transactiondate=inputs.date?new Date(inputs.date+"T12:00:00.000Z"):null;
+   payload.fmg_amount=inputs.amount?Number(inputs.amount):null;
+   payload.fmg_flowclass=inputs.flow?Number(inputs.flow):null;
+   payload.fmg_scope=inputs.scope?Number(inputs.scope):null;
+   payload["fmg_category@odata.bind"]=inputs.category?"/fmg_category("+inputs.category+")":null;
+   payload["fmg_cashaccount@odata.bind"]=inputs.account?"/fmg_cashaccount("+inputs.account+")":null;
+   payload["fmg_branch@odata.bind"]=inputs.scope==="797280001"?null:(inputs.branch?"/fmg_branch("+inputs.branch+")":null);
    if(data.pen)payload["transactioncurrencyid@odata.bind"]="/transactioncurrency("+data.pen+")";
    setBusy(true);setFeedback("");
    try{

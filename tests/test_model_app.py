@@ -76,6 +76,15 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn("fmg_status:797280002", source)
         self.assertNotIn('dataApi.updateRow("fmg_budget"', source)
 
+    def test_cleared_draft_inputs_have_explicit_nulls(self) -> None:
+        source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
+        for field in ("fmg_transactiondate", "fmg_amount", "fmg_flowclass", "fmg_scope"):
+            with self.subTest(field=field):
+                self.assertRegex(source, rf'payload\.{field}\s*=.+:null;')
+        for field in ("fmg_category", "fmg_cashaccount", "fmg_branch"):
+            with self.subTest(field=field):
+                self.assertRegex(source, rf'payload\["{field}@odata\.bind"\]\s*=.+:null')
+
     def test_budget_and_catalog_pages_are_read_only(self) -> None:
         for file_name in ("budgets.tsx", "master-data.tsx"):
             with self.subTest(page=file_name):
