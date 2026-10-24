@@ -11,7 +11,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 
 ## Status
 
-**Implementation status.** The repository contains a real unmanaged Dataverse solution exported from `financial-manager-dev`, server-side plug-ins for payment and budget integrity, and a published model-driven Power Apps application with four generative pages. Browser-level workflow and non-administrator permission testing are still pending. The application is model-driven, not Canvas. A version-controlled Power BI Project (PBIP) now contains four expense-analysis pages, five semantic-model tables, four relationships and twelve DAX measures. The PBIP passes structural checks, but Desktop refresh, reconciliation, accessibility and publication remain unverified. Requirements remain subject to business review.
+**Implementation status.** The repository contains a real unmanaged Dataverse solution exported from `financial-manager-dev`, server-side plug-ins for payment and budget integrity, and a published model-driven Power Apps application with four generative pages. Browser-level workflow and non-administrator permission testing are still pending. The application is model-driven, not Canvas. A version-controlled Power BI Project (PBIP) now contains four expense-analysis pages, five semantic-model tables, four relationships and twelve DAX measures. The PBIP passes structural checks; a temporary authenticated Desktop copy successfully imported and reconciled the current Posted/PEN data against Dataverse. Visual rendering, interactive permissions, accessibility and Power BI Service publication remain unverified. Requirements remain subject to business review.
 
 ## Documentation
 
