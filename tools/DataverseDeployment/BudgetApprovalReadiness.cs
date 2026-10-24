@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.ServiceModel;
+using Microsoft.Crm.Sdk.Messages;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
@@ -9,6 +10,46 @@ using Microsoft.Xrm.Sdk.Query;
 
 internal static class BudgetApprovalReadiness
 {
+    // Negative-only invocation with a random nonexistent budget ID.
+    // No financial row can be approved; the current identity must lack the
+    // explicit role. A BAP003 fault confirms the main plug-in rejects it.
+    public static int ProbeUnauthorized(ServiceClient service)
+    {
+        var who = (WhoAmIResponse)service.Execute(new WhoAmIRequest());
+        var roleQuery = new QueryExpression("role")
+        {
+            ColumnSet = new ColumnSet(false), TopCount = 1
+        };
+        roleQuery.Criteria.AddCondition("name", ConditionOperator.Equal,
+            "Financial Manager Budget Approver");
+        var members = roleQuery.AddLink("systemuserroles", "roleid", "roleid");
+        members.LinkCriteria.AddCondition(
+            "systemuserid", ConditionOperator.Equal, who.UserId);
+        if (service.RetrieveMultiple(roleQuery).Entities.Count != 0)
+            throw new InvalidOperationException(
+                "Refusing unauthorized probe: current identity has approver role.");
+
+        var request = new OrganizationRequest("fmg_ApproveBudget");
+        request["Target"] = new EntityReference("fmg_budget", Guid.NewGuid());
+        try
+        {
+            service.Execute(request);
+        }
+        catch (FaultException<OrganizationServiceFault> ex)
+        {
+            if (ex.ToString().Contains("BAP003"))
+            {
+                Console.WriteLine("PASS_UNAUTHORIZED_APPROVAL_API_REJECTED_BAP003");
+                return 0;
+            }
+            Console.WriteLine("UNEXPECTED_APPROVAL_API_FAULT=" +
+                ex.Detail?.ErrorCode.ToString());
+            throw;
+        }
+        throw new InvalidOperationException(
+            "UNSAFE: API invocation unexpectedly succeeded with an unassigned approver.");
+    }
+
     public static int Inspect(ServiceClient service)
     {
         var roles = new QueryExpression("role")
@@ -20,6 +61,28 @@ internal static class BudgetApprovalReadiness
             "name", ConditionOperator.Equal, "Financial Manager Budget Approver");
         var foundRoles = service.RetrieveMultiple(roles).Entities;
         Console.WriteLine("EXPLICIT_APPROVER_ROLES=" + foundRoles.Count);
+        if (foundRoles.Count == 1)
+        {
+            var grants = (RetrieveRolePrivilegesRoleResponse)service.Execute(
+                new RetrieveRolePrivilegesRoleRequest { RoleId = foundRoles[0].Id });
+            var granted = grants.RolePrivileges ?? Array.Empty<RolePrivilege>();
+            var ids = granted.Select(p => (object)p.PrivilegeId).ToArray();
+            Console.WriteLine("EXPLICIT_APPROVER_ROLE_PRIVILEGE_COUNT=" + ids.Length);
+            if (ids.Length > 0)
+            {
+                var listed = new QueryExpression("privilege")
+                {
+                    ColumnSet = new ColumnSet("name"), TopCount = ids.Length + 2
+                };
+                listed.Criteria.AddCondition("privilegeid", ConditionOperator.In, ids);
+                var names = service.RetrieveMultiple(listed).Entities
+                    .Select(e => e.GetAttributeValue<string>("name")).ToArray();
+                Console.WriteLine("APPROVER_ROLE_SHAREPOINT_PRIVILEGES=" +
+                    names.Count(n => n.IndexOf("SharePoint", StringComparison.OrdinalIgnoreCase) >= 0));
+                Console.WriteLine("APPROVER_ROLE_REQUIRED_API_PRIVILEGE=" +
+                    names.Contains("prvCreatefmg_BudgetApprovalClaim"));
+            }
+        }
         var assignedDirect = new QueryExpression("role")
         {
             ColumnSet = new ColumnSet(false),
@@ -41,15 +104,36 @@ internal static class BudgetApprovalReadiness
         var teamAssignments = service.RetrieveMultiple(assignedTeam).Entities.Count;
         Console.WriteLine("TEAM_APPROVER_ROLE_ASSIGNMENTS=" + teamAssignments);
 
+        var claimPrivileges = new QueryExpression("privilege")
+        {
+            ColumnSet = new ColumnSet("name"), TopCount = 50
+        };
+        claimPrivileges.Criteria.AddCondition("name", ConditionOperator.Like,
+            "%fmg_BudgetApprovalClaim%");
+        foreach (var entry in service.RetrieveMultiple(claimPrivileges).Entities)
+            Console.WriteLine("CLAIM_PRIVILEGE=" + entry.GetAttributeValue<string>("name"));
+
         var api = new QueryExpression("customapi")
         {
-            ColumnSet = new ColumnSet("customapiid"),
+            ColumnSet = new ColumnSet("customapiid", "bindingtype",
+                "boundentitylogicalname", "executeprivilegename", "plugintypeid",
+                "allowedcustomprocessingsteptype", "isfunction", "isprivate"),
             TopCount = 2
         };
         api.Criteria.AddCondition(
             "uniquename", ConditionOperator.Equal, "fmg_ApproveBudget");
-        Console.WriteLine("REGISTERED_APPROVAL_CUSTOM_APIS=" +
-            service.RetrieveMultiple(api).Entities.Count);
+        var configuredApis = service.RetrieveMultiple(api).Entities;
+        Console.WriteLine("REGISTERED_APPROVAL_CUSTOM_APIS=" + configuredApis.Count);
+        var validApi = configuredApis.Count == 1 &&
+            configuredApis[0].GetAttributeValue<OptionSetValue>("bindingtype")?.Value == 1 &&
+            configuredApis[0].GetAttributeValue<string>("boundentitylogicalname") == "fmg_budget" &&
+            configuredApis[0].GetAttributeValue<string>("executeprivilegename") ==
+                "prvCreatefmg_BudgetApprovalClaim" &&
+            configuredApis[0].GetAttributeValue<OptionSetValue>(
+                "allowedcustomprocessingsteptype")?.Value == 0 &&
+            configuredApis[0].GetAttributeValue<EntityReference>("plugintypeid") != null &&
+            !configuredApis[0].GetAttributeValue<bool>("isfunction");
+        Console.WriteLine("APPROVAL_CUSTOM_API_SECURED_AND_BOUND=" + validApi);
 
         bool hasClaimTable;
         bool hasScopeKey;
@@ -95,7 +179,7 @@ internal static class BudgetApprovalReadiness
         Console.WriteLine("APPROVAL_READY=" + (
             foundRoles.Count == 1 && directAssignments > 0 &&
             teamAssignments == 0 && hasClaimTable && hasScopeKey && keyActive &&
-            service.RetrieveMultiple(api).Entities.Count == 1
+            validApi
         ));
         // Return success for read-only diagnostics even when intentionally
         // unconfigured. Never create a role, table or API from an inspect command.

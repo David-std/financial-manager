@@ -1,0 +1,20 @@
+<customapi uniquename="fmg_ApproveBudget">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>1</bindingtype>
+  <boundentitylogicalname>fmg_budget</boundentitylogicalname>
+  <description default="Independent approval with unique annual scope and server verification.">
+    <label description="Independent approval with unique annual scope and server verification." languagecode="3082" />
+  </description>
+  <displayname default="Approve Budget (server controlled)">
+    <label description="Approve Budget (server controlled)" languagecode="3082" />
+  </displayname>
+  <executeprivilegename>prvCreatefmg_BudgetApprovalClaim</executeprivilegename>
+  <iscustomizable>0</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>fmg_ApproveBudget</name>
+  <plugintypeid>
+    <plugintypeexportkey>8E0FFD290F2FB6095C20C21228383C3302913351171A02BC361295A9A1F5029A</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

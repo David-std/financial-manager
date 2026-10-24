@@ -82,6 +82,7 @@ namespace FinancialManager.BudgetIntegrity.Tests
                 budget["fmg_scope"] = new OptionSetValue(BudgetOptions.Shared);
                 budget["createdby"] = new EntityReference("systemuser", Creator);
                 budget["ownerid"] = new EntityReference("systemuser", Creator);
+                budget["modifiedby"] = new EntityReference("systemuser", Creator);
                 Budgets.Add(id, budget);
                 return id;
             }

@@ -103,6 +103,12 @@ internal static class BudgetLiveVerifier
         }
 
 
+        var directClaim = new Entity("fmg_budgetapprovalclaim") { Id = Guid.NewGuid() };
+        directClaim["fmg_name"] = "TEST-ROLLBACK-NOT-A-VALID-APPROVAL";
+        directClaim["fmg_scopekey"] = Guid.NewGuid().ToString("D");
+        directClaim["fmg_budget"] = new EntityReference(Budget, Guid.NewGuid());
+        Check("Direct approval claim create denied", "BAC003", Create(directClaim));
+
         var dir=NewBudget(Guid.NewGuid());dir["fmg_status"]=new OptionSetValue(Approved);
         Check("Direct approved budget creation denied","BGV001",Create(dir));
 

@@ -4,10 +4,10 @@ using Microsoft.Xrm.Sdk;
 namespace FinancialManager.BudgetIntegrity
 {
     /// <summary>
-    /// A standalone preflight for the FUTURE dedicated approval command.
-    /// It is deliberately not registered as a plug-in step or called by BudgetGuard.
-    /// Preflight validation is NOT a substitute for atomic effective-version arbitration.
-    /// The live BGV009 approval block must stay in place until ADR 0004 is complete.
+    /// The approval command's preflight validation. It is separate from the
+    /// regular budget update guard and is not sufficient without atomic
+    /// arbitration, role separation and two-identity acceptance. The direct
+    /// BGV009 approval block must remain active.
     /// </summary>
     public sealed class BudgetApprovalPreflight
     {
@@ -34,8 +34,20 @@ namespace FinancialManager.BudgetIntegrity
                 creator.Id == Guid.Empty || owner.Id == Guid.Empty)
                 Fail("BAP004", "Creator and individual owner are required for segregation.");
 
-            if (creator.Id == initiator || owner.Id == initiator)
-                Fail("BAP005", "A budget creator or owner may not approve their own budget.");
+            // A Submitted budget is immutable under the budget guard, so its
+            // modifiedby metadata identifies the last submission writer.
+            // If impersonation is in use, also reject the on-behalf identity.
+            var submitter = submittedBudget.GetAttributeValue<EntityReference>("modifiedby");
+            var onBehalf = submittedBudget.GetAttributeValue<EntityReference>("modifiedonbehalfby");
+            if (submitter == null || submitter.LogicalName != "systemuser" ||
+                submitter.Id == Guid.Empty ||
+                (onBehalf != null && (onBehalf.LogicalName != "systemuser" ||
+                                      onBehalf.Id == Guid.Empty)))
+                Fail("BAP004", "Submission author metadata must be verifiable.");
+            if (creator.Id == initiator || owner.Id == initiator ||
+                submitter.Id == initiator ||
+                (onBehalf != null && onBehalf.Id == initiator))
+                Fail("BAP005", "Creator, owner or submitter cannot approve their own budget.");
 
             var year = submittedBudget.GetAttributeValue<int?>("fmg_year");
             var version = submittedBudget.GetAttributeValue<int?>("fmg_version");

@@ -38,6 +38,14 @@ def verify(path: Path) -> str:
             raise ValueError("Expected exactly one BudgetIntegrity assembly")
         assembly = archive.read(names[0])
         missing = [name for name in REQUIRED_TYPES if name.encode() not in assembly]
+        required_behaviors = (
+            "An independent finance approver role is required.",
+            "Submission author metadata must be verifiable.",
+        )
+        missing.extend(
+            phrase for phrase in required_behaviors
+            if phrase.encode("utf-16-le") not in assembly
+        )
         if missing:
             raise ValueError("Package contains a stale assembly; missing: " + ", ".join(missing))
         if len(assembly) < 10_000:

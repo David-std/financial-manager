@@ -10,6 +10,7 @@ namespace FinancialManager.BudgetIntegrity.Tests
         private static readonly Guid Author = Guid.NewGuid();
         private static readonly Guid Owner = Guid.NewGuid();
         private static readonly Guid Approver = Guid.NewGuid();
+        private static readonly Guid Submitter = Guid.NewGuid();
 
         private static Entity Submitted()
         {
@@ -17,6 +18,7 @@ namespace FinancialManager.BudgetIntegrity.Tests
             budget["fmg_status"] = new OptionSetValue(BudgetOptions.Submitted);
             budget["createdby"] = new EntityReference("systemuser", Author);
             budget["ownerid"] = new EntityReference("systemuser", Owner);
+            budget["modifiedby"] = new EntityReference("systemuser", Submitter);
             budget["fmg_year"] = 2027;
             budget["fmg_version"] = 1;
             budget["fmg_effectivefrommonth"] = 1;
@@ -42,6 +44,26 @@ namespace FinancialManager.BudgetIntegrity.Tests
         [Fact]
         public void BudgetOwnerCannotSelfApprove()
             => Reject("BAP005", Submitted(), Owner, true);
+
+        [Fact]
+        public void BudgetSubmitterCannotApproveEvenIfNotCreatorOrOwner()
+            => Reject("BAP005", Submitted(), Submitter, true);
+
+        [Fact]
+        public void OnBehalfOfSubmitterCannotApprove()
+        {
+            var budget = Submitted();
+            budget["modifiedonbehalfby"] = new EntityReference("systemuser", Approver);
+            Reject("BAP005", budget, Approver, true);
+        }
+
+        [Fact]
+        public void MissingSubmissionIdentityFailsClosed()
+        {
+            var budget = Submitted();
+            budget.Attributes.Remove("modifiedby");
+            Reject("BAP004", budget, Approver, true);
+        }
 
         [Fact]
         public void AdministratorWithoutExplicitApproverRoleIsRejected()

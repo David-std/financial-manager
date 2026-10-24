@@ -36,7 +36,7 @@ namespace FinancialManager.BudgetIntegrity
 
     /// <summary>
     /// Server-side PreValidation guard for direct claim Create/Update/Delete.
-    /// Register all three synchronous steps, without client bypass permissions.
+    /// Registered as three synchronous PreValidation steps in the dev solution.
     /// </summary>
     public sealed class BAC_BlockDirectClaimWrites : IPlugin
     {

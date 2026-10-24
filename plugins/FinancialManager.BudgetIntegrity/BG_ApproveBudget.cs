@@ -5,8 +5,8 @@ namespace FinancialManager.BudgetIntegrity
 {
     /// <summary>
     /// Dedicated, bound fmg_ApproveBudget Custom API main-operation plug-in.
-    /// NOT REGISTERED. Registration is gated on role membership, unique claim key,
-    /// server-only claim writes, and two-identity concurrency acceptance.
+    /// The restricted bound Custom API is registered in development, but no
+    /// independent approver is assigned and no approval acceptance is complete.
     /// </summary>
     public sealed class BG_ApproveBudget : IPlugin
     {

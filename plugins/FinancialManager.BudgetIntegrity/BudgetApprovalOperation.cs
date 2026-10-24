@@ -6,9 +6,9 @@ using Microsoft.Xrm.Sdk.Query;
 namespace FinancialManager.BudgetIntegrity
 {
     /// <summary>
-    /// Unregistered server-side approval operation. Its claim table and alternate key
-    /// must exist and be ACTIVE before deployment. Do not call from a web client.
-    /// A future dedicated custom API must execute this inside a Dataverse transaction.
+    /// Server-side approval operation used only by the bound Custom API.
+    /// It requires an active Dataverse transaction, a unique scope claim,
+    /// optimistic row-version concurrency and an independent human approver.
     /// </summary>
     public sealed class BudgetApprovalOperation
     {
@@ -28,14 +28,19 @@ namespace FinancialManager.BudgetIntegrity
             if (budgetId == Guid.Empty || actor == Guid.Empty)
                 Fail("BAP001", "A budget and initiating actor are required.");
 
+            // Reject unauthorized actors before loading budget details.
+            // System Administrator alone is not approval authority.
+            bool hasRole = HasDirectApproverRole(actor);
+            if (!hasRole)
+                Fail("BAP003", "An independent finance approver role is required.");
+
             var budget = service.Retrieve(
                 "fmg_budget", budgetId,
                 new ColumnSet("fmg_status", "fmg_year", "fmg_version",
                     "fmg_effectivefrommonth", "fmg_scope", "fmg_branch",
-                    "createdby", "ownerid"));
+                    "createdby", "ownerid", "modifiedby", "modifiedonbehalfby"));
 
             // The explicit approver role is separate from System Administrator.
-            bool hasRole = HasDirectApproverRole(actor);
             new BudgetApprovalPreflight().Validate(budget, actor, hasRole);
 
             if (String.IsNullOrWhiteSpace(budget.RowVersion))

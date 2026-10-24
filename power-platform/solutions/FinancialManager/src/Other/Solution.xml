@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ImportExportXml version="9.2.26094.146" SolutionPackageVersion="9.2" languagecode="3082" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26094.146" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26102.00120">
+<ImportExportXml version="9.2.26094.146" SolutionPackageVersion="9.2" languagecode="3082" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26094.146" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26102.00122">
   <SolutionManifest>
     <UniqueName>FinancialManager</UniqueName>
     <LocalizedNames>
@@ -105,6 +105,9 @@
       <RootComponent type="9" schemaName="fmg_tipodedatosstatus" behavior="0" />
       <RootComponent type="91" id="{1abe5a6c-68ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.BudgetIntegrity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
       <RootComponent type="91" id="{31965de4-59ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.Validation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="92" id="{0367fbaa-5dcf-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{0667fbaa-5dcf-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{0967fbaa-5dcf-f111-b377-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{6979d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{6c79d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{7079d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />

@@ -151,3 +151,17 @@ dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Rel
 ```
 
 A first PAC push unintentionally used an old cached NuGet; it reported success but **did not register the new classes**. A subsequent clean output directory generated a distinct checked assembly and the second PAC push successfully registered both new plug-in types while retaining identity/version and previous guard steps. Run `python scripts/check_budget_plugin_package.py <newly-generated-nupkg>` before pushing; a stale NuGet intentionally fails. Do not confuse a successful PAC exit code with proof that every expected class or processing step is registered. **The BAC Create/Update/Delete steps are NOT yet registered**: an attempted follow-up write was blocked by remote execution controls. Accordingly no live Claim guard assurance or approval acceptance exists. Do not register or expose the bound API until the three Claim guards are active and tested, a least-privilege independent approver exists, and actual concurrency is verified. `budget-upgrade` deliberately fails closed to prevent the obsolete binary update path.
+
+## Bound approval API and package build trap (2026-10-23)
+
+The three `BAC_BlockClaim*` synchronous PreValidation steps are now registered. A private, budget-bound `fmg_ApproveBudget` API is registered with main-operation `BG_ApproveBudget`, requiring `prvCreatefmg_BudgetApprovalClaim` and explicit independent role membership. A negative call with a nonexistent budget and no role returned `BAP003` after the final plug-in deployment.
+
+**Never assume `dotnet pack` contains the latest compiled code.** The official Power Apps MSBuild plug-in pack target uses `bin/Release/net48/publish`; `dotnet publish` without `-p:PublishOnBuild=false` hit a circular MSBuild target. The proven sequence is:
+```powershell
+dotnet publish plugins/FinancialManager.BudgetIntegrity/FinancialManager.BudgetIntegrity.csproj -c Release -p:PublishOnBuild=false
+dotnet pack plugins/FinancialManager.BudgetIntegrity/FinancialManager.BudgetIntegrity.csproj -c Release -p:PublishOnBuild=false -p:PackageOutputPath=<fresh-temporary-output-directory>
+python scripts/check_budget_plugin_package.py <fresh-temporary-output-directory>/fmg_BudgetIntegrity.1.0.0.nupkg
+```
+After the downloaded baseline is checksum-verified, upload **that validated NuGet** with `pac plugin push --pluginId <existing-id> --pluginFile <validated-file> --environment <verified-dev-url>`. The artifact validator verifies both required plug-in classes and two approval-security behavior strings. A successful `pac` exit code without a binary-content check is not acceptance.
+
+The separate `Financial Manager Budget Approver` role has **zero assignments**. Dataverse retained four SharePoint defaults in the first post-change export even after applying nine explicit privileges. Do not assign it until a second independent identity, a least-privilege post-export review and actual concurrent approval testing are ready. `budget-approval-role-cleanup` is deliberately not exposed after a long-running attempt was cancelled without confirmation. `budget-approval-inspect` and `budget-approval-probe --apply` provide read-only and negative-only diagnostics respectively.
