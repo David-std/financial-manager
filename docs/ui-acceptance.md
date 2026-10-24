@@ -42,7 +42,7 @@ The four pages are published and their source/sitemap consistency is checked in 
 - The editor currently assembles an `updateRow` payload in two stages: save Draft, then request Posted. Confirm the request really persists and that a failed Post never shows a false success.
 - Clearing the document reference and Category from an existing Draft passed UI-07 in the running app and was confirmed by FetchXML. Other optional fields and the Branch/Shared transition still require targeted tests; do not generalize UI-07 to every field without evidence.
 - All summary amounts on generated pages are restricted to loaded records; they are **not** complete financial reports or approved budget-versus-actual metrics.
-- The budget server plug-in deliberately forbids approval. Do not enable it through a button, flow, or modified user role.
+- The budget server plug-in deliberately forbids approval. Do not enable it through a button, flow, or modified user role. The planned independent approver preflight is implemented and tested in source but not registered or used by the live plug-in. See [ADR 0004](decisions/0004-safe-budget-approval.md).
 - Direct Activity Event writes are blocked until a trusted server-side event writer is designed and tested. Dataverse native audit remains authoritative.
 - The alternative full user/team role test is explicitly deferred.
 - Solution export packs with known PluginAssembly component warnings; independent cross-environment import verification is still pending.

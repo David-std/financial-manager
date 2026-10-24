@@ -11,7 +11,7 @@ Financial Manager's reporting workspace will be maintained as a **Power BI Proje
 
 ## Source and accounting boundaries
 
-- Source: authorized Financial Manager Dataverse tables. Actual spending includes only **Posted** expense payments; Draft and Voided are excluded.
+- Source: authorized Financial Manager Dataverse tables. Actual spending includes only **Posted** expense payments; Draft and Voided are excluded. Power BI Desktop authoring does not require Pro; Power BI service licenses and Fabric trial capacities are separate and tenant-specific. Verify that the account's selected tenant is the intended Dataverse organization before creating a shared workspace.
 - Currency: PEN. Shared movements must be counted **once**, not copied into each branch total.
 - Budget measures must use **approved and effective** allocations. Budget approval is intentionally blocked in the current development environment; do not show Draft/Submitted allocations as approved budgets. Unavailable budget comparisons must be labeled **not available**, not zero.
 - No receipts, income, sales, invoicing, cash balances, net cash flow, margin, or profit metrics are supported by the MVP.

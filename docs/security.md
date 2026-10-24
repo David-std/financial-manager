@@ -27,7 +27,7 @@ Business roles reflect responsibilities, not arbitrary privilege levels. Real st
 | View financial reports | All scopes | Authorized scopes | Limited | Assigned branch | All approved scopes | All approved scopes |
 | View full audit history | Restricted | No | No | No | No | Yes |
 
-Technical Power Platform administration is **not** a routine finance-user role. Use documented separate administrative access. If the same person prepares and approves a budget in a small organization, record an explicit exception and compensating review instead of silently treating it as segregation of duties.
+Technical Power Platform administration is **not** a routine finance-user role. Use documented separate administrative access. The detailed approval implementation and concurrency gates are in [ADR 0004](decisions/0004-safe-budget-approval.md); preparer/approver separation and an atomic effective-version operation must be deployed before unblocking `BGV009`. If the same person prepares and approves a budget in a small organization, record an explicit exception and compensating review instead of silently treating it as segregation of duties.
 
 ## Branch enforcement
 
