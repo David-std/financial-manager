@@ -36,3 +36,19 @@ An approval request must be a **dedicated, authenticated server operation**, not
 **Keep `BGV009` enabled and do not present a functional Approve button.** The user has approved implementing the full workflow, but this does not establish a separate approver identity or the correctness of concurrent version approval. Continue implementing the missing controls without creating production approvals or using real financial data.
 
 Related: [Data model](../data-model.md), [Security](../security.md), [Reporting](../reporting.md), [ADR 0003](0003-expanded-financial-scope.md).
+
+## Implemented but not deployed: annual approval transaction primitive
+
+The unregistered `BudgetApprovalOperation` now contains a concrete service-side write sequence. It validates `IsInTransaction`, loads the submitted budget and its RowVersion, checks the explicit approver role membership and separation from the creator/owner, requires allocations, and acquires a unique **annual scope claim** before issuing an `UpdateRequest` with `IfRowVersionMatches`. Exceptions are never swallowed, so a properly registered in-transaction operation rolls back both writes. The claim key uses `year:scope:branchGuid` or `year:scope:shared`.
+
+This release deliberately supports **at most one approved budget per year and scope**. It cannot approve a revised version or partially overlapping effective periods; supersession requires another design and transaction workflow. This conservative restriction prevents duplicate annual approvals while keeping the initial data model simple.
+
+**Required deployment gates, not yet completed:**
+
+- Create `fmg_budgetapprovalclaim` with a server-owned `fmg_scopekey` field, lookup to the budget, a successfully **Active** unique alternate key on `fmg_scopekey`, and server rules rejecting all direct client Create/Update/Delete actions. Check uniqueness under actual concurrent synthetic requests.
+- Create and assign the distinct `Financial Manager Budget Approver` security role to an independently authorized second human identity. The read-only role check on 2026-10-23 returned **zero** matching roles.
+- Register an appropriately bound dedicated Dataverse Custom API with plug-in main operation, authenticated initiation, `IsInTransaction` evidence, least-privilege execution and correct rejection of direct writes. The existing `BGV009` guard and anti-spoof rule will need a narrowly scoped server-only approval path; do **not** remove them generally or simply permit ordinary status updates.
+- Validate that the alternate-key claim and budget status update occur in the same transaction, including rollback on a row-version mismatch, duplicate annual claim, missing privilege and missing allocation. Use two separate users and concurrent requests in a synthetic dev test.
+- Confirm `approvedby`, `approvedon`, immutable history and audit with independent server readback. Only then expose the Approve button and alter the reporting-approved budget eligibility.
+
+**Current safety:** the new operation is **not exposed, registered or called**, its claim table/key are not provisioned, and no budget can be approved through it. `BGV009` still rejects approvals in the deployed plugin. The operation and its fake-service unit tests are infrastructure preparation, **not** proof of an atomic Dataverse production transaction. See Microsoft's [Dataverse database transactions](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/scalable-customization-design/database-transactions) and [optimistic concurrency](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/optimistic-concurrency) guidance.

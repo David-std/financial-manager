@@ -11,13 +11,13 @@ const string PluginClass = "FinancialManager.Validation.FT_EnforcePaymentIntegri
 const string Table = "fmg_financialtransaction";
 
 string mode = args.Length > 0 ? args[0] : "inspect";
-if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && mode != "app-nav-inspect" && mode != "app-nav-fix" && !mode.StartsWith("budget-", StringComparison.Ordinal))
+if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && mode != "app-nav-inspect" && mode != "app-nav-fix" && mode != "budget-approval-inspect" && !mode.StartsWith("budget-", StringComparison.Ordinal))
 {
     Console.Error.WriteLine("Usage: inspect | app-nav-inspect | app-nav-fix --apply | inspect-schema | verify-schema | budget-inspect | budget-key-status | budget-key --apply | budget-register --apply | budget-steps --apply | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
     return 2;
 }
 bool apply = args.Length > 1 && args[1] == "--apply";
-if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && mode != "app-nav-inspect" && !apply)
+if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && mode != "budget-approval-inspect" && mode != "app-nav-inspect" && !apply)
 {
     Console.Error.WriteLine("Mutation requires explicit --apply.");
     return 2;
@@ -60,6 +60,7 @@ Console.WriteLine("Plugin packages found: " + packages.Entities.Count + "; plug-
 
 if (mode == "inspect") return 0;
 if (mode=="app-nav-inspect" || mode=="app-nav-fix") return AppNavigation.Run(client,mode=="app-nav-fix");
+if (mode == "budget-approval-inspect") return BudgetApprovalReadiness.Inspect(client);
 if (mode.StartsWith("budget-", StringComparison.Ordinal)) return BudgetDeployment.Run(client, mode);
 if (mode == "inspect-schema" || mode == "schema")
     return SchemaDeployment.Run(client, mode == "schema");

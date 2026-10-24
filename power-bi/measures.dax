@@ -1,0 +1,69 @@
+// Proposed DAX measures for the first expense-only PBIP.
+// Paste each measure in Power BI Desktop after the FactPostedExpense and
+// DimDate tables have been created and linked. NOT evaluated yet.
+// Status eligibility is enforced upstream by FactPostedExpense's M query.
+
+// Measures under FactPostedExpense:
+Paid Spending =
+    SUM ( FactPostedExpense[AmountPEN] )
+
+Operating Spending =
+    CALCULATE (
+        [Paid Spending],
+        FactPostedExpense[FlowClassCode] = 797280000
+    )
+
+Capital Spending =
+    CALCULATE (
+        [Paid Spending],
+        FactPostedExpense[FlowClassCode] = 797280001
+    )
+
+Tax Spending =
+    CALCULATE (
+        [Paid Spending],
+        FactPostedExpense[FlowClassCode] = 797280002
+    )
+
+Other Spending =
+    CALCULATE (
+        [Paid Spending],
+        FactPostedExpense[FlowClassCode] = 797280003
+    )
+
+Shared Spending =
+    CALCULATE (
+        [Paid Spending],
+        FactPostedExpense[ScopeCode] = 797280001
+    )
+
+Branch Spending =
+    CALCULATE (
+        [Paid Spending],
+        FactPostedExpense[ScopeCode] = 797280000
+    )
+
+Prior Year Spending =
+    CALCULATE (
+        [Paid Spending],
+        SAMEPERIODLASTYEAR ( DimDate[Date] )
+    )
+
+Year-over-Year Change =
+    VAR Previous = [Prior Year Spending]
+    RETURN
+        IF (
+            ISBLANK ( Previous ),
+            BLANK (),
+            [Paid Spending] - Previous
+        )
+
+Year-over-Year Change % =
+    DIVIDE (
+        [Year-over-Year Change],
+        [Prior Year Spending]
+    )
+
+// No Approved Budget measure is defined yet. Draft/Submitted budgets
+// MUST NOT appear as available spending limits or utilization percentages.
+// Cash inflows, internal transfers and balances require separate source facts.
