@@ -15,6 +15,8 @@ DEFINITION = REPORT / "definition"
 PAGES = DEFINITION / "pages"
 PAGE1 = "ac21e26d330743fa8b79"
 PAGE2 = "de2b78eaf1b44c2a9485"
+PAGE3 = "f9be472dc34d4e5cab27"
+PAGE4 = "f1a74ce8854f434789d2"
 VISUAL_SCHEMA = (
     "https://developer.microsoft.com/json-schemas/fabric/item/report/"
     "definition/visualContainer/2.9.0/schema.json"
@@ -103,8 +105,16 @@ def build() -> None:
     page2["name"] = PAGE2
     page2["displayName"] = "Sedes y movimientos"
     save(PAGES / PAGE2 / "page.json", page2)
+    page3 = dict(settings)
+    page3["name"] = PAGE3
+    page3["displayName"] = "Análisis de categorías"
+    save(PAGES / PAGE3 / "page.json", page3)
+    page4 = dict(settings)
+    page4["name"] = PAGE4
+    page4["displayName"] = "Tendencias de pagos"
+    save(PAGES / PAGE4 / "page.json", page4)
     order = json.loads((PAGES / "pages.json").read_text(encoding="utf-8"))
-    order["pageOrder"] = [PAGE1, PAGE2]
+    order["pageOrder"] = [PAGE1, PAGE2, PAGE3, PAGE4]
     order["activePageName"] = PAGE1
     save(PAGES / "pages.json", order)
 
@@ -156,7 +166,36 @@ def build() -> None:
                    column("FactPostedExpense", "AmountPEN"),
                ]},
                "Movimientos confirmados")
-    print("PBIR_PAGES=2;PBIR_VISUALS=9")
+    # Detailed category analysis and period comparison, strictly Posted payments.
+    add_visual(PAGE3, "filter", "slicer", 24, 24, 288, 136,
+               {"Values": [column("DimDate", "Year")]}, "Año")
+    add_visual(PAGE3, "total", "card", 330, 24, 288, 136,
+               {"Values": [measure("FactPostedExpense", "Paid Spending")]},
+               "Total pagado · PEN")
+    add_visual(PAGE3, "categories", "tableEx", 24, 184, 1218, 500,
+               {"Values": [
+                   column("DimCategory", "CategoryCode"),
+                   column("DimCategory", "CategoryName"),
+                   measure("FactPostedExpense", "Paid Spending"),
+                   measure("FactPostedExpense", "Prior Year Spending"),
+                   measure("FactPostedExpense", "Year-over-Year Change %"),
+               ]}, "Gasto confirmado por categoría · comparación interanual")
+
+    # Only supported real expense measures; no mock cash flow or revenue.
+    add_visual(PAGE4, "filter", "slicer", 24, 24, 284, 136,
+               {"Values": [column("DimDate", "Year")]}, "Año")
+    add_visual(PAGE4, "total", "card", 324, 24, 284, 136,
+               {"Values": [measure("FactPostedExpense", "Paid Spending")]},
+               "Pagos confirmados · PEN")
+    add_visual(PAGE4, "variance", "card", 624, 24, 284, 136,
+               {"Values": [measure("FactPostedExpense", "Year-over-Year Change %")]},
+               "Variación interanual")
+    add_visual(PAGE4, "monthly", "lineChart", 24, 185, 1218, 490,
+               {
+                   "Category": [column("DimDate", "YearMonth")],
+                   "Y": [measure("FactPostedExpense", "Paid Spending")],
+               }, "Evolución mensual de pagos confirmados")
+    print("PBIR_PAGES=4;PBIR_VISUALS=16")
     print("PBIR_PROJECT=" + str(ROOT / "FinancialManager.pbip"))
 
 if __name__ == "__main__":

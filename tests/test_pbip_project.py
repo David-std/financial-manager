@@ -46,7 +46,7 @@ class PbipContractTests(unittest.TestCase):
     def test_report_pages_are_bounded_and_bind_real_model_fields(self) -> None:
         pages = REPORT / "definition" / "pages"
         listing = json.loads((pages / "pages.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(listing["pageOrder"]), 2)
+        self.assertEqual(len(listing["pageOrder"]), 4)
         total_visuals = 0
         for page_id in listing["pageOrder"]:
             page_folder = pages / page_id
@@ -60,7 +60,7 @@ class PbipContractTests(unittest.TestCase):
                 self.assertLessEqual(position["y"] + position["height"], 720)
                 self.assertTrue(visual["visual"]["query"]["queryState"])
                 total_visuals += 1
-        self.assertEqual(total_visuals, 9)
+        self.assertEqual(total_visuals, 16)
 
 
 if __name__ == "__main__":

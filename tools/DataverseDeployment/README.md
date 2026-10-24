@@ -137,3 +137,17 @@ All commands still require `FM_ENV_URL` and `FM_ORGANIZATION_ID`, and abort if t
 `BudgetDeployment` contains unregistered plans for `BAC_BlockClaimCreate`, `BAC_BlockClaimUpdate` and `BAC_BlockClaimDelete`; no steps exist yet in Dataverse. The `budget-upgrade --apply` mode now requires a recoverable backup of the currently deployed NuGet plug-in package. Its attempt to retrieve `pluginpackage.content` returned an empty value and safely aborted **without** updating the package. This is an intentional fail-closed gate. Microsoft documents plugin package contents as file storage, and supports updates through the Plug-in Registration Tool or `pac plugin push` with an existing package ID. Do not bypass this backup requirement merely to publish the new type.
 
 See [Microsoft plug-in package management](https://learn.microsoft.com/en-us/power-platform/developer/howto/cli-create-package) and [ADR 0004](../../docs/decisions/0004-safe-budget-approval.md).
+
+## Supported NuGet backup and package update (2026-10-23)
+
+The previous read of `pluginpackage.content` cannot recover deployed package bytes: the binary lives in the **`pluginpackage.package` file column**. `budget-backup` now downloads exact bytes using `InitializeFileBlocksDownload`/`DownloadBlock`, verifies a NuGet manifest and size, writes a local TEMP backup, and prints the SHA-256 digest. The local backup contains deployed code and must remain outside the public repository.
+
+```powershell
+# Read-only, after setting FM_ENV_URL and FM_ORGANIZATION_ID locally:
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-backup
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-inspect
+# A package upgrade requires the verified backup, reviewed package ID and intended dev environment:
+# pac plugin push --pluginId <existing-package-id> --pluginFile <reviewed-release-nupkg> --environment <verified-dev-url>
+```
+
+A first PAC push unintentionally used an old cached NuGet; it reported success but **did not register the new classes**. A subsequent clean output directory generated a distinct checked assembly and the second PAC push successfully registered both new plug-in types while retaining identity/version and previous guard steps. Run `python scripts/check_budget_plugin_package.py <newly-generated-nupkg>` before pushing; a stale NuGet intentionally fails. Do not confuse a successful PAC exit code with proof that every expected class or processing step is registered. **The BAC Create/Update/Delete steps are NOT yet registered**: an attempted follow-up write was blocked by remote execution controls. Accordingly no live Claim guard assurance or approval acceptance exists. Do not register or expose the bound API until the three Claim guards are active and tested, a least-privilege independent approver exists, and actual concurrency is verified. `budget-upgrade` deliberately fails closed to prevent the obsolete binary update path.

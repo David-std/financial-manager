@@ -2,6 +2,9 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.IO.Compression;
+using System.Security.Cryptography;
+using Microsoft.Crm.Sdk.Messages;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
@@ -55,6 +58,11 @@ internal static class BudgetDeployment
             Console.WriteLine(key==null ? "KEY_MISSING" : ("KEY_STATUS="+key.EntityKeyIndexStatus));
             return key!=null && key.EntityKeyIndexStatus.ToString()=="Active" ? 0 : 8;
         }
+        if(mode=="budget-backup")
+        {
+            DownloadAndValidateExistingPackage(svc);
+            return 0;
+        }
         if(mode=="budget-upgrade")
         {
             UpgradePackage(svc);
@@ -80,6 +88,14 @@ internal static class BudgetDeployment
             Console.WriteLine(key==null ? "KEY_MISSING" : "KEY_STATUS="+key.EntityKeyIndexStatus);
             var pkg=QueryByName(svc,"pluginpackage","name",PackageName,"pluginpackageid");
             Console.WriteLine("BUDGET_PLUGIN_PACKAGES="+pkg.Count);
+            if(pkg.Count==1) Console.WriteLine("BUDGET_PLUGIN_PACKAGE_ID="+pkg[0].Id.ToString("D"));
+            foreach(var fullName in new[]{
+                "FinancialManager.BudgetIntegrity.BAC_BlockDirectClaimWrites",
+                "FinancialManager.BudgetIntegrity.BG_ApproveBudget"})
+            {
+                var rows=QueryByName(svc,"plugintype","typename",fullName,"plugintypeid");
+                Console.WriteLine("PLUGIN_TYPE_"+fullName.Split('.').Last()+"="+rows.Count);
+            }
             var all=GetPlannedSteps();
             foreach(var plan in all)
             {
@@ -199,42 +215,71 @@ internal static class BudgetDeployment
         };
     }
 
+    /// <summary>
+    /// Download the real deployed NuGet from Dataverse file storage. Querying
+    /// pluginpackage.content is not a reliable way to recover this binary.
+    /// Store in local TEMP only; never commit this archive to source control.
+    /// </summary>
+    private static string DownloadAndValidateExistingPackage(ServiceClient svc)
+    {
+        var rows=QueryByName(svc,"pluginpackage","name",PackageName,
+            "pluginpackageid","name","version","package_name");
+        if(rows.Count!=1 || rows[0].GetAttributeValue<string>("version")!="1.0.0")
+            throw new InvalidOperationException("Expected one package at registered version 1.0.0.");
+        var init=(InitializeFileBlocksDownloadResponse)svc.Execute(
+            new InitializeFileBlocksDownloadRequest
+            {
+                Target=new EntityReference("pluginpackage",rows[0].Id),
+                FileAttributeName="package"
+            });
+        if(init.FileSizeInBytes<200 || init.FileSizeInBytes>10_000_000)
+            throw new InvalidOperationException("Unexpected deployed NuGet backup size.");
+        var fileBytes=new List<byte>((int)init.FileSizeInBytes);
+        long offset=0;
+        while(offset<init.FileSizeInBytes)
+        {
+            var size=init.IsChunkingSupported ?
+                Math.Min(4*1024*1024,init.FileSizeInBytes-offset) : init.FileSizeInBytes;
+            var block=(DownloadBlockResponse)svc.Execute(new DownloadBlockRequest
+            {
+                FileContinuationToken=init.FileContinuationToken,
+                BlockLength=size,
+                Offset=offset
+            });
+            if(block.Data==null || block.Data.Length==0 ||
+                block.Data.Length>size)
+                throw new InvalidOperationException("Incomplete NuGet file download.");
+            fileBytes.AddRange(block.Data);
+            offset+=block.Data.Length;
+        }
+        if(fileBytes.Count!=init.FileSizeInBytes)
+            throw new InvalidOperationException("Deployed NuGet length mismatch.");
+        var bytes=fileBytes.ToArray();
+        using(var zip=new ZipArchive(new MemoryStream(bytes),ZipArchiveMode.Read))
+        {
+            if(!zip.Entries.Any(e=>e.FullName.EndsWith(".nuspec",StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException("Downloaded plugin package has no NuGet manifest.");
+        }
+        var backup=Path.Combine(Path.GetTempPath(),
+            "fmg_BudgetIntegrity-live-backup-"+DateTime.UtcNow.ToString("yyyyMMdd-HHmmss")+".nupkg");
+        File.WriteAllBytes(backup,bytes);
+        if(!File.ReadAllBytes(backup).SequenceEqual(bytes))
+            throw new InvalidOperationException("Cannot verify backed-up package.");
+        Console.WriteLine("LIVE_NUGET_BACKUP="+backup);
+        Console.WriteLine("BACKUP_BYTES="+bytes.Length);
+        Console.WriteLine("BACKUP_SHA256="+Convert.ToHexString(SHA256.HashData(bytes)));
+        return backup;
+    }
+
     private static void UpgradePackage(ServiceClient svc)
     {
-        var existing=QueryByName(svc,"pluginpackage","name",PackageName,
-            "pluginpackageid","name","version","content");
-        if(existing.Count!=1)
-            throw new InvalidOperationException("Exactly one existing budget package required for upgrade.");
-        var path=Environment.GetEnvironmentVariable("FM_BUDGET_PACKAGE_PATH");
-        if(String.IsNullOrWhiteSpace(path) || !File.Exists(path) ||
-           !Path.GetFileName(path).StartsWith(PackageName+".1.0.0",StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Package content refresh must use the registered version 1.0.0.");
-        var bytes=File.ReadAllBytes(path);
-        if(bytes.Length>10_000_000) throw new InvalidOperationException("Unexpected package size.");
-        var api = QueryByName(svc,"customapi","uniquename","fmg_ApproveBudget","customapiid");
-        if (api.Count != 0)
-            throw new InvalidOperationException("Refusing package upgrade while approval API is already registered.");
-        var previousContent = existing[0].GetAttributeValue<string>("content");
-        if (String.IsNullOrWhiteSpace(previousContent))
-            throw new InvalidOperationException("Could not back up the existing plug-in package.");
-        var backup = Path.Combine(Path.GetTempPath(),
-            "fmg_BudgetIntegrity-before-approval-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + ".nupkg");
-        File.WriteAllBytes(backup, Convert.FromBase64String(previousContent));
-        Console.WriteLine("PACKAGE_BACKUP_CREATED=" + backup);
-        var row=new Entity("pluginpackage"){Id=existing[0].Id};
-        row["content"]=Convert.ToBase64String(bytes);
-        svc.Execute(new UpdateRequest{Target=row});
-        Console.WriteLine("REFRESHED_BUDGET_PACKAGE_CONTENT_IN_PLACE");
-        foreach(var classname in new[]{
-            "FinancialManager.BudgetIntegrity.BG_EnforceBudgetIntegrity",
-            "FinancialManager.BudgetIntegrity.BA_EnforceAllocationIntegrity",
-            "FinancialManager.BudgetIntegrity.AE_BlockDirectEventWrites",
-            "FinancialManager.BudgetIntegrity.BAC_BlockDirectClaimWrites"})
-        {
-            var type=QueryByName(svc,"plugintype","typename",classname,"plugintypeid");
-            if(type.Count!=1) throw new InvalidOperationException("Expected registered type after update: "+classname);
-        }
-        Console.WriteLine("FOUR_GUARD_CLASSES_REGISTERED_APPROVAL_API_NOT_ENABLED");
+        // The legacy UpdateRequest against pluginpackage.content does not update
+        // the binary held in Dataverse file storage. Never revive that path.
+        // Use budget-backup, verify its SHA-256 locally, and then the supported
+        // pac plugin push --pluginId <existing-id> --pluginFile <nupkg> operation.
+        throw new InvalidOperationException(
+            "Use budget-backup followed by the reviewed PAC plugin push command. " +
+            "Do not update pluginpackage.content through the legacy SDK path.");
     }
 
     private static void RegisterSteps(ServiceClient svc)
