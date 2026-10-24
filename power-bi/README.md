@@ -44,7 +44,7 @@ Each `.pq` file is **one separate Power Query M expression**, except the main fi
 
 **Current account finding:** the browser Power BI session shows **UPC as its only selectable tenant**, despite the `company717.onmicrosoft.com` account being authorized in Power Apps/Dataverse. This does not mean those tenants merged. Authoring a local Desktop model against a Dataverse host can be attempted using the account with Dataverse access; publishing a workspace in the Financial Manager tenant remains a **separate tenant licensing and membership check**. The visible 59-day Power BI trial in UPC does not establish license rights in the Developer Dataverse tenant. Do not join/disconnect the PC from any organization or cancel trial access as a workaround.
 
-**Implementation boundary (updated 2026-10-24):** the four-page, sixteen-visual PBIP passes source/schema/TOM checks, opened in Desktop from a temporary copy, refreshed its five tables, and reconciled current Posted/PEN counts and totals with independent Dataverse reads. Individual visuals, representative nonempty posted fixtures, drill-through, RLS, access permissions and service publishing remain pending. The project is not published to Power BI Service.
+**Implementation boundary (updated 2026-10-24):** the four-page baseline PBIP (subsequently upgraded to the 55-element executive v2 report) passes source/schema/TOM checks, opened in Desktop from a temporary copy, refreshed its five tables, and reconciled current Posted/PEN counts and totals with independent Dataverse reads. Individual visuals, representative nonempty posted fixtures, drill-through, RLS, access permissions and service publishing remain pending. The project is not published to Power BI Service.
 
 ## Current versioned PBIP
 
@@ -52,8 +52,8 @@ The reproducible expense-analysis project is at [FinancialManager/FinancialManag
 
 - Five Import tables in TMDL: FactPostedExpense, DimDate, DimCategory, DimBranch, and DimCashAccount.
 - Four single-direction fact-to-dimension relationships. Shared expenses have no branch and must appear once in consolidated spending.
-- Twelve spending/payment measures; no approved-budget, income, cash-balance, revenue or profit measures.
-- Four PBIR pages with sixteen bound native visuals: **Resumen de gastos**, **Sedes y movimientos**, **Análisis de categorías**, and **Tendencias de pagos**. Budget-control visualization stays unavailable until independent approval and version selection are validated.
+- Executive v2: 26 spending/payment measures (12 original plus 14 KPI, mix and trend measures); no approved-budget, income, cash-balance, revenue or profit measures.
+- Four PBIR pages with 55 native report elements (text headers, slicers, KPI cards, charts and data tables): **Resumen de gastos**, **Sedes y movimientos**, **Análisis de categorías**, and **Tendencias de pagos**. Budget-control visualization stays unavailable until independent approval and version selection are validated.
 - An official Power BI report CLI scaffold, valid PBIR schemas and successful Analysis Services TOM/TMDL deserialization. These are structural checks, **not evidence of successful refresh or rendered pages**.
 
 Regenerate the model and report sources with the following commands from the repository root:

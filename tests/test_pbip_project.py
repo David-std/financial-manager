@@ -36,7 +36,11 @@ class PbipContractTests(unittest.TestCase):
         )
         self.assertIn("WHERE expense.fmg_status = 797280001", fact)
         self.assertIn("currency.isocurrencycode = 'PEN'", fact)
-        self.assertEqual(fact.count("\n\tmeasure '"), 12)
+        self.assertEqual(fact.count("\n\tmeasure '"), 26)
+        self.assertIn("'Pagos confirmados KPI'", fact)
+        self.assertIn("'Variación interanual lectura'", fact)
+        self.assertIn("column FlowClassLabel", fact)
+        self.assertIn("column ScopeLabel", fact)
         for source in definition.rglob("*.tmdl"):
             content = source.read_text(encoding="utf-8")
             self.assertNotIn(".crm3.dynamics.com", content)
@@ -58,9 +62,10 @@ class PbipContractTests(unittest.TestCase):
                 position = visual["position"]
                 self.assertLessEqual(position["x"] + position["width"], 1280)
                 self.assertLessEqual(position["y"] + position["height"], 720)
-                self.assertTrue(visual["visual"]["query"]["queryState"])
+                if visual["visual"]["visualType"] != "textbox":
+                    self.assertTrue(visual["visual"]["query"]["queryState"])
                 total_visuals += 1
-        self.assertEqual(total_visuals, 16)
+        self.assertEqual(total_visuals, 55)
 
 
 if __name__ == "__main__":

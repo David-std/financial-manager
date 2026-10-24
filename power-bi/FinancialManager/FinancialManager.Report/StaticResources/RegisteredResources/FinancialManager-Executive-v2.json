@@ -1,0 +1,18 @@
+{
+  "name": "FinancialManager-Executive-v2.json",
+  "dataColors": [
+    "#2878B8",
+    "#129D98",
+    "#E3A948",
+    "#5375C7",
+    "#8F77C2",
+    "#5D9C84",
+    "#C67E70"
+  ],
+  "background": "#F3F7FB",
+  "foreground": "#152940",
+  "tableAccent": "#2878B8",
+  "good": "#129D98",
+  "neutral": "#E3A948",
+  "bad": "#CE5A62"
+}

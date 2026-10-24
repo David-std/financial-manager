@@ -36,6 +36,55 @@ table FactPostedExpense
 	measure 'Year-over-Year Change %' = DIVIDE ( [Year-over-Year Change], [Prior Year Spending] )
 		formatString: 0.0%
 
+	measure 'Pagos confirmados KPI' = COALESCE ( [Paid Spending], 0 )
+		formatString: "S/ "#,##0.00
+
+	measure 'Cantidad de pagos KPI' = COALESCE ( [Payment Count], 0 )
+		formatString: #,##0
+
+	measure 'Ticket promedio KPI' = COALESCE ( [Average Payment], 0 )
+		formatString: "S/ "#,##0.00
+
+	measure 'Gasto compartido KPI' = COALESCE ( [Shared Spending], 0 )
+		formatString: "S/ "#,##0.00
+
+	measure 'Gasto por sede KPI' = COALESCE ( [Branch Spending], 0 )
+		formatString: "S/ "#,##0.00
+
+	measure 'Gasto anterior KPI' = IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", FORMAT ( [Prior Year Spending], "S/ #,##0.00" ) )
+
+	measure 'Participación compartida' = COALESCE ( DIVIDE ( [Shared Spending], [Paid Spending], 0 ), 0 )
+		formatString: 0.0%
+
+	measure 'Participación categoría' = COALESCE ( DIVIDE ( [Paid Spending], CALCULATE ( [Paid Spending], ALLSELECTED ( DimCategory ) ), 0 ), 0 )
+		formatString: 0.0%
+
+	measure 'Categorías con pagos' = COALESCE ( DISTINCTCOUNT ( FactPostedExpense[CategoryId] ), 0 )
+		formatString: #,##0
+
+	measure 'Gasto acumulado YTD' = COALESCE ( TOTALYTD ( [Paid Spending], DimDate[Date] ), 0 )
+		formatString: "S/ "#,##0.00
+
+	measure 'Meses con pagos' = COALESCE ( COUNTROWS ( FILTER ( VALUES ( DimDate[YearMonth] ), NOT ISBLANK ( [Paid Spending] ) ) ), 0 )
+		formatString: #,##0
+
+	measure 'Promedio mensual pagado' = COALESCE ( DIVIDE ( [Paid Spending], [Meses con pagos], 0 ), 0 )
+		formatString: "S/ "#,##0.00
+
+	measure 'Variación interanual lectura' = IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", FORMAT ( [Year-over-Year Change %], "0.0%;-0.0%;0.0%" ) )
+
+	measure 'Estado del informe' = IF ( [Payment Count] = 0 || ISBLANK ( [Payment Count] ), "Sin pagos confirmados en PEN para los filtros actuales", "Pagos contabilizados · fuente Dataverse" )
+
+	column FlowClassLabel
+		dataType: string
+		sourceColumn: FlowClassLabel
+		summarizeBy: none
+
+	column ScopeLabel
+		dataType: string
+		sourceColumn: ScopeLabel
+		summarizeBy: none
+
 	column ExpenseId
 		dataType: string
 		isHidden
@@ -166,5 +215,7 @@ table FactPostedExpense
 			            {"ScopeCode", Int64.Type}
 			        }
 			    )
+            , FlowLabels = Table.AddColumn(Typed, "FlowClassLabel", each if [FlowClassCode] = 797280000 then "Operativo" else if [FlowClassCode] = 797280001 then "Capital" else if [FlowClassCode] = 797280002 then "Impuestos" else "Otros", type text)
+            , ScopeLabels = Table.AddColumn(FlowLabels, "ScopeLabel", each if [ScopeCode] = 797280001 then "Compartido" else "Por sede", type text)
 			in
-			    Typed
+			    ScopeLabels
