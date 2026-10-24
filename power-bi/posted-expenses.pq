@@ -24,7 +24,7 @@ let
         FROM fmg_financialtransaction AS expense
         INNER JOIN transactioncurrency AS currency
             ON expense.transactioncurrencyid = currency.transactioncurrencyid
-        WHERE fmg_status = 797280001
+        WHERE expense.fmg_status = 797280001
           AND currency.isocurrencycode = 'PEN'
         ",
         null,

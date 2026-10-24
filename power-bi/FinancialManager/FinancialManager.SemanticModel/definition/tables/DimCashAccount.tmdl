@@ -1,0 +1,67 @@
+table DimCashAccount
+
+	column CashAccountId
+		dataType: string
+		isHidden
+		sourceColumn: CashAccountId
+		summarizeBy: none
+
+	column CashAccountName
+		dataType: string
+		sourceColumn: CashAccountName
+		summarizeBy: none
+
+	column IsActive
+		dataType: boolean
+		isHidden
+		sourceColumn: IsActive
+		summarizeBy: none
+
+	column BranchId
+		dataType: string
+		isHidden
+		sourceColumn: BranchId
+		summarizeBy: none
+
+	partition DimCashAccount = m
+		mode: import
+		source =
+			let
+			    Source = CommonDataService.Database(
+			        DataverseHost,
+			        [CreateNavigationProperties = false]
+			    ),
+			    Accounts = Value.NativeQuery(
+			        Source,
+			        "
+			        SELECT fmg_cashaccountid, fmg_name, fmg_isactive, fmg_branch
+			        FROM fmg_cashaccount
+			        ",
+			        null,
+			        [EnableFolding = true]
+			    ),
+			    Renamed = Table.RenameColumns(
+			        Accounts,
+			        {
+			            {"fmg_cashaccountid", "CashAccountId"},
+			            {"fmg_name", "CashAccountName"},
+			            {"fmg_isactive", "IsActive"},
+			            {"fmg_branch", "BranchId"}
+			        }
+			    ),
+			    KeysAsText = Table.TransformColumns(
+			        Renamed,
+			        {
+			            {"CashAccountId", each if _ = null then null else Text.Lower(Text.From(_)), type text},
+			            {"BranchId", each if _ = null then null else Text.Lower(Text.From(_)), type text}
+			        }
+			    ),
+			    Typed = Table.TransformColumnTypes(
+			        KeysAsText,
+			        {
+			            {"CashAccountName", type text},
+			            {"IsActive", type logical}
+			        }
+			    )
+			in
+			    Typed

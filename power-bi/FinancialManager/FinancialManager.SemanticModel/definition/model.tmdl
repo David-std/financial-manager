@@ -1,0 +1,12 @@
+model Model
+	culture: es-ES
+	sourceQueryCulture: es-ES
+	defaultPowerBIDataSourceVersion: powerBI_V3
+
+ref table FactPostedExpense
+ref table DimCategory
+ref table DimBranch
+ref table DimCashAccount
+ref table DimDate
+
+expression DataverseHost = "SET_DATAVERSE_HOST" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]

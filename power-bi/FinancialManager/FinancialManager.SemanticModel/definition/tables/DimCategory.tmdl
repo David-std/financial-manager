@@ -1,0 +1,83 @@
+table DimCategory
+
+	column CategoryId
+		dataType: string
+		isHidden
+		sourceColumn: CategoryId
+		summarizeBy: none
+
+	column CategoryCode
+		dataType: string
+		sourceColumn: CategoryCode
+		summarizeBy: none
+
+	column CategoryName
+		dataType: string
+		sourceColumn: CategoryName
+		summarizeBy: none
+
+	column ParentCategoryId
+		dataType: string
+		isHidden
+		sourceColumn: ParentCategoryId
+		summarizeBy: none
+
+	column IsActive
+		dataType: boolean
+		isHidden
+		sourceColumn: IsActive
+		summarizeBy: none
+
+	column IsGroup
+		dataType: boolean
+		isHidden
+		sourceColumn: IsGroup
+		summarizeBy: none
+
+	partition DimCategory = m
+		mode: import
+		source =
+			let
+			    Source = CommonDataService.Database(
+			        DataverseHost,
+			        [CreateNavigationProperties = false]
+			    ),
+			    Categories = Value.NativeQuery(
+			        Source,
+			        "
+			        SELECT fmg_categoryid, fmg_code, fmg_name,
+			               fmg_parentcategory, fmg_isactive, fmg_isgroup
+			        FROM fmg_category
+			        ",
+			        null,
+			        [EnableFolding = true]
+			    ),
+			    Renamed = Table.RenameColumns(
+			        Categories,
+			        {
+			            {"fmg_categoryid", "CategoryId"},
+			            {"fmg_code", "CategoryCode"},
+			            {"fmg_name", "CategoryName"},
+			            {"fmg_parentcategory", "ParentCategoryId"},
+			            {"fmg_isactive", "IsActive"},
+			            {"fmg_isgroup", "IsGroup"}
+			        }
+			    ),
+			    KeysAsText = Table.TransformColumns(
+			        Renamed,
+			        {
+			            {"CategoryId", each if _ = null then null else Text.Lower(Text.From(_)), type text},
+			            {"ParentCategoryId", each if _ = null then null else Text.Lower(Text.From(_)), type text}
+			        }
+			    ),
+			    Typed = Table.TransformColumnTypes(
+			        KeysAsText,
+			        {
+			            {"CategoryCode", type text},
+			            {"CategoryName", type text},
+			            {"IsActive", type logical},
+			            {"IsGroup", type logical}
+			        }
+			    )
+			in
+			    Typed

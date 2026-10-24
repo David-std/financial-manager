@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "60a41df5fc3ba9427262",
+  "position": {
+    "x": 628,
+    "y": 24,
+    "z": 7000,
+    "height": 158,
+    "width": 290,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPostedExpense"
+                    }
+                  },
+                  "Property": "Shared Spending"
+                }
+              },
+              "queryRef": "FactPostedExpense.Shared Spending",
+              "nativeQueryRef": "Shared Spending"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Gastos compartidos'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

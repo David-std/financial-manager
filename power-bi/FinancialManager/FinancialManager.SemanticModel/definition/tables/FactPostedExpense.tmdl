@@ -1,0 +1,170 @@
+table FactPostedExpense
+
+	measure 'Paid Spending' = SUM ( FactPostedExpense[AmountPEN] )
+		formatString: #,##0.00
+
+	measure 'Payment Count' = COUNTROWS ( FactPostedExpense )
+		formatString: #,##0
+
+	measure 'Average Payment' = DIVIDE ( [Paid Spending], [Payment Count] )
+		formatString: #,##0.00
+
+	measure 'Operating Spending' = CALCULATE ( [Paid Spending], FactPostedExpense[FlowClassCode] = 797280000 )
+		formatString: #,##0.00
+
+	measure 'Capital Spending' = CALCULATE ( [Paid Spending], FactPostedExpense[FlowClassCode] = 797280001 )
+		formatString: #,##0.00
+
+	measure 'Tax Spending' = CALCULATE ( [Paid Spending], FactPostedExpense[FlowClassCode] = 797280002 )
+		formatString: #,##0.00
+
+	measure 'Other Spending' = CALCULATE ( [Paid Spending], FactPostedExpense[FlowClassCode] = 797280003 )
+		formatString: #,##0.00
+
+	measure 'Shared Spending' = CALCULATE ( [Paid Spending], FactPostedExpense[ScopeCode] = 797280001 )
+		formatString: #,##0.00
+
+	measure 'Branch Spending' = CALCULATE ( [Paid Spending], FactPostedExpense[ScopeCode] = 797280000 )
+		formatString: #,##0.00
+
+	measure 'Prior Year Spending' = CALCULATE ( [Paid Spending], SAMEPERIODLASTYEAR ( DimDate[Date] ) )
+		formatString: #,##0.00
+
+	measure 'Year-over-Year Change' = IF ( ISBLANK ( [Prior Year Spending] ), BLANK (), [Paid Spending] - [Prior Year Spending] )
+		formatString: #,##0.00
+
+	measure 'Year-over-Year Change %' = DIVIDE ( [Year-over-Year Change], [Prior Year Spending] )
+		formatString: 0.0%
+
+	column ExpenseId
+		dataType: string
+		isHidden
+		sourceColumn: ExpenseId
+		summarizeBy: none
+
+	column ExpenseReference
+		dataType: string
+		sourceColumn: ExpenseReference
+		summarizeBy: none
+
+	column TransactionDate
+		dataType: dateTime
+		sourceColumn: TransactionDate
+		summarizeBy: none
+
+	column AmountPEN
+		dataType: decimal
+		sourceColumn: AmountPEN
+		summarizeBy: none
+
+	column StatusCode
+		dataType: int64
+		isHidden
+		sourceColumn: StatusCode
+		summarizeBy: none
+
+	column FlowClassCode
+		dataType: int64
+		sourceColumn: FlowClassCode
+		summarizeBy: none
+
+	column ScopeCode
+		dataType: int64
+		sourceColumn: ScopeCode
+		summarizeBy: none
+
+	column BranchId
+		dataType: string
+		isHidden
+		sourceColumn: BranchId
+		summarizeBy: none
+
+	column CategoryId
+		dataType: string
+		isHidden
+		sourceColumn: CategoryId
+		summarizeBy: none
+
+	column CashAccountId
+		dataType: string
+		isHidden
+		sourceColumn: CashAccountId
+		summarizeBy: none
+
+	column CurrencyId
+		dataType: string
+		isHidden
+		sourceColumn: CurrencyId
+		summarizeBy: none
+
+	partition FactPostedExpense = m
+		mode: import
+		source =
+			let
+			    Source = CommonDataService.Database(
+			        DataverseHost,
+			        [CreateNavigationProperties = false]
+			    ),
+			    PostedRows = Value.NativeQuery(
+			        Source,
+			        "
+			        SELECT
+			            fmg_financialtransactionid,
+			            fmg_name,
+			            fmg_transactiondate,
+			            fmg_amount,
+			            fmg_status,
+			            fmg_flowclass,
+			            fmg_scope,
+			            fmg_branch,
+			            fmg_category,
+			            fmg_cashaccount,
+			            expense.transactioncurrencyid
+			        FROM fmg_financialtransaction AS expense
+			        INNER JOIN transactioncurrency AS currency
+			            ON expense.transactioncurrencyid = currency.transactioncurrencyid
+			        WHERE expense.fmg_status = 797280001
+			          AND currency.isocurrencycode = 'PEN'
+			        ",
+			        null,
+			        [EnableFolding = true]
+			    ),
+			    NamedColumns = Table.RenameColumns(
+			        PostedRows,
+			        {
+			            {"fmg_financialtransactionid", "ExpenseId"},
+			            {"fmg_name", "ExpenseReference"},
+			            {"fmg_transactiondate", "TransactionDate"},
+			            {"fmg_amount", "AmountPEN"},
+			            {"fmg_status", "StatusCode"},
+			            {"fmg_flowclass", "FlowClassCode"},
+			            {"fmg_scope", "ScopeCode"},
+			            {"fmg_branch", "BranchId"},
+			            {"fmg_category", "CategoryId"},
+			            {"fmg_cashaccount", "CashAccountId"},
+			            {"transactioncurrencyid", "CurrencyId"}
+			        }
+			    ),
+			    KeysAsText = Table.TransformColumns(
+			        NamedColumns,
+			        {
+			            {"ExpenseId", each if _ = null then null else Text.Lower(Text.From(_)), type text},
+			            {"BranchId", each if _ = null then null else Text.Lower(Text.From(_)), type text},
+			            {"CategoryId", each if _ = null then null else Text.Lower(Text.From(_)), type text},
+			            {"CashAccountId", each if _ = null then null else Text.Lower(Text.From(_)), type text},
+			            {"CurrencyId", each if _ = null then null else Text.Lower(Text.From(_)), type text}
+			        }
+			    ),
+			    Typed = Table.TransformColumnTypes(
+			        KeysAsText,
+			        {
+			            {"ExpenseReference", type text},
+			            {"TransactionDate", type date},
+			            {"AmountPEN", Currency.Type},
+			            {"StatusCode", Int64.Type},
+			            {"FlowClassCode", Int64.Type},
+			            {"ScopeCode", Int64.Type}
+			        }
+			    )
+			in
+			    Typed

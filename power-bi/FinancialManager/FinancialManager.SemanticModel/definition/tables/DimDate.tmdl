@@ -1,0 +1,48 @@
+table DimDate
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		sourceColumn: Date
+		summarizeBy: none
+
+	column Year
+		dataType: int64
+		sourceColumn: Year
+		summarizeBy: none
+
+	column Month
+		dataType: int64
+		sourceColumn: Month
+		summarizeBy: none
+
+	column YearMonth
+		dataType: string
+		sourceColumn: YearMonth
+		summarizeBy: none
+
+	column Quarter
+		dataType: int64
+		sourceColumn: Quarter
+		summarizeBy: none
+
+	partition DimDate = m
+		mode: import
+		source =
+			let
+			    Start = #date(2020, 1, 1),
+			    Finish = #date(2035, 12, 31),
+			    Days = Duration.Days(Finish - Start) + 1,
+			    AsList = List.Dates(Start, Days, #duration(1, 0, 0, 0)),
+			    AsTable = Table.FromList(AsList, Splitter.SplitByNothing(), {"Date"}),
+			    Typed = Table.TransformColumnTypes(AsTable, {{"Date", type date}}),
+			    Year = Table.AddColumn(Typed, "Year", each Date.Year([Date]), Int64.Type),
+			    Month = Table.AddColumn(Year, "Month", each Date.Month([Date]), Int64.Type),
+			    YearMonth = Table.AddColumn(
+			        Month, "YearMonth", each Date.ToText([Date], "yyyy-MM"), type text
+			    ),
+			    Quarter = Table.AddColumn(
+			        YearMonth, "Quarter", each Date.QuarterOfYear([Date]), Int64.Type
+			    )
+			in
+			    Quarter

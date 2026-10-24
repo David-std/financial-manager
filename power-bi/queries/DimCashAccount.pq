@@ -1,5 +1,4 @@
 // DimCashAccount - paste into a separate Power BI Desktop blank query
-(separate query, not part of DimBranch)
 let
     Source = CommonDataService.Database(
         DataverseHost,

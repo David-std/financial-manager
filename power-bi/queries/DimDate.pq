@@ -1,5 +1,4 @@
 // DimDate - paste into a separate Power BI Desktop blank query
-(separate query; inclusive, without private source data)
 let
     Start = #date(2020, 1, 1),
     Finish = #date(2035, 12, 31),

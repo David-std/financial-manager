@@ -1,0 +1,66 @@
+table DimBranch
+
+	column BranchId
+		dataType: string
+		isHidden
+		sourceColumn: BranchId
+		summarizeBy: none
+
+	column BranchCode
+		dataType: string
+		sourceColumn: BranchCode
+		summarizeBy: none
+
+	column BranchName
+		dataType: string
+		sourceColumn: BranchName
+		summarizeBy: none
+
+	column IsActive
+		dataType: boolean
+		isHidden
+		sourceColumn: IsActive
+		summarizeBy: none
+
+	partition DimBranch = m
+		mode: import
+		source =
+			let
+			    Source = CommonDataService.Database(
+			        DataverseHost,
+			        [CreateNavigationProperties = false]
+			    ),
+			    Branches = Value.NativeQuery(
+			        Source,
+			        "
+			        SELECT fmg_branchid, fmg_code, fmg_name, fmg_isactive
+			        FROM fmg_branch
+			        ",
+			        null,
+			        [EnableFolding = true]
+			    ),
+			    Renamed = Table.RenameColumns(
+			        Branches,
+			        {
+			            {"fmg_branchid", "BranchId"},
+			            {"fmg_code", "BranchCode"},
+			            {"fmg_name", "BranchName"},
+			            {"fmg_isactive", "IsActive"}
+			        }
+			    ),
+			    KeysAsText = Table.TransformColumns(
+			        Renamed,
+			        {
+			            {"BranchId", each if _ = null then null else Text.Lower(Text.From(_)), type text}
+			        }
+			    ),
+			    Typed = Table.TransformColumnTypes(
+			        KeysAsText,
+			        {
+			            {"BranchCode", type text},
+			            {"BranchName", type text},
+			            {"IsActive", type logical}
+			        }
+			    )
+			in
+			    Typed

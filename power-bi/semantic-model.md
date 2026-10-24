@@ -1,6 +1,6 @@
 # Financial Manager — semantic model contract
 
-Status: **implementation preparation**, not a published or validated Power BI model.
+Status: **PBIP source implemented**, not yet refreshed or visually accepted in Power BI Desktop, and not published to Power BI Service. The project is versioned under [FinancialManager/](FinancialManager/).
 Source of truth: authenticated Financial Manager Dataverse, not files copied from the operational environment.
 Primary baseline: posted expense payments and budget versions. Subsequent receipt and transfer domains require separate facts and measures; see [ADR 0003](../docs/decisions/0003-expanded-financial-scope.md).
 

@@ -1,0 +1,19 @@
+relationship 'Expense Date'
+	fromColumn: FactPostedExpense.TransactionDate
+	toColumn: DimDate.Date
+	crossFilteringBehavior: oneDirection
+
+relationship 'Expense Category'
+	fromColumn: FactPostedExpense.CategoryId
+	toColumn: DimCategory.CategoryId
+	crossFilteringBehavior: oneDirection
+
+relationship 'Expense Branch'
+	fromColumn: FactPostedExpense.BranchId
+	toColumn: DimBranch.BranchId
+	crossFilteringBehavior: oneDirection
+
+relationship 'Expense Cash Account'
+	fromColumn: FactPostedExpense.CashAccountId
+	toColumn: DimCashAccount.CashAccountId
+	crossFilteringBehavior: oneDirection

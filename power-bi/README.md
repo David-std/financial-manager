@@ -1,6 +1,6 @@
 # Power BI reporting
 
-Financial Manager's reporting workspace will be maintained as a **Power BI Project (PBIP)**, with report definitions in PBIR and a source-controlled semantic model. The directory currently contains **no Power BI report or semantic model**. The [semantic-model contract](semantic-model.md) and [posted-expense Power Query M starter](posted-expenses.pq) are preparation only, not a working PBIP or validated source connection. The reporting requirements are in [docs/reporting.md](../docs/reporting.md).
+Financial Manager's reporting workspace will be maintained as a **Power BI Project (PBIP)**, with report definitions in PBIR and a source-controlled semantic model. The first versioned project is now in [FinancialManager/FinancialManager.pbip](FinancialManager/FinancialManager.pbip), with a PBIR report and a five-table TMDL semantic model. The [semantic-model contract](semantic-model.md) and [posted-expense M source](posted-expenses.pq) document eligibility and traceability. **TMDL parsing and PBIR schema checks pass, but Desktop data import, visual rendering and service publishing remain unverified.** The reporting requirements are in [docs/reporting.md](../docs/reporting.md).
 
 ## MVP reporting pages
 
@@ -29,7 +29,7 @@ Do **not** commit PBIX exports, actual financial records, extracted datasets, ca
 
 Related specifications: [Reporting](../docs/reporting.md), [Scope](../docs/scope.md), and [Verification](../docs/verification.md).
 
-## First desktop model workspace (not yet a PBIP)
+## First PBIP project — implementation source ready, refresh not yet verified
 
 Source-ready, non-secret starter files:
 
@@ -44,4 +44,28 @@ Each `.pq` file is **one separate Power Query M expression**, except the main fi
 
 **Current account finding:** the browser Power BI session shows **UPC as its only selectable tenant**, despite the `company717.onmicrosoft.com` account being authorized in Power Apps/Dataverse. This does not mean those tenants merged. Authoring a local Desktop model against a Dataverse host can be attempted using the account with Dataverse access; publishing a workspace in the Financial Manager tenant remains a **separate tenant licensing and membership check**. The visible 59-day Power BI trial in UPC does not establish license rights in the Developer Dataverse tenant. Do not join/disconnect the PC from any organization or cancel trial access as a workaround.
 
-**Implementation boundary:** no PBIP project or actual Power BI refresh/visual has been verified yet. The files are a source-backed baseline for authoring the report, not a claim that a model has been published.
+**Implementation boundary:** the PBIP with two pages and nine configured visuals exists and passes source/schema/TOM checks; actual Power BI Desktop opening, authenticated refresh, screenshots of both pages and model reconciliation remain pending. The project is not published to Power BI Service.
+
+## Current versioned PBIP
+
+The reproducible first-stage project is at [FinancialManager/FinancialManager.pbip](FinancialManager/FinancialManager.pbip).
+
+- Five Import tables in TMDL: FactPostedExpense, DimDate, DimCategory, DimBranch, and DimCashAccount.
+- Four single-direction fact-to-dimension relationships. Shared expenses have no branch and must appear once in consolidated spending.
+- Twelve spending/payment measures; no approved-budget, income, cash-balance, revenue or profit measures.
+- Two PBIR pages with nine bound native visuals: **Resumen de gastos** and **Sedes y movimientos**.
+- An official Power BI report CLI scaffold, valid PBIR schemas and successful Analysis Services TOM/TMDL deserialization. These are structural checks, **not evidence of successful refresh or rendered pages**.
+
+Regenerate the model and report sources with the following commands from the repository root:
+
+    python power-bi/tools/build_pbip_model.py
+    python power-bi/tools/build_pbip_report.py
+    powerbi-report-author validate power-bi/FinancialManager/FinancialManager.pbip
+
+The report stores a DataverseHost **parameter placeholder**, not a real host or credential. When opening the PBIP in Power BI Desktop, use **Transform Data → Manage Parameters** to set DataverseHost to the verified Financial Manager Dataverse hostname. Authenticate with the authorized organizational account, then Import/Refresh. The user's Navigator screenshot confirmed that Desktop can enumerate **financial-manager-dev**. It did not prove these particular M queries have been executed or loaded.
+
+Do not commit the locally edited parameter, PBIX exports, local settings, ABF cache, payment data or access tokens. Preserve the placeholder in version control and configure the endpoint locally. Review any Desktop-generated definition changes before staging them.
+
+The final acceptance must verify SQL/TDS column names; Posted and PEN filtering; row counts and sums against Dataverse; GUID joins; that Shared totals are not duplicated into branches; date/YearMonth sorting; both pages' rendering; RLS and refresh. Synthetic Draft expense data contributes nothing to Paid Spending until it is Posted, and no fictitious Posted rows should be introduced just to populate charts.
+
+Budget variance reporting remains unavailable until a budget is independently Approved and effective. This first PBIP can be developed without invoking the pending approval API.

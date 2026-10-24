@@ -13,7 +13,7 @@ class PowerBiStarterTests(unittest.TestCase):
         source = (ROOT / "posted-expenses.pq").read_text(encoding="utf-8")
         self.assertIn("CommonDataService.Database(", source)
         self.assertIn("DataverseHost", source)
-        self.assertIn("WHERE fmg_status = 797280001", source)
+        self.assertIn("WHERE expense.fmg_status = 797280001", source)
         self.assertIn("CreateNavigationProperties = false", source)
         self.assertNotRegex(source, r"(?i)https?://[^\s\"]+crm\d*\.dynamics\.com")
         self.assertNotRegex(source, r"(?i)(?:password|clientsecret|accesstoken)\s*=")
