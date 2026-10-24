@@ -61,6 +61,8 @@ Console.WriteLine("Plugin packages found: " + packages.Entities.Count + "; plug-
 if (mode == "inspect") return 0;
 if (mode=="app-nav-inspect" || mode=="app-nav-fix") return AppNavigation.Run(client,mode=="app-nav-fix");
 if (mode == "budget-approval-inspect") return BudgetApprovalReadiness.Inspect(client);
+if (mode == "budget-approval-schema" || mode == "budget-approval-role")
+    return BudgetApprovalProvisioning.Run(client, mode);
 if (mode.StartsWith("budget-", StringComparison.Ordinal)) return BudgetDeployment.Run(client, mode);
 if (mode == "inspect-schema" || mode == "schema")
     return SchemaDeployment.Run(client, mode == "schema");

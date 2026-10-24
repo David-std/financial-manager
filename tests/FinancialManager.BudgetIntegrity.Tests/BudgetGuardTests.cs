@@ -108,6 +108,53 @@ namespace FinancialManager.BudgetIntegrity.Tests
             var f=Valid();f.Admin=true;var b=Budget();b["fmg_status"]=new OptionSetValue(BudgetOptions.Submitted);
             Reject("BGV009",f,"fmg_budget","Update",Transition(BudgetOptions.Approved),b);
         }
+        [Fact] public void TrustedApiMaySetOnlyApprovalAttribution()
+        {
+            var f = Valid();
+            var before = Budget();
+            before["fmg_status"] = new OptionSetValue(BudgetOptions.Submitted);
+            var target = Transition(BudgetOptions.Approved);
+            target["fmg_approvedby"] = R("systemuser", OtherUser);
+            target["fmg_approvedon"] = DateTime.UtcNow;
+            new BudgetGuard(f).Validate("fmg_budget", "Update", target, before, Actor, true);
+        }
+
+        [Fact] public void DirectApprovalStillBlockedAfterTrustedPathAdded()
+        {
+            var f = Valid();
+            var before = Budget();
+            before["fmg_status"] = new OptionSetValue(BudgetOptions.Submitted);
+            var target = Transition(BudgetOptions.Approved);
+            target["fmg_approvedby"] = R("systemuser", OtherUser);
+            target["fmg_approvedon"] = DateTime.UtcNow;
+            Reject("BGV011", f, "fmg_budget", "Update", target, before);
+        }
+
+        [Fact] public void TrustedApprovalCannotModifyOtherBudgetFields()
+        {
+            var f = Valid();
+            var before = Budget();
+            before["fmg_status"] = new OptionSetValue(BudgetOptions.Submitted);
+            var target = Transition(BudgetOptions.Approved);
+            target["fmg_approvedby"] = R("systemuser", OtherUser);
+            target["fmg_approvedon"] = DateTime.UtcNow;
+            target["fmg_name"] = "Unauthorized change";
+            Assert.StartsWith("BGV011", Assert.Throws<InvalidPluginExecutionException>(
+                () => new BudgetGuard(f).Validate(
+                    "fmg_budget", "Update", target, before, Actor, true)).Message);
+        }
+
+        [Fact] public void TrustedApprovalWithoutAttributionIsRejected()
+        {
+            var f = Valid();
+            var before = Budget();
+            before["fmg_status"] = new OptionSetValue(BudgetOptions.Submitted);
+            Assert.StartsWith("BGV009", Assert.Throws<InvalidPluginExecutionException>(
+                () => new BudgetGuard(f).Validate(
+                    "fmg_budget", "Update", Transition(BudgetOptions.Approved),
+                    before, Actor, true)).Message);
+        }
+
         [Fact] public void SubmittedCannotBeEdited()
         {
             var b=Budget();b["fmg_status"]=new OptionSetValue(BudgetOptions.Submitted);

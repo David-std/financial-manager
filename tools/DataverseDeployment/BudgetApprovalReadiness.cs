@@ -20,6 +20,26 @@ internal static class BudgetApprovalReadiness
             "name", ConditionOperator.Equal, "Financial Manager Budget Approver");
         var foundRoles = service.RetrieveMultiple(roles).Entities;
         Console.WriteLine("EXPLICIT_APPROVER_ROLES=" + foundRoles.Count);
+        var assignedDirect = new QueryExpression("role")
+        {
+            ColumnSet = new ColumnSet(false),
+            TopCount = 100
+        };
+        assignedDirect.Criteria.AddCondition(
+            "name", ConditionOperator.Equal, "Financial Manager Budget Approver");
+        assignedDirect.AddLink("systemuserroles", "roleid", "roleid");
+        var directAssignments = service.RetrieveMultiple(assignedDirect).Entities.Count;
+        Console.WriteLine("DIRECT_APPROVER_ROLE_ASSIGNMENTS=" + directAssignments);
+        var assignedTeam = new QueryExpression("role")
+        {
+            ColumnSet = new ColumnSet(false),
+            TopCount = 100
+        };
+        assignedTeam.Criteria.AddCondition(
+            "name", ConditionOperator.Equal, "Financial Manager Budget Approver");
+        assignedTeam.AddLink("teamroles", "roleid", "roleid");
+        var teamAssignments = service.RetrieveMultiple(assignedTeam).Entities.Count;
+        Console.WriteLine("TEAM_APPROVER_ROLE_ASSIGNMENTS=" + teamAssignments);
 
         var api = new QueryExpression("customapi")
         {
@@ -73,7 +93,8 @@ internal static class BudgetApprovalReadiness
         Console.WriteLine("APPROVAL_CLAIM_KEY_COLUMN=" + hasScopeKey);
         Console.WriteLine("APPROVAL_CLAIM_ALT_KEY_ACTIVE=" + keyActive);
         Console.WriteLine("APPROVAL_READY=" + (
-            foundRoles.Count > 0 && hasClaimTable && hasScopeKey && keyActive &&
+            foundRoles.Count == 1 && directAssignments > 0 &&
+            teamAssignments == 0 && hasClaimTable && hasScopeKey && keyActive &&
             service.RetrieveMultiple(api).Entities.Count == 1
         ));
         // Return success for read-only diagnostics even when intentionally

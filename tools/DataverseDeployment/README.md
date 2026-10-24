@@ -116,3 +116,24 @@ dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Rel
 The guarded fix takes a local TEMP backup before changing an unpublished sitemap, keeps existing Area/Group/SubArea and generated page IDs, writes Spanish titles (3082), and verifies unpublished readback. **It publishes the existing app module using `PublishXmlRequest` `<appmodules>`**, not just the `<sitemaps>` element; then verifies the published sitemap. A sitemap-only publish previously returned success but did not make this app's changes effective. Never copy stale, pre-publish sitemap XML back to the repository.
 
 After an actual correction, run a fresh unmanaged solution export, unpack into TEMP, and update **only** `AppModuleSiteMaps/financial_manager_bee9f134/AppModuleSiteMap.xml` in source control. Validate all four page IDs; no new pages or full solution import are required. The running browser view is a separate final-acceptance check.
+
+## Budget approval infrastructure (development only)
+
+The read-only command `budget-approval-inspect` reports whether the explicit approver role, direct/team assignments, Claim table, ScopeKey and ACTIVE unique index exist, and whether the bound Custom API has been registered. The preliminary table and unassigned role were added to `financial-manager-dev` through individually guarded, idempotent `budget-approval-schema --apply` and `budget-approval-role --apply` commands. The latter **does not** assign users or remove Dataverse's nine built-in default role privileges; review those privileges before any assignment.
+
+```powershell
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-approval-inspect
+# Development-only and only after independent authorization and review:
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-approval-schema --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- budget-approval-role --apply
+```
+
+All commands still require `FM_ENV_URL` and `FM_ORGANIZATION_ID`, and abort if the organization or solution do not match. `budget-approval-inspect` is read-only. The approval Custom API is **not** registered; `BGV009` is still active in the deployed plug-in. See [ADR 0004](../../docs/decisions/0004-safe-budget-approval.md).
+
+## Claim guard upgrade safety
+
+`BudgetApprovalProvisioning` created the Claim table/lookup and Active alternate key, and an unassigned finance approver role. The exported role has nine Dataverse platform default privileges and must not be assigned before role security review.
+
+`BudgetDeployment` contains unregistered plans for `BAC_BlockClaimCreate`, `BAC_BlockClaimUpdate` and `BAC_BlockClaimDelete`; no steps exist yet in Dataverse. The `budget-upgrade --apply` mode now requires a recoverable backup of the currently deployed NuGet plug-in package. Its attempt to retrieve `pluginpackage.content` returned an empty value and safely aborted **without** updating the package. This is an intentional fail-closed gate. Microsoft documents plugin package contents as file storage, and supports updates through the Plug-in Registration Tool or `pac plugin push` with an existing package ID. Do not bypass this backup requirement merely to publish the new type.
+
+See [Microsoft plug-in package management](https://learn.microsoft.com/en-us/power-platform/developer/howto/cli-create-package) and [ADR 0004](../../docs/decisions/0004-safe-budget-approval.md).

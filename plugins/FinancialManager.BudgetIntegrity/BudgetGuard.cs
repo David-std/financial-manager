@@ -29,15 +29,17 @@ namespace FinancialManager.BudgetIntegrity
         private readonly IBudgetFacts facts;
         public BudgetGuard(IBudgetFacts facts) { this.facts=facts ?? throw new ArgumentNullException(nameof(facts)); }
 
-        public void Validate(string table, string message, Entity target, Entity before, Guid actor)
+        public void Validate(string table, string message, Entity target, Entity before, Guid actor,
+            bool trustedApproval = false)
         {
-            if (table == "fmg_budget") ValidateBudget(message,target,before,actor);
+            if (table == "fmg_budget") ValidateBudget(message,target,before,actor,trustedApproval);
             else if (table == "fmg_budgetallocation") ValidateAllocation(message,target,before,actor);
             else if (table == "fmg_activityevent") Error("AEV001","Activity Event is currently closed to direct writes.");
             else Error("BGV000","Unexpected table.");
         }
 
-        private void ValidateBudget(string message,Entity target,Entity before,Guid actor)
+        private void ValidateBudget(string message,Entity target,Entity before,Guid actor,
+            bool trustedApproval)
         {
             if (message=="Create")
             {
@@ -56,7 +58,7 @@ namespace FinancialManager.BudgetIntegrity
                 return;
             }
             if (message!="Update" || target==null) Error("BGV000","Unexpected Budget operation.");
-            NoApprovalSpoof(target);
+            NoApprovalSpoof(target, trustedApproval);
             var current=Merge(before,target);
             var next=Option(current,"fmg_status");
             if (oldStatus==BudgetOptions.Draft)
@@ -77,7 +79,19 @@ namespace FinancialManager.BudgetIntegrity
             if (oldStatus==BudgetOptions.Submitted)
             {
                 if (next==BudgetOptions.Approved)
-                    Error("BGV009","Budget approval remains disabled until financial roles, segregation of duties, and concurrency are verified.");
+                {
+                    if (!trustedApproval || !target.Contains("fmg_status") ||
+                        !target.Contains("fmg_approvedby") ||
+                        !target.Contains("fmg_approvedon"))
+                        Error("BGV009","Direct budget approval is forbidden.");
+                    foreach (var field in target.Attributes.Keys)
+                    {
+                        if (field!="fmg_budgetid" && field!="fmg_status" &&
+                            field!="fmg_approvedby" && field!="fmg_approvedon")
+                            Error("BGV011","Approval may only set server-managed status and attribution.");
+                    }
+                    return;
+                }
                 if (next!=BudgetOptions.Rejected || !target.Contains("fmg_status") ||
                     !facts.IsAdministrator(actor))
                     Error("BGV006","Submitted budgets are immutable except for administrator rejection.");
@@ -192,9 +206,10 @@ namespace FinancialManager.BudgetIntegrity
             if(row==null) Error("BGV000","Related record unavailable.");
             return row;
         }
-        private static void NoApprovalSpoof(Entity row)
+        private static void NoApprovalSpoof(Entity row, bool trustedApproval = false)
         {
-            if(row.Contains("fmg_approvedby") || row.Contains("fmg_approvedon"))
+            if(!trustedApproval &&
+               (row.Contains("fmg_approvedby") || row.Contains("fmg_approvedon")))
                 Error("BGV011","Approved By/On are server-managed and may not be supplied.");
         }
         private static Entity Merge(Entity before,Entity change)

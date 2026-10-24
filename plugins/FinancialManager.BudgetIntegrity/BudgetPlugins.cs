@@ -48,8 +48,24 @@ namespace FinancialManager.BudgetIntegrity
             Entity before=null;
             if(context.MessageName!="Create" && context.PreEntityImages.Contains("Before"))
                 before=context.PreEntityImages["Before"];
+            // The approval bypass may originate only from the dedicated server
+            // Custom API nested in the same Dataverse transaction. A client cannot
+            // supply ParentContext or its SharedVariables via an entity update.
+            var parent = context.ParentContext;
+            bool trustedApproval = false;
+            if (ExpectedTable == "fmg_budget" && context.MessageName == "Update" &&
+                parent != null && parent.MessageName == "fmg_ApproveBudget" &&
+                parent.IsInTransaction && context.IsInTransaction &&
+                parent.InitiatingUserId == context.InitiatingUserId &&
+                parent.SharedVariables.Contains("fmg_ApprovalBudgetId"))
+            {
+                var marker = parent.SharedVariables["fmg_ApprovalBudgetId"] as string;
+                trustedApproval = String.Equals(
+                    marker, target.Id.ToString("D"), StringComparison.OrdinalIgnoreCase);
+            }
             new BudgetGuard(new DataverseBudgetFacts(local.PluginUserService))
-                .Validate(ExpectedTable,context.MessageName,target,before,context.InitiatingUserId);
+                .Validate(ExpectedTable,context.MessageName,target,before,
+                    context.InitiatingUserId,trustedApproval);
         }
     }
 

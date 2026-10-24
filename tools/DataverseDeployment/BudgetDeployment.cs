@@ -180,6 +180,7 @@ internal static class BudgetDeployment
         const string b="FinancialManager.BudgetIntegrity.BG_EnforceBudgetIntegrity";
         const string a="FinancialManager.BudgetIntegrity.BA_EnforceAllocationIntegrity";
         const string e="FinancialManager.BudgetIntegrity.AE_BlockDirectEventWrites";
+        const string claim="FinancialManager.BudgetIntegrity.BAC_BlockDirectClaimWrites";
         const string budgetFields="fmg_status,fmg_year,fmg_scope,fmg_branch,fmg_version,fmg_effectivefrommonth,fmg_approvedby,fmg_approvedon,ownerid,createdby,fmg_name";
         const string allocationFields="fmg_budget,fmg_month,fmg_category,fmg_amount,transactioncurrencyid,fmg_name";
         return new[]{
@@ -191,14 +192,17 @@ internal static class BudgetDeployment
             new Plan("BA_ProtectDeletion","fmg_budgetallocation","Delete",a,allocationFields),
             new Plan("AE_BlockCreate","fmg_activityevent","Create",e),
             new Plan("AE_BlockUpdate","fmg_activityevent","Update",e),
-            new Plan("AE_BlockDelete","fmg_activityevent","Delete",e)
+            new Plan("AE_BlockDelete","fmg_activityevent","Delete",e),
+            new Plan("BAC_BlockClaimCreate","fmg_budgetapprovalclaim","Create",claim),
+            new Plan("BAC_BlockClaimUpdate","fmg_budgetapprovalclaim","Update",claim),
+            new Plan("BAC_BlockClaimDelete","fmg_budgetapprovalclaim","Delete",claim)
         };
     }
 
     private static void UpgradePackage(ServiceClient svc)
     {
         var existing=QueryByName(svc,"pluginpackage","name",PackageName,
-            "pluginpackageid","name","version");
+            "pluginpackageid","name","version","content");
         if(existing.Count!=1)
             throw new InvalidOperationException("Exactly one existing budget package required for upgrade.");
         var path=Environment.GetEnvironmentVariable("FM_BUDGET_PACKAGE_PATH");
@@ -207,6 +211,16 @@ internal static class BudgetDeployment
             throw new InvalidOperationException("Package content refresh must use the registered version 1.0.0.");
         var bytes=File.ReadAllBytes(path);
         if(bytes.Length>10_000_000) throw new InvalidOperationException("Unexpected package size.");
+        var api = QueryByName(svc,"customapi","uniquename","fmg_ApproveBudget","customapiid");
+        if (api.Count != 0)
+            throw new InvalidOperationException("Refusing package upgrade while approval API is already registered.");
+        var previousContent = existing[0].GetAttributeValue<string>("content");
+        if (String.IsNullOrWhiteSpace(previousContent))
+            throw new InvalidOperationException("Could not back up the existing plug-in package.");
+        var backup = Path.Combine(Path.GetTempPath(),
+            "fmg_BudgetIntegrity-before-approval-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + ".nupkg");
+        File.WriteAllBytes(backup, Convert.FromBase64String(previousContent));
+        Console.WriteLine("PACKAGE_BACKUP_CREATED=" + backup);
         var row=new Entity("pluginpackage"){Id=existing[0].Id};
         row["content"]=Convert.ToBase64String(bytes);
         svc.Execute(new UpdateRequest{Target=row});
@@ -214,12 +228,13 @@ internal static class BudgetDeployment
         foreach(var classname in new[]{
             "FinancialManager.BudgetIntegrity.BG_EnforceBudgetIntegrity",
             "FinancialManager.BudgetIntegrity.BA_EnforceAllocationIntegrity",
-            "FinancialManager.BudgetIntegrity.AE_BlockDirectEventWrites"})
+            "FinancialManager.BudgetIntegrity.AE_BlockDirectEventWrites",
+            "FinancialManager.BudgetIntegrity.BAC_BlockDirectClaimWrites"})
         {
             var type=QueryByName(svc,"plugintype","typename",classname,"plugintypeid");
             if(type.Count!=1) throw new InvalidOperationException("Expected registered type after update: "+classname);
         }
-        Console.WriteLine("THREE_BUDGET_CLASSES_STILL_REGISTERED");
+        Console.WriteLine("FOUR_GUARD_CLASSES_REGISTERED_APPROVAL_API_NOT_ENABLED");
     }
 
     private static void RegisterSteps(ServiceClient svc)

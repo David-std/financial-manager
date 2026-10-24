@@ -7,6 +7,7 @@
   <EntityRelationship Name="fmg_AE_Actor" />
   <EntityRelationship Name="fmg_BA_Budget" />
   <EntityRelationship Name="fmg_BA_Category" />
+  <EntityRelationship Name="fmg_BAC_Budget" />
   <EntityRelationship Name="fmg_BG_Approver" />
   <EntityRelationship Name="fmg_BG_Branch" />
   <EntityRelationship Name="fmg_CashAccount_Branch" />
@@ -22,6 +23,8 @@
   <EntityRelationship Name="lk_fmg_budget_modifiedby" />
   <EntityRelationship Name="lk_fmg_budgetallocation_createdby" />
   <EntityRelationship Name="lk_fmg_budgetallocation_modifiedby" />
+  <EntityRelationship Name="lk_fmg_budgetapprovalclaim_createdby" />
+  <EntityRelationship Name="lk_fmg_budgetapprovalclaim_modifiedby" />
   <EntityRelationship Name="lk_fmg_cashaccount_createdby" />
   <EntityRelationship Name="lk_fmg_cashaccount_modifiedby" />
   <EntityRelationship Name="lk_fmg_category_createdby" />
@@ -29,6 +32,7 @@
   <EntityRelationship Name="lk_fmg_financialtransaction_createdby" />
   <EntityRelationship Name="lk_fmg_financialtransaction_modifiedby" />
   <EntityRelationship Name="organization_fmg_branch" />
+  <EntityRelationship Name="organization_fmg_budgetapprovalclaim" />
   <EntityRelationship Name="organization_fmg_cashaccount" />
   <EntityRelationship Name="organization_fmg_category" />
   <EntityRelationship Name="owner_fmg_activityevent" />
