@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "9d4b3a9fce965280bdd8",
   "position": {
-    "x": 522,
-    "y": 132,
+    "x": 595,
+    "y": 111,
     "z": 2000,
-    "height": 66,
-    "width": 237,
-    "tabOrder": 9
+    "height": 74,
+    "width": 216,
+    "tabOrder": 8
   },
   "visual": {
     "visualType": "slicer",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "DimBranch.BranchName",
-              "nativeQueryRef": "Sede",
-              "displayName": "Sede"
+              "nativeQueryRef": "BranchName"
             }
           ]
         }
@@ -122,7 +121,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#DCE6F1'"
+                      "Value": "'#E2E6EA'"
                     }
                   }
                 }
@@ -131,7 +130,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "2D"
                 }
               }
             },
@@ -151,28 +150,28 @@
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "11D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "11D"
                 }
               }
             },
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "6D"
+                  "Value": "5D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "6D"
+                  "Value": "5D"
                 }
               }
             }
@@ -227,7 +226,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#143451'"
+                      "Value": "'#233344'"
                     }
                   }
                 }
@@ -236,7 +235,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "11D"
                 }
               }
             },
@@ -251,13 +250,6 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
-                }
-              }
-            },
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'left'"
                 }
               }
             }

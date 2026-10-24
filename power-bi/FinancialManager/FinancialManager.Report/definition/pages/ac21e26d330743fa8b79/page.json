@@ -3,7 +3,7 @@
   "name": "ac21e26d330743fa8b79",
   "displayName": "Resumen de gastos",
   "displayOption": "FitToWidth",
-  "height": 944,
+  "height": 1140,
   "width": 1280,
   "objects": {
     "background": [
@@ -14,7 +14,7 @@
               "color": {
                 "expr": {
                   "Literal": {
-                    "Value": "'#F1F5FA'"
+                    "Value": "'#F5F6F7'"
                   }
                 }
               }
@@ -38,7 +38,7 @@
               "color": {
                 "expr": {
                   "Literal": {
-                    "Value": "'#F1F5FA'"
+                    "Value": "'#F5F6F7'"
                   }
                 }
               }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "d58d076863dd4170981d",
   "position": {
-    "x": 28,
-    "y": 17,
+    "x": 22,
+    "y": 43,
     "z": 300,
-    "height": 39,
-    "width": 820,
+    "height": 42,
+    "width": 980,
     "tabOrder": 3
   },
   "visual": {
@@ -19,11 +19,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "RESUMEN DE GASTOS",
+                    "value": "Visión general de gastos",
                     "textStyle": {
                       "fontFamily": "Segoe UI Semibold",
-                      "fontSize": "24pt",
-                      "color": "#FFFFFF",
+                      "fontSize": "23pt",
+                      "color": "#233344",
                       "fontWeight": "bold"
                     }
                   }
@@ -43,24 +43,6 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#FFFFFF'"
-                    }
-                  }
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
                 }
               }
             }
@@ -83,6 +65,20 @@
       "padding": [
         {
           "properties": {
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
             "top": {
               "expr": {
                 "Literal": {
@@ -94,20 +90,6 @@
               "expr": {
                 "Literal": {
                   "Value": "0D"
-                }
-              }
-            },
-            "left": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
-                }
-              }
-            },
-            "right": {
-              "expr": {
-                "Literal": {
-                  "Value": "6D"
                 }
               }
             }

@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "95b5784c7f0d419e49fe",
   "position": {
-    "x": 846,
-    "y": 388,
+    "x": 17,
+    "y": 313,
     "z": 2000,
-    "height": 289,
-    "width": 402,
-    "tabOrder": 36
+    "height": 275,
+    "width": 738,
+    "tabOrder": 15
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "DimCategory.CategoryName",
-              "nativeQueryRef": "Categoría",
-              "displayName": "Categoría"
+              "nativeQueryRef": "CategoryName"
             }
           ]
         },
@@ -46,8 +45,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Paid Spending",
-              "nativeQueryRef": "Total",
-              "displayName": "Total"
+              "nativeQueryRef": "Paid Spending"
             }
           ]
         }
@@ -115,7 +113,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#DCE6F1'"
+                      "Value": "'#E2E6EA'"
                     }
                   }
                 }
@@ -124,7 +122,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "2D"
                 }
               }
             },
@@ -144,28 +142,28 @@
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "11D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "11D"
                 }
               }
             },
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "6D"
+                  "Value": "5D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "6D"
+                  "Value": "5D"
                 }
               }
             }
@@ -211,7 +209,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Categorías con mayor gasto'"
+                  "Value": "'Ranking de categorías · PEN'"
                 }
               }
             },
@@ -220,7 +218,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#143451'"
+                      "Value": "'#233344'"
                     }
                   }
                 }
@@ -229,7 +227,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "11D"
                 }
               }
             },
@@ -244,13 +242,6 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
-                }
-              }
-            },
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'left'"
                 }
               }
             }

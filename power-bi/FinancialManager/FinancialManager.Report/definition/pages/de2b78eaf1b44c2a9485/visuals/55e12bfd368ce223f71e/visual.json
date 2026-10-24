@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "55e12bfd368ce223f71e",
   "position": {
-    "x": 29,
-    "y": 56,
+    "x": 23,
+    "y": 84,
     "z": 300,
-    "height": 25,
-    "width": 885,
+    "height": 24,
+    "width": 1184,
     "tabOrder": 4
   },
   "visual": {
@@ -19,11 +19,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "Control operativo por sede, fuente de fondos y ámbito de gasto",
+                    "value": "Comparativo operativo: sedes, cuentas y movimientos contabilizados",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10pt",
-                      "color": "#E1EBF7"
+                      "color": "#526577"
                     }
                   }
                 ],
@@ -42,24 +42,6 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#FFFFFF'"
-                    }
-                  }
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
                 }
               }
             }
@@ -82,6 +64,20 @@
       "padding": [
         {
           "properties": {
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
             "top": {
               "expr": {
                 "Literal": {
@@ -93,20 +89,6 @@
               "expr": {
                 "Literal": {
                   "Value": "0D"
-                }
-              }
-            },
-            "left": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
-                }
-              }
-            },
-            "right": {
-              "expr": {
-                "Literal": {
-                  "Value": "6D"
                 }
               }
             }

@@ -33,7 +33,7 @@ table FactPostedExpense
 	measure 'Year-over-Year Change' = IF ( ISBLANK ( [Prior Year Spending] ), BLANK (), [Paid Spending] - [Prior Year Spending] )
 		formatString: #,##0.00
 
-	measure 'Year-over-Year Change %' = DIVIDE ( [Year-over-Year Change], [Prior Year Spending] )
+	measure 'Year-over-Year Change %' = IF ( NOT HASONEVALUE ( DimDate[Year] ), BLANK (), DIVIDE ( [Year-over-Year Change], [Prior Year Spending] ) )
 		formatString: 0.0%
 
 	measure 'Pagos confirmados KPI' = COALESCE ( [Paid Spending], 0 )
@@ -51,7 +51,7 @@ table FactPostedExpense
 	measure 'Gasto por sede KPI' = COALESCE ( [Branch Spending], 0 )
 		formatString: "S/ "#,##0.00
 
-	measure 'Gasto anterior KPI' = IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", FORMAT ( [Prior Year Spending], "S/ #,##0.00" ) )
+	measure 'Gasto anterior KPI' = IF ( NOT HASONEVALUE ( DimDate[Year] ), "Selecciona un año", IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", "S/ " & FORMAT ( [Prior Year Spending], "#,##0.00" ) ) )
 
 	measure 'Participación compartida' = COALESCE ( DIVIDE ( [Shared Spending], [Paid Spending], 0 ), 0 )
 		formatString: 0.0%
@@ -62,7 +62,7 @@ table FactPostedExpense
 	measure 'Categorías con pagos' = COALESCE ( DISTINCTCOUNT ( FactPostedExpense[CategoryId] ), 0 )
 		formatString: #,##0
 
-	measure 'Gasto acumulado YTD' = COALESCE ( TOTALYTD ( [Paid Spending], DimDate[Date] ), 0 )
+	measure 'Gasto acumulado YTD' = VAR LastPaidDate = MAX ( FactPostedExpense[TransactionDate] ) RETURN IF ( ISBLANK ( LastPaidDate ), 0, COALESCE ( CALCULATE ( [Paid Spending], DATESBETWEEN ( DimDate[Date], DATE ( YEAR ( LastPaidDate ), 1, 1 ), LastPaidDate ) ), 0 ) )
 		formatString: "S/ "#,##0.00
 
 	measure 'Meses con pagos' = COALESCE ( COUNTROWS ( FILTER ( VALUES ( DimDate[YearMonth] ), NOT ISBLANK ( [Paid Spending] ) ) ), 0 )
@@ -71,7 +71,7 @@ table FactPostedExpense
 	measure 'Promedio mensual pagado' = COALESCE ( DIVIDE ( [Paid Spending], [Meses con pagos], 0 ), 0 )
 		formatString: "S/ "#,##0.00
 
-	measure 'Variación interanual lectura' = IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", FORMAT ( [Year-over-Year Change %], "0.0%;-0.0%;0.0%" ) )
+	measure 'Variación interanual lectura' = IF ( NOT HASONEVALUE ( DimDate[Year] ), "Selecciona un año", IF ( ISBLANK ( [Prior Year Spending] ) || [Prior Year Spending] = 0, "Sin base anterior", FORMAT ( [Year-over-Year Change %], "0.0%;-0.0%;0.0%" ) ) )
 
 	measure 'Estado del informe' = IF ( [Payment Count] = 0 || ISBLANK ( [Payment Count] ), "Sin pagos confirmados en PEN para los filtros actuales", "Pagos contabilizados · fuente Dataverse" )
 

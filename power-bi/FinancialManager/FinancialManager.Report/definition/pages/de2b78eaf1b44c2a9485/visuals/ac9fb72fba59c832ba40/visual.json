@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "ac9fb72fba59c832ba40",
   "position": {
-    "x": 807,
-    "y": 399,
+    "x": 628,
+    "y": 312,
     "z": 2000,
-    "height": 251,
-    "width": 441,
-    "tabOrder": 36
+    "height": 267,
+    "width": 635,
+    "tabOrder": 16
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "DimCashAccount.CashAccountName",
-              "nativeQueryRef": "Cuenta",
-              "displayName": "Cuenta"
+              "nativeQueryRef": "CashAccountName"
             }
           ]
         },
@@ -46,8 +45,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Paid Spending",
-              "nativeQueryRef": "Monto",
-              "displayName": "Monto"
+              "nativeQueryRef": "Paid Spending"
             }
           ]
         }
@@ -115,7 +113,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#DCE6F1'"
+                      "Value": "'#E2E6EA'"
                     }
                   }
                 }
@@ -124,7 +122,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "2D"
                 }
               }
             },
@@ -144,28 +142,28 @@
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "11D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "11D"
                 }
               }
             },
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "6D"
+                  "Value": "5D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "6D"
+                  "Value": "5D"
                 }
               }
             }
@@ -211,7 +209,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Cuentas internas de origen'"
+                  "Value": "'Gasto por cuenta de origen'"
                 }
               }
             },
@@ -220,7 +218,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#143451'"
+                      "Value": "'#233344'"
                     }
                   }
                 }
@@ -229,7 +227,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "11D"
                 }
               }
             },
@@ -244,13 +242,6 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
-                }
-              }
-            },
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'left'"
                 }
               }
             }

@@ -1,18 +1,19 @@
 {
   "name": "FinancialManager-Executive-v2.json",
   "dataColors": [
-    "#2878B8",
-    "#129D98",
-    "#E3A948",
-    "#5375C7",
-    "#8F77C2",
-    "#5D9C84",
-    "#C67E70"
+    "#386C9C",
+    "#6A93BC",
+    "#407C83",
+    "#8199AA",
+    "#9CB3C9",
+    "#547C9A",
+    "#6C8D90",
+    "#BCC8D1"
   ],
-  "background": "#F3F7FB",
-  "foreground": "#152940",
-  "tableAccent": "#2878B8",
-  "good": "#129D98",
-  "neutral": "#E3A948",
-  "bad": "#CE5A62"
+  "background": "#F5F6F7",
+  "foreground": "#233344",
+  "tableAccent": "#386C9C",
+  "good": "#407C83",
+  "neutral": "#8F9FAC",
+  "bad": "#B96B6B"
 }
