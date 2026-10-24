@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "d763aa2ed2d303b3a49c",
   "position": {
-    "x": 652,
-    "y": 202,
+    "x": 837,
+    "y": 255,
     "z": 2000,
-    "height": 119,
-    "width": 290,
-    "tabOrder": 10
+    "height": 101,
+    "width": 415,
+    "tabOrder": 18
   },
   "visual": {
     "visualType": "card",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Gasto acumulado YTD",
-              "nativeQueryRef": "Acumulado",
-              "displayName": "Acumulado"
+              "nativeQueryRef": "Gasto acumulado YTD"
             }
           ]
         }
@@ -192,7 +191,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Acumulado anual · PEN'"
+                  "Value": "'ACUMULADO ANUAL'"
                 }
               }
             },

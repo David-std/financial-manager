@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "0e04d7fcce2601a24145",
   "position": {
-    "x": 652,
-    "y": 202,
+    "x": 778,
+    "y": 223,
     "z": 2000,
-    "height": 119,
-    "width": 290,
-    "tabOrder": 10
+    "height": 112,
+    "width": 232,
+    "tabOrder": 22
   },
   "visual": {
     "visualType": "card",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Gasto compartido KPI",
-              "nativeQueryRef": "Compartidos",
-              "displayName": "Compartidos"
+              "nativeQueryRef": "Gasto compartido KPI"
             }
           ]
         }
@@ -192,7 +191,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Gastos compartidos'"
+                  "Value": "'GASTO COMPARTIDO'"
                 }
               }
             },

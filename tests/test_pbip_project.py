@@ -56,16 +56,16 @@ class PbipContractTests(unittest.TestCase):
             page_folder = pages / page_id
             page = json.loads((page_folder / "page.json").read_text(encoding="utf-8"))
             self.assertEqual(page["width"], 1280)
-            self.assertEqual(page["height"], 720)
+            self.assertEqual(page["height"], 944)
             for file in (page_folder / "visuals").glob("*/visual.json"):
                 visual = json.loads(file.read_text(encoding="utf-8"))
                 position = visual["position"]
                 self.assertLessEqual(position["x"] + position["width"], 1280)
-                self.assertLessEqual(position["y"] + position["height"], 720)
+                self.assertLessEqual(position["y"] + position["height"], 944)
                 if visual["visual"]["visualType"] != "textbox":
                     self.assertTrue(visual["visual"]["query"]["queryState"])
                 total_visuals += 1
-        self.assertEqual(total_visuals, 55)
+        self.assertEqual(total_visuals, 153)
 
 
 if __name__ == "__main__":

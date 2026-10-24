@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "604b2eedc924dc82ac6a",
   "position": {
-    "x": 652,
-    "y": 202,
+    "x": 746,
+    "y": 227,
     "z": 2000,
-    "height": 119,
-    "width": 290,
-    "tabOrder": 10
+    "height": 109,
+    "width": 238,
+    "tabOrder": 28
   },
   "visual": {
     "visualType": "card",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Variación interanual lectura",
-              "nativeQueryRef": "Comparación",
-              "displayName": "Comparación"
+              "nativeQueryRef": "Variación interanual lectura"
             }
           ]
         }
@@ -192,7 +191,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Variación interanual'"
+                  "Value": "'VARIACIÓN INTERANUAL'"
                 }
               }
             },

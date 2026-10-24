@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "ac9fb72fba59c832ba40",
   "position": {
-    "x": 648,
-    "y": 337,
+    "x": 807,
+    "y": 399,
     "z": 2000,
-    "height": 228,
-    "width": 608,
-    "tabOrder": 12
+    "height": 251,
+    "width": 441,
+    "tabOrder": 36
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -46,8 +46,8 @@
                 }
               },
               "queryRef": "FactPostedExpense.Paid Spending",
-              "nativeQueryRef": "Total pagado",
-              "displayName": "Total pagado"
+              "nativeQueryRef": "Monto",
+              "displayName": "Monto"
             }
           ]
         }
@@ -211,7 +211,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Gasto por cuenta de origen'"
+                  "Value": "'Cuentas internas de origen'"
                 }
               }
             },

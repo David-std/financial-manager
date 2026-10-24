@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "c87b24ddecc50043a5fe",
   "position": {
-    "x": 338,
-    "y": 202,
+    "x": 276,
+    "y": 223,
     "z": 2000,
-    "height": 119,
-    "width": 290,
-    "tabOrder": 9
+    "height": 112,
+    "width": 232,
+    "tabOrder": 16
   },
   "visual": {
     "visualType": "card",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Cantidad de pagos KPI",
-              "nativeQueryRef": "Pagos",
-              "displayName": "Pagos"
+              "nativeQueryRef": "Cantidad de pagos KPI"
             }
           ]
         }
@@ -192,7 +191,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Cantidad de pagos'"
+                  "Value": "'MOVIMIENTOS'"
                 }
               }
             },

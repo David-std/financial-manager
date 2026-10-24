@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
   "name": "ac21e26d330743fa8b79",
   "displayName": "Resumen de gastos",
-  "displayOption": "FitToPage",
-  "height": 720,
+  "displayOption": "FitToWidth",
+  "height": 944,
   "width": 1280,
   "objects": {
     "background": [
@@ -14,7 +14,7 @@
               "color": {
                 "expr": {
                   "Literal": {
-                    "Value": "'#F3F7FB'"
+                    "Value": "'#F1F5FA'"
                   }
                 }
               }
@@ -38,7 +38,7 @@
               "color": {
                 "expr": {
                   "Literal": {
-                    "Value": "'#F3F7FB'"
+                    "Value": "'#F1F5FA'"
                   }
                 }
               }

@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "6cc4debb2cda4c3e02d7",
   "position": {
-    "x": 966,
-    "y": 202,
+    "x": 1005,
+    "y": 227,
     "z": 2000,
-    "height": 119,
-    "width": 290,
-    "tabOrder": 11
+    "height": 109,
+    "width": 238,
+    "tabOrder": 30
   },
   "visual": {
     "visualType": "card",
@@ -27,8 +27,7 @@
                 }
               },
               "queryRef": "FactPostedExpense.Categorías con pagos",
-              "nativeQueryRef": "Categorías",
-              "displayName": "Categorías"
+              "nativeQueryRef": "Categorías con pagos"
             }
           ]
         }
@@ -192,7 +191,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Categorías con pagos'"
+                  "Value": "'CATEGORÍAS ACTIVAS'"
                 }
               }
             },
