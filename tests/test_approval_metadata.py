@@ -29,7 +29,10 @@ class ApprovalMetadataTests(unittest.TestCase):
         root = ET.parse(path).getroot()
         self.assertEqual(root.attrib.get("name"), "Financial Manager Budget Approver")
         self.assertEqual(root.findtext("IsAutoAssigned"), "0")
-        self.assertGreaterEqual(len(root.findall("./RolePrivileges/RolePrivilege")), 1)
+        names = [p.attrib["name"] for p in root.findall("./RolePrivileges/RolePrivilege")]
+        self.assertEqual(len(names), 9)
+        self.assertFalse(any("SharePoint" in name for name in names))
+        self.assertIn("prvCreatefmg_BudgetApprovalClaim", names)
 
     def test_deployed_budget_guard_still_has_explicit_blocking_path(self) -> None:
         code = (
@@ -37,6 +40,16 @@ class ApprovalMetadataTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn('Error("BGV009","Direct budget approval is forbidden.")', code)
         self.assertIn("!trustedApproval", code)
+
+    def test_role_cleanup_is_explicitly_gated_and_preserves_evidence(self) -> None:
+        program = (ROOT / "tools" / "DataverseDeployment" / "Program.cs").read_text(encoding="utf-8")
+        cleanup = (ROOT / "tools" / "DataverseDeployment" / "ApprovalRoleCleanup.cs").read_text(encoding="utf-8")
+        self.assertIn('mode == "budget-approval-role-cleanup"', program)
+        self.assertIn('Mutation requires explicit --apply.', program)
+        self.assertIn('EnsureUnassigned(service, roleId)', cleanup)
+        self.assertIn('RemovePrivilegeRoleRequest', cleanup)
+        self.assertIn('ROLE_BACKUP_PATH=', cleanup)
+        self.assertIn('ROLE_UNASSIGNED_APPROVAL_STILL_DISABLED', cleanup)
 
     def test_approval_readiness_cannot_be_inferred_from_a_role_assignment(self) -> None:
         code = (

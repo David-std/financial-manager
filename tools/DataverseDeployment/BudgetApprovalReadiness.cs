@@ -89,7 +89,8 @@ internal static class BudgetApprovalReadiness
                 Console.WriteLine("APPROVER_ROLE_REQUIRED_API_PRIVILEGE=" +
                     names.Contains("prvCreatefmg_BudgetApprovalClaim"));
                 leastPrivilegeRole = names.Length == ApprovalRolePrivileges.Allowed.Length &&
-                    !ApprovalRolePrivileges.Allowed.Except(names, StringComparer.Ordinal).Any();
+                    !ApprovalRolePrivileges.Allowed.Except(names, StringComparer.Ordinal).Any() &&
+                    granted.All(p => p.Depth == PrivilegeDepth.Global);
                 Console.WriteLine("APPROVER_ROLE_EXACT_MINIMUM_PRIVILEGES=" + leastPrivilegeRole);
             }
         }
