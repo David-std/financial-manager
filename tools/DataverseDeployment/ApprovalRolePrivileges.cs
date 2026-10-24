@@ -11,7 +11,7 @@ internal static class ApprovalRolePrivileges
 
     // Creation of the approval claim is also the API execute privilege.
     // No Delete, BudgetAllocation write, or ActivityEvent write is granted.
-    private static readonly string[] Allowed =
+    internal static readonly string[] Allowed =
     {
         "prvReadfmg_Budget",
         "prvWritefmg_Budget",

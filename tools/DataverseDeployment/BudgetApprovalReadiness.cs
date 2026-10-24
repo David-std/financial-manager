@@ -10,6 +10,12 @@ using Microsoft.Xrm.Sdk.Query;
 
 internal static class BudgetApprovalReadiness
 {
+    // Approval acceptance is a separate, evidenced release gate.
+    // Never turn these on merely because a finance role was assigned.
+    // Change only after recorded, independently authenticated two-user and
+    // simultaneous competing approval tests in a disposable development environment.
+    private const bool TwoIdentityAcceptanceRecorded = false;
+    private const bool ConcurrencyAcceptanceRecorded = false;
     // Negative-only invocation with a random nonexistent budget ID.
     // No financial row can be approved; the current identity must lack the
     // explicit role. A BAP003 fault confirms the main plug-in rejects it.
@@ -61,6 +67,7 @@ internal static class BudgetApprovalReadiness
             "name", ConditionOperator.Equal, "Financial Manager Budget Approver");
         var foundRoles = service.RetrieveMultiple(roles).Entities;
         Console.WriteLine("EXPLICIT_APPROVER_ROLES=" + foundRoles.Count);
+        bool leastPrivilegeRole = false;
         if (foundRoles.Count == 1)
         {
             var grants = (RetrieveRolePrivilegesRoleResponse)service.Execute(
@@ -81,6 +88,9 @@ internal static class BudgetApprovalReadiness
                     names.Count(n => n.IndexOf("SharePoint", StringComparison.OrdinalIgnoreCase) >= 0));
                 Console.WriteLine("APPROVER_ROLE_REQUIRED_API_PRIVILEGE=" +
                     names.Contains("prvCreatefmg_BudgetApprovalClaim"));
+                leastPrivilegeRole = names.Length == ApprovalRolePrivileges.Allowed.Length &&
+                    !ApprovalRolePrivileges.Allowed.Except(names, StringComparer.Ordinal).Any();
+                Console.WriteLine("APPROVER_ROLE_EXACT_MINIMUM_PRIVILEGES=" + leastPrivilegeRole);
             }
         }
         var assignedDirect = new QueryExpression("role")
@@ -132,7 +142,8 @@ internal static class BudgetApprovalReadiness
             configuredApis[0].GetAttributeValue<OptionSetValue>(
                 "allowedcustomprocessingsteptype")?.Value == 0 &&
             configuredApis[0].GetAttributeValue<EntityReference>("plugintypeid") != null &&
-            !configuredApis[0].GetAttributeValue<bool>("isfunction");
+            !configuredApis[0].GetAttributeValue<bool>("isfunction") &&
+            configuredApis[0].GetAttributeValue<bool>("isprivate");
         Console.WriteLine("APPROVAL_CUSTOM_API_SECURED_AND_BOUND=" + validApi);
 
         bool hasClaimTable;
@@ -176,11 +187,15 @@ internal static class BudgetApprovalReadiness
         Console.WriteLine("APPROVAL_CLAIM_TABLE=" + hasClaimTable);
         Console.WriteLine("APPROVAL_CLAIM_KEY_COLUMN=" + hasScopeKey);
         Console.WriteLine("APPROVAL_CLAIM_ALT_KEY_ACTIVE=" + keyActive);
-        Console.WriteLine("APPROVAL_READY=" + (
-            foundRoles.Count == 1 && directAssignments > 0 &&
-            teamAssignments == 0 && hasClaimTable && hasScopeKey && keyActive &&
-            validApi
-        ));
+        var infrastructureReady = foundRoles.Count == 1 && hasClaimTable &&
+            hasScopeKey && keyActive && validApi;
+        var roleAssignmentReady = directAssignments > 0 && teamAssignments == 0;
+        Console.WriteLine("APPROVAL_INFRASTRUCTURE_READY=" + infrastructureReady);
+        Console.WriteLine("APPROVAL_ROLE_ASSIGNMENT_PRESENT=" + roleAssignmentReady);
+        Console.WriteLine("APPROVAL_TWO_IDENTITY_ACCEPTED=" + TwoIdentityAcceptanceRecorded);
+        Console.WriteLine("APPROVAL_CONCURRENCY_ACCEPTED=" + ConcurrencyAcceptanceRecorded);
+        Console.WriteLine("APPROVAL_READY=" + (infrastructureReady && leastPrivilegeRole &&
+            roleAssignmentReady && TwoIdentityAcceptanceRecorded && ConcurrencyAcceptanceRecorded));
         // Return success for read-only diagnostics even when intentionally
         // unconfigured. Never create a role, table or API from an inspect command.
         return 0;

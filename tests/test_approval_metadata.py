@@ -38,6 +38,17 @@ class ApprovalMetadataTests(unittest.TestCase):
         self.assertIn('Error("BGV009","Direct budget approval is forbidden.")', code)
         self.assertIn("!trustedApproval", code)
 
+    def test_approval_readiness_cannot_be_inferred_from_a_role_assignment(self) -> None:
+        code = (
+            ROOT / "tools" / "DataverseDeployment" / "BudgetApprovalReadiness.cs"
+        ).read_text(encoding="utf-8")
+        self.assertIn("TwoIdentityAcceptanceRecorded = false", code)
+        self.assertIn("ConcurrencyAcceptanceRecorded = false", code)
+        self.assertIn("APPROVER_ROLE_EXACT_MINIMUM_PRIVILEGES=", code)
+        self.assertIn('GetAttributeValue<bool>("isprivate")', code)
+        self.assertIn("roleAssignmentReady && TwoIdentityAcceptanceRecorded", code)
+        self.assertIn("TwoIdentityAcceptanceRecorded && ConcurrencyAcceptanceRecorded", code)
+
 
 if __name__ == "__main__":
     unittest.main()
