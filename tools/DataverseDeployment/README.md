@@ -102,3 +102,17 @@ dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Rel
 The initial NuGet package registration is `fmg_BudgetIntegrity` version `1.0.0`. Dataverse rejects attempts to update an already registered `PluginPackage.version` from 1.0.0 to 1.0.1. The approved update mechanism replaces **only the package contents**, preserving registered package identity and version, then verifies the three classes and nine active steps. Do not delete/recreate the package: that can remove dependent processing steps.
 
 Budget approvals intentionally remain **disabled**; ordinary direct writes to Activity Event are blocked. A passing `budget-verify` run means the nine rollback-only development integration tests succeeded. **Live authorization for non-admin identities and version-based approvals remain unverified.**
+
+## Model-driven app navigation labels
+
+The existing `Financial Manager` app sitemap uses a **single es-ES (LCID 3082)** environment and must not contain `SitemapDesigner.NewArea/NewGroup/NewSubArea` placeholder resources. The `app-nav-inspect` command reads published and unpublished records independently, validates the one Area, one Group and four original page IDs, and reports localization status without writing anything.
+
+```powershell
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- app-nav-inspect
+# Run only against the verified dev environment when correction is needed:
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- app-nav-fix --apply
+```
+
+The guarded fix takes a local TEMP backup before changing an unpublished sitemap, keeps existing Area/Group/SubArea and generated page IDs, writes Spanish titles (3082), and verifies unpublished readback. **It publishes the existing app module using `PublishXmlRequest` `<appmodules>`**, not just the `<sitemaps>` element; then verifies the published sitemap. A sitemap-only publish previously returned success but did not make this app's changes effective. Never copy stale, pre-publish sitemap XML back to the repository.
+
+After an actual correction, run a fresh unmanaged solution export, unpack into TEMP, and update **only** `AppModuleSiteMaps/financial_manager_bee9f134/AppModuleSiteMap.xml` in source control. Validate all four page IDs; no new pages or full solution import are required. The running browser view is a separate final-acceptance check.

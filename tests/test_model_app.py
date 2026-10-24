@@ -60,6 +60,28 @@ class ModelAppContractTests(unittest.TestCase):
             pages[label] = identifier.lower()
         self.assertEqual(pages, PAGE_IDS)
 
+    def test_navigation_spanish_labels_have_no_template_resource_ids(self) -> None:
+        xml = ET.parse(SITEMAP).getroot()
+        area = xml.find("./SiteMap/Area")
+        self.assertIsNotNone(area)
+        group = xml.find("./SiteMap/Area/Group")
+        self.assertIsNotNone(group)
+        expected = [(area, "Financial Manager"), (group, "Gestión financiera")]
+        for page_name, page_id in PAGE_IDS.items():
+            matches = [
+                item for item in xml.findall(".//SubArea")
+                if item.attrib.get("GenPageId", "").lower() == page_id
+            ]
+            self.assertEqual(len(matches), 1)
+            expected.append((matches[0], page_name))
+
+        for node, name in expected:
+            with self.subTest(node=node.attrib.get("Id")):
+                self.assertNotIn("ResourceId", node.attrib)
+                titles = node.findall("./Titles/Title[@LCID='3082']")
+                self.assertEqual(len(titles), 1)
+                self.assertEqual(titles[0].attrib.get("Title"), name)
+
     def test_all_four_typescript_pages_exist(self) -> None:
         for name, file_name in SOURCES.items():
             with self.subTest(page=name):

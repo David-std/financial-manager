@@ -6,32 +6,38 @@
   <ShowPinned>True</ShowPinned>
   <ShowRecents>True</ShowRecents>
   <SiteMap IntroducedVersion="7.0.0.0">
-    <Area Id="area_financial_manager_bee9f134" ShowGroups="true" ResourceId="SitemapDesigner.NewArea" IntroducedVersion="7.0.0.0">
+    <Area Id="area_financial_manager_bee9f134" ShowGroups="true" IntroducedVersion="7.0.0.0">
       <Titles>
-        <Title Title="Main" LCID="1033" />
+        <Title Title="Principal" LCID="1033" />
+        <Title LCID="3082" Title="Financial Manager" />
       </Titles>
-      <Group Id="group_financial_manager_bee9f134" IsProfile="false" ResourceId="SitemapDesigner.NewGroup" IntroducedVersion="7.0.0.0">
+      <Group Id="group_financial_manager_bee9f134" IsProfile="false" IntroducedVersion="7.0.0.0">
         <Titles>
-          <Title Title="Pages" LCID="1033" />
+          <Title Title="Gestión" LCID="1033" />
+          <Title LCID="3082" Title="Gestión financiera" />
         </Titles>
-        <SubArea Id="subarea_e020eb10" ResourceId="SitemapDesigner.NewSubArea" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="92083d36-806a-43dd-b289-2fafd9e3afb1">
+        <SubArea Id="subarea_e020eb10" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="92083d36-806a-43dd-b289-2fafd9e3afb1">
           <Titles>
             <Title LCID="1033" Title="Gastos" />
+            <Title LCID="3082" Title="Gastos" />
           </Titles>
         </SubArea>
-        <SubArea Id="subarea_59077c11" ResourceId="SitemapDesigner.NewSubArea" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="1a6e3c3e-fb2e-43b0-b5dd-9071483d1a1f">
+        <SubArea Id="subarea_59077c11" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="1a6e3c3e-fb2e-43b0-b5dd-9071483d1a1f">
           <Titles>
             <Title LCID="1033" Title="Presupuestos" />
+            <Title LCID="3082" Title="Presupuestos" />
           </Titles>
         </SubArea>
-        <SubArea Id="subarea_71c5be31" ResourceId="SitemapDesigner.NewSubArea" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="35a771c0-5cdf-4d5e-a295-6f893ffcf3d4">
+        <SubArea Id="subarea_71c5be31" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="35a771c0-5cdf-4d5e-a295-6f893ffcf3d4">
           <Titles>
             <Title LCID="1033" Title="Datos maestros" />
+            <Title LCID="3082" Title="Datos maestros" />
           </Titles>
         </SubArea>
-        <SubArea Id="subarea_afd6dd88" ResourceId="SitemapDesigner.NewSubArea" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="4a317af5-b6a8-4a82-a22a-6b56447a082f">
+        <SubArea Id="subarea_afd6dd88" VectorIcon="/_imgs/TableIconsFluentV9/document_one_page_sparkle.svg" Icon="/_imgs/imagestrips/transparent_spacer.gif" Client="All,Outlook,OutlookLaptopClient,OutlookWorkstationClient,Web" AvailableOffline="true" PassParams="false" Sku="All,OnPremise,Live,SPLA" GenPageId="4a317af5-b6a8-4a82-a22a-6b56447a082f">
           <Titles>
             <Title LCID="1033" Title="Detalle del gasto" />
+            <Title LCID="3082" Title="Detalle del gasto" />
           </Titles>
         </SubArea>
       </Group>

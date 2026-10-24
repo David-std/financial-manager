@@ -1,6 +1,6 @@
 # Expense and budget reporting specification
 
-These are management reports, not statutory financial statements. The MVP includes **expense payments and spending budgets only**. Income, customer receipts, sales, margins, profit and complete net cash flow are not available or inferable.
+These are management reports, not statutory financial statements. The **first analytical baseline** includes expense payments and spending budgets only. The product's phased expansion authorizes future incoming payments and transfers, but these domains do not yet exist in this source dataset; income, customer receipts, margins, profit and complete cash flow cannot be inferred from its current tables. See [ADR 0003](decisions/0003-expanded-financial-scope.md) and [semantic-model preparation](../power-bi/semantic-model.md).
 
 ## Dataset scope
 

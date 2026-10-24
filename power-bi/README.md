@@ -1,6 +1,6 @@
 # Power BI reporting
 
-Financial Manager's reporting workspace will be maintained as a **Power BI Project (PBIP)**, with report definitions in PBIR and a source-controlled semantic model. The directory currently contains **no Power BI report or semantic model**; the reporting specification is in [docs/reporting.md](../docs/reporting.md).
+Financial Manager's reporting workspace will be maintained as a **Power BI Project (PBIP)**, with report definitions in PBIR and a source-controlled semantic model. The directory currently contains **no Power BI report or semantic model**. The [semantic-model contract](semantic-model.md) and [posted-expense Power Query M starter](posted-expenses.pq) are preparation only, not a working PBIP or validated source connection. The reporting requirements are in [docs/reporting.md](../docs/reporting.md).
 
 ## MVP reporting pages
 
@@ -19,7 +19,7 @@ Financial Manager's reporting workspace will be maintained as a **Power BI Proje
 
 ## Delivery gates
 
-1. Confirm Data API/Dataverse metadata and payment state/option codes; validate the source tables and join cardinalities.
+1. Confirm Dataverse TDS/Power BI organizational authentication and option/lookup metadata. TCP 1433 reachability alone does not prove Dataverse TDS is enabled or that the semantic model refresh works.
 2. Create the star-schema semantic model, a calendar table, and tested DAX measures.
 3. Create the four report pages, with a clear empty/not-available state when there are no eligible posted payments or approved budgets.
 4. Test reconciliation, branch/shared logic, drill-through, RLS/authorized access, and refresh against development fixtures.
