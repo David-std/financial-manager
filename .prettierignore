@@ -1,0 +1,6 @@
+# Generated Dataverse/Power Platform artifacts: leave their vendor-defined formatting untouched.
+power-platform/model-apps/financial-manager/RuntimeTypes.ts
+power-platform/solutions/
+**/bin/
+**/obj/
+node_modules/

@@ -10,3 +10,9 @@ indent_size = 2
 
 [*.py]
 indent_size = 4
+
+[*.cs]
+indent_size = 4
+
+[*.{ts,tsx}]
+indent_size = 2

@@ -1,0 +1,13 @@
+{
+  "name": "financial-manager-workspace",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Source-formatting checks for the Financial Manager Power Apps pages",
+  "scripts": {
+    "format:app": "prettier --write \"power-platform/model-apps/financial-manager/{expenses,expense-detail,budgets,master-data}.tsx\"",
+    "check:format": "prettier --check \"power-platform/model-apps/financial-manager/{expenses,expense-detail,budgets,master-data}.tsx\""
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}

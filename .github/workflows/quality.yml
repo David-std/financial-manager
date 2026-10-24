@@ -24,3 +24,12 @@ jobs:
         run: python scripts/check_repository.py
       - name: Check Power Apps navigation and financial UI guardrails
         run: python scripts/check_model_app.py
+      - name: Set up Node for source formatting
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install formatter
+        run: npm ci --ignore-scripts
+      - name: Enforce Power Apps TSX formatting
+        run: npm run check:format

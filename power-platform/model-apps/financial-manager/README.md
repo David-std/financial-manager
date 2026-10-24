@@ -7,7 +7,7 @@ This is not a Canvas app. Power Platform CLI generative pages use React + TypeSc
 | Navigation page | Implementation | Current behavior |
 | --- | --- | --- |
 | Gastos | `expenses.tsx` | Read payment list, search/filter, show Posted totals on loaded rows, create a Draft and open its editor using record-context navigation |
-| Presupuestos | `budgets.tsx` | Query budget versions and allocations, filter, open native record, clearly disable approval |
+| Presupuestos | `budgets.tsx` | Create and edit Draft budget headers, add and adjust monthly allocations, inspect versions, and submit Drafts with confirmation. Server-enforced approval remains disabled. |
 | Datos maestros | `master-data.tsx` | Read-only category/branch/cash-account catalogs and native record links |
 | Detalle del gasto | `expense-detail.tsx` | Edit Draft amount/date/scope/category/account and document reference; request privileged Post and Void with reason; read-only after posting |
 
@@ -33,14 +33,28 @@ pac model list
 pac model genpage list --app-id <app-id>
 ```
 
+## Source formatting and reproducibility
+
+The four application page files (`expenses.tsx`, `expense-detail.tsx`, `budgets.tsx`, `master-data.tsx`) are **editable, hand-maintained React/TypeScript source** consumed by Power Platform CLI. They can and should be formatted consistently without changing their semantics. Run from the repository root:
+
+```powershell
+npm ci --ignore-scripts
+npm run format:app   # Only the four hand-maintained page files
+npm run check:format # CI-enforced
+```
+
+Formatting rules are pinned in `package-lock.json`, `.prettierrc.json` and `.prettierignore`. The GitHub Actions quality job validates the results. Do not format or manually modify `RuntimeTypes.ts`: Power Platform generates it from Dataverse table metadata. Do not normalize `power-platform/solutions/` XML or solution exports; they are source-controlled vendor artifacts, not hand-authored application code.
+
+Reformatting code in Git does **not** automatically update the running app. Transpile and upload each changed page to its **existing** page ID and verify by downloading its published source. Avoid page re-creation, sitemap reattachment, or changing budget approvals.
+
 ## Safety and known limits
 
 - **Server is authoritative:** Do not implement financial state changes by bypassing the payment/budget plug-ins. The app does not grant extra Dataverse permissions.
 - `FT_EnforcePaymentIntegrity` permits only System Administrators to Post/Void until roles are configured. `BG_EnforceBudgetIntegrity` deliberately refuses approvals.
 - No test payments, budgets, or master data are embedded in the pages or committed to Git.
-- **Gastos** creates a minimal Draft and navigates to the separate `expense-detail.tsx` generative page to complete its fields. The native model-driven payment form still contains only **Name and Owner**. The new editor includes Save Draft, Post and Void actions, but **interactive testing of input binding, updateRow payloads, navigation, and permissions is still pending**. Do not treat the full workflow as production-ready until this verification passes.
+- **Gastos** creates a minimal Draft and opens `expense-detail.tsx`. Interactive record navigation, saving, clearing fields and Branch-to-Shared behavior were verified with a synthetic Draft and authenticated Dataverse readback. The reverse Shared-to-Branch transition, Post/Void permissions and non-admin identity checks still require acceptance.
 - The budget page shows aggregate allocations over loaded rows only. No approved budget exists for reliable budget-vs-actual reporting. Avoid presenting this as a complete analytical report.
-- All four pages have been transpiled and published, but **interactive browser testing remains pending**. A successful CLI upload is not proof that all actions work in the rendered UI. Each page has a maximum of six linked Dataverse tables (the detail page uses five); `RuntimeTypes.ts` is a unified *source typing* reference containing seven tables, not a seven-table runtime binding.
+- Generated pages are compiled and published independently of Git. A successful CLI upload does not prove each interaction or access boundary; refer to the acceptance checklist. Each page has a maximum of six linked Dataverse tables (the detail page uses five); `RuntimeTypes.ts` is a unified *source typing* reference containing seven tables, not a seven-table runtime binding.
 - Data-source access, roles, app sharing and non-admin identity testing are not complete.
 - The source-controlled solution still emits plug-in-assembly warnings when repacked and has not been import-tested into a separate tenant.
 

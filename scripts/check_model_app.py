@@ -116,6 +116,7 @@ def check(root: Path = ROOT) -> list[str]:
     # Dataverse plug-in validates transitions and protects approved budgets.
     # Deletion and master-catalog mutations remain prohibited.
     budget_source = files.get("Presupuestos", "")
+    budget_compact = re.sub(r"\s+", "", budget_source)
     allowed = {("createRow", "fmg_budget"),
                ("updateRow", "fmg_budget"),
                ("createRow", "fmg_budgetallocation"),
@@ -124,11 +125,11 @@ def check(root: Path = ROOT) -> list[str]:
         operation, table = match.groups()
         if (operation, table) not in allowed:
             errors.append(f"Unreviewed budget operation: {operation} on {table}")
-    if 'dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount})' not in budget_source:
+    if 'dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount})' not in budget_compact:
         errors.append("Budget allocation edits must change amount only")
-    if 'dataApi.updateRow("fmg_budget",submitCandidate,{fmg_status:797280401})' not in budget_source:
+    if 'dataApi.updateRow("fmg_budget",submitCandidate,{fmg_status:797280401})' not in budget_compact:
         errors.append("Budget submission must be a Draft-to-Submitted-only update")
-    if 'fmg_status:797280400' not in budget_source:
+    if 'fmg_status:797280400' not in budget_compact:
         errors.append("Budget creation must explicitly use Draft status")
     if re.search(r'fmg_status\s*:\s*797280402', budget_source):
         errors.append("Budget UI must not set an Approved status")

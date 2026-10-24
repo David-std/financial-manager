@@ -31,6 +31,14 @@ SOURCES = {
 }
 
 
+def compact_ts(source: str) -> str:
+    """Collapse whitespace for checking source contracts irrespective of formatting.
+
+    Used only with code fragments, never to parse or execute TSX.
+    """
+    return re.sub(r"\s+", "", source)
+
+
 class ModelAppContractTests(unittest.TestCase):
     def test_exported_app_has_expected_unique_name(self) -> None:
         self.assertTrue(APP.is_file())
@@ -66,7 +74,7 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn("recordId: id", source)
         self.assertIn('dataApi.createRow("fmg_financialtransaction"', source)
         self.assertIn('await host.Navigation.navigateTo', source)
-        self.assertIn('catch(error => setFeedback', source)
+        self.assertRegex(source, r"\.catch\(\s*\(error\)\s*=>\s*setFeedback\(")
         self.assertIn('Borrador creado, pero no se pudo abrir el detalle:', source)
 
     def test_detail_accepts_record_context_and_only_updates_transactions(self) -> None:
@@ -75,50 +83,57 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn('dataApi.retrieveRow("fmg_financialtransaction"', source)
         self.assertIn('dataApi.updateRow("fmg_financialtransaction"', source)
         self.assertIn("fmg_voidreason", source)
-        self.assertIn("fmg_status:797280001", source)
-        self.assertIn("fmg_status:797280002", source)
+        normalized = compact_ts(source)
+        self.assertIn("fmg_status:797280001", normalized)
+        self.assertIn("fmg_status:797280002", normalized)
         self.assertNotIn('dataApi.updateRow("fmg_budget"', source)
 
     def test_cleared_draft_inputs_have_explicit_nulls(self) -> None:
         source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
+        normalized = compact_ts(source)
         for field in ("fmg_transactiondate", "fmg_amount", "fmg_flowclass", "fmg_scope"):
             with self.subTest(field=field):
-                self.assertRegex(source, rf'payload\.{field}\s*=.+:null;')
+                self.assertRegex(normalized, rf'payload\.{field}=[^;]*:null;')
         runtime_types = (PAGES / "RuntimeTypes.ts").read_text(encoding="utf-8")
         for field in ("fmg_category", "fmg_cashaccount", "fmg_branch"):
             with self.subTest(field=field):
-                self.assertRegex(source, rf'payload\._{field}_value\s*=.+:null')
+                self.assertRegex(normalized, rf'payload\._{field}_value=[^;]*:null')
                 self.assertIn(f'_{field}_value: `/{field}(${{string}})`', runtime_types)
-        self.assertIn('payload._transactioncurrencyid_value=', source)
-        self.assertIn('dataApi.retrieveRow("fmg_financialtransaction",{id:recordId,select:[', source)
+        self.assertIn('payload._transactioncurrencyid_value=', normalized)
+        self.assertIn('dataApi.retrieveRow("fmg_financialtransaction",{id:recordId,select:[', normalized)
         self.assertIn('No se conservaron las relaciones:', source)
         self.assertNotRegex(source, r'payload\["[^"]+@odata\.bind"\]')
 
     def test_budget_editor_creates_drafts_and_allocations_without_approvals(self) -> None:
         source = (PAGES / "budgets.tsx").read_text(encoding="utf-8")
+        normalized = compact_ts(source)
         self.assertIn('dataApi.createRow("fmg_budget"', source)
         self.assertIn('dataApi.createRow("fmg_budgetallocation"', source)
-        self.assertIn('fmg_status:797280400', source)
+        self.assertIn('fmg_status:797280400', normalized)
         self.assertIn('_fmg_budget_value:', source)
         self.assertIn('_fmg_category_value:', source)
         self.assertIn('_transactioncurrencyid_value:', source)
         self.assertIn('Nueva asignación', source)
-        self.assertIn('await navigateBudget(id)', source)
-        self.assertNotIn('fmg_status:797280402', source)
-        self.assertIn('dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount})', source)
+        self.assertIn('awaitnavigateBudget(id)', normalized)
+        self.assertNotIn('fmg_status:797280402', normalized)
+        self.assertIn('dataApi.updateRow("fmg_budgetallocation",allocationEditing,{fmg_amount:amount})', normalized)
         self.assertIn('Solo es posible modificar asignaciones de presupuestos en borrador.', source)
         self.assertNotRegex(source, r'dataApi\.deleteRow\s*\(')
-        self.assertIn('dataApi.updateRow("fmg_budget",submitCandidate,{fmg_status:797280401})', source)
+        self.assertIn('dataApi.updateRow("fmg_budget",submitCandidate,{fmg_status:797280401})', normalized)
+        self.assertIn('dataApi.updateRow("fmg_budget",editingBudgetId,', normalized)
+        self.assertIn('...(editingHasAllocations?{}:identity)', normalized)
+        self.assertIn('row.fmg_status===797280400', normalized)
         self.assertIn('Confirmar presentación', source)
-        self.assertIn('La aprobación sigue restringida.', source)
+        self.assertIn('Laaprobaciónsiguerestringida.', normalized)
         self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
 
     def test_budget_yes_no_fields_support_boolean_and_choice_forms(self) -> None:
         source = (PAGES / "budgets.tsx").read_text(encoding="utf-8")
-        self.assertIn("function active(value:unknown):boolean{return value===true||value===1;}", source)
-        self.assertIn("state.branches.filter(b=>active(b.fmg_isactive))", source)
-        self.assertIn("state.categories.filter(c=>active(c.fmg_isactive)&&!active(c.fmg_isgroup)", source)
-        self.assertIn("c.fmg_categoryid===allocationCategory&&active(c.fmg_isactive)&&!active(c.fmg_isgroup)", source)
+        normalized = compact_ts(source)
+        self.assertIn("functionactive(value:unknown):boolean{returnvalue===true||value===1;}", normalized)
+        self.assertIn("state.branches.filter((b)=>active(b.fmg_isactive))", normalized)
+        self.assertIn("state.categories.filter((c)=>active(c.fmg_isactive)&&!active(c.fmg_isgroup)", normalized)
+        self.assertIn("c.fmg_categoryid===allocationCategory&&active(c.fmg_isactive)&&!active(c.fmg_isgroup)", normalized)
         self.assertNotRegex(source, r"fmg_isactive\s*===\s*1")
         self.assertNotRegex(source, r"fmg_isgroup\s*===\s*0")
 
