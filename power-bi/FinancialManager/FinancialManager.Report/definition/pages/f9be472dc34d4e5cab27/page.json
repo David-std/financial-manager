@@ -3,7 +3,7 @@
   "name": "f9be472dc34d4e5cab27",
   "displayName": "Análisis de categorías",
   "displayOption": "FitToWidth",
-  "height": 1140,
+  "height": 1160,
   "width": 1280,
   "objects": {
     "background": [
@@ -14,7 +14,7 @@
               "color": {
                 "expr": {
                   "Literal": {
-                    "Value": "'#F5F6F7'"
+                    "Value": "'#F6F6F3'"
                   }
                 }
               }
@@ -38,7 +38,7 @@
               "color": {
                 "expr": {
                   "Literal": {
-                    "Value": "'#F5F6F7'"
+                    "Value": "'#F6F6F3'"
                   }
                 }
               }
