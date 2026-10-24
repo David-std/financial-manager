@@ -50,8 +50,8 @@ class PowerBiStarterTests(unittest.TestCase):
     def test_budget_metrics_are_explicitly_gated(self) -> None:
         contract = (ROOT / "semantic-model.md").read_text(encoding="utf-8")
         self.assertIn("**only after** approval", contract.lower())
-        self.assertIn("26-measure executive v2 model", contract)
-        self.assertIn("Positive-payment scenarios still need acceptance", contract)
+        self.assertIn("Executive v6 extends it to 29 measures", contract)
+        self.assertIn("positive-payment end-to-end acceptance still needs completion", contract)
         self.assertIn("Shared", contract)
         self.assertIn("RLS", contract.upper())
 

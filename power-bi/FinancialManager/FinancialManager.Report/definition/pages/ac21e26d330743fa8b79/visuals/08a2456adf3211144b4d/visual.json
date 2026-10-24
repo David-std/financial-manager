@@ -3,10 +3,10 @@
   "name": "08a2456adf3211144b4d",
   "position": {
     "x": 260,
-    "y": 839,
+    "y": 931,
     "z": 2000,
-    "height": 292,
-    "width": 725,
+    "height": 390,
+    "width": 1000,
     "tabOrder": 21
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "FactPostedExpense.ExpenseReference",
-              "nativeQueryRef": "ExpenseReference"
+              "nativeQueryRef": "Referencia",
+              "displayName": "Referencia"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "FactPostedExpense.TransactionDate",
-              "nativeQueryRef": "TransactionDate"
+              "nativeQueryRef": "Fecha de pago",
+              "displayName": "Fecha de pago"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "DimBranch.BranchName",
-              "nativeQueryRef": "BranchName"
+              "nativeQueryRef": "Sede",
+              "displayName": "Sede"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "DimCategory.CategoryName",
-              "nativeQueryRef": "CategoryName"
+              "nativeQueryRef": "Categoría",
+              "displayName": "Categoría"
             },
             {
               "field": {
@@ -83,7 +87,23 @@
                 }
               },
               "queryRef": "FactPostedExpense.FlowClassLabel",
-              "nativeQueryRef": "FlowClassLabel"
+              "nativeQueryRef": "Tipo de gasto",
+              "displayName": "Tipo de gasto"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactPostedExpense"
+                    }
+                  },
+                  "Property": "Estado por movimiento"
+                }
+              },
+              "queryRef": "FactPostedExpense.Estado por movimiento",
+              "nativeQueryRef": "Estado",
+              "displayName": "Estado"
             },
             {
               "field": {
@@ -97,7 +117,8 @@
                 }
               },
               "queryRef": "FactPostedExpense.AmountPEN",
-              "nativeQueryRef": "AmountPEN"
+              "nativeQueryRef": "Monto PEN",
+              "displayName": "Monto PEN"
             }
           ]
         }
@@ -279,6 +300,183 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#303B45'"
+                    }
+                  }
+                }
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#EAF0F3'"
+                    }
+                  }
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "defaultColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "135D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "gridHorizontal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "gridHorizontalColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#E5E9EB'"
+                    }
+                  }
+                }
+              }
+            },
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "7D"
+                }
+              }
+            },
+            "textSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#303B45'"
+                    }
+                  }
+                }
+              }
+            },
+            "backColorPrimary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "backColorSecondary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F2F6F8'"
+                    }
+                  }
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

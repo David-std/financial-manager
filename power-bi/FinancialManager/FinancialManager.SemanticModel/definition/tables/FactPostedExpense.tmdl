@@ -51,7 +51,7 @@ table FactPostedExpense
 	measure 'Gasto por sede KPI' = COALESCE ( [Branch Spending], 0 )
 		formatString: "S/ "#,##0.00
 
-	measure 'Gasto anterior KPI' = IF ( NOT HASONEVALUE ( DimDate[Year] ), "Selecciona un año", IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", "S/ " & FORMAT ( [Prior Year Spending], "#,##0.00" ) ) )
+	measure 'Gasto anterior KPI' = IF ( NOT HASONEVALUE ( DimDate[Year] ), "Elige año", IF ( ISBLANK ( [Prior Year Spending] ), "Sin base anterior", "S/ " & FORMAT ( [Prior Year Spending], "#,##0.00" ) ) )
 
 	measure 'Participación compartida' = COALESCE ( DIVIDE ( [Shared Spending], [Paid Spending], 0 ), 0 )
 		formatString: 0.0%
@@ -71,9 +71,16 @@ table FactPostedExpense
 	measure 'Promedio mensual pagado' = COALESCE ( DIVIDE ( [Paid Spending], [Meses con pagos], 0 ), 0 )
 		formatString: "S/ "#,##0.00
 
-	measure 'Variación interanual lectura' = IF ( NOT HASONEVALUE ( DimDate[Year] ), "Selecciona un año", IF ( ISBLANK ( [Prior Year Spending] ) || [Prior Year Spending] = 0, "Sin base anterior", FORMAT ( [Year-over-Year Change %], "0.0%;-0.0%;0.0%" ) ) )
+	measure 'Variación interanual lectura' = IF ( NOT HASONEVALUE ( DimDate[Year] ), "Elige año", IF ( ISBLANK ( [Prior Year Spending] ) || [Prior Year Spending] = 0, "Sin base anterior", FORMAT ( [Year-over-Year Change %], "0.0%;-0.0%;0.0%" ) ) )
 
 	measure 'Estado del informe' = IF ( [Payment Count] = 0 || ISBLANK ( [Payment Count] ), "Sin pagos confirmados en PEN para los filtros actuales", "Pagos contabilizados · fuente Dataverse" )
+
+	measure 'Escala porcentual' = 1
+		formatString: 0.0%
+
+	measure 'Estado de registros' = IF ( [Payment Count] > 0, "✓ Contabilizados", "Sin movimientos" )
+
+	measure 'Estado por movimiento' = IF ( HASONEVALUE ( FactPostedExpense[ExpenseId] ), "✓ Contabilizado", BLANK () )
 
 	column FlowClassLabel
 		dataType: string
