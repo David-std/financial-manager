@@ -2,10 +2,79 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainerMobileState/2.4.0/schema.json",
   "position": {
     "x": 0,
-    "y": 108,
+    "y": 191,
     "width": 158,
-    "height": 100,
-    "z": 1,
-    "tabOrder": 1
+    "height": 79,
+    "z": 2,
+    "tabOrder": 2
+  },
+  "visualContainerObjects": {
+    "padding": [
+      {
+        "properties": {
+          "left": {
+            "expr": {
+              "Literal": {
+                "Value": "7D"
+              }
+            }
+          },
+          "right": {
+            "expr": {
+              "Literal": {
+                "Value": "7D"
+              }
+            }
+          },
+          "top": {
+            "expr": {
+              "Literal": {
+                "Value": "5D"
+              }
+            }
+          },
+          "bottom": {
+            "expr": {
+              "Literal": {
+                "Value": "5D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "general": [
+      {
+        "properties": {
+          "altText": {
+            "expr": {
+              "Literal": {
+                "Value": "'Visualización de análisis financiero.'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "title": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "11D"
+              }
+            }
+          },
+          "titleWrap": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
   }
 }

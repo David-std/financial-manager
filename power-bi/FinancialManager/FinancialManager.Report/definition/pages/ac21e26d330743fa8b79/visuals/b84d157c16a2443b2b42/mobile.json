@@ -4,8 +4,32 @@
     "x": 0,
     "y": 0,
     "width": 323,
-    "height": 100,
+    "height": 73,
     "z": 0,
     "tabOrder": 0
+  },
+  "objects": {
+    "general": [
+      {
+        "properties": {
+          "paragraphs": [
+            {
+              "textRuns": [
+                {
+                  "value": "Panorama de gastos",
+                  "textStyle": {
+                    "fontFamily": "Segoe UI Semibold",
+                    "fontSize": "16pt",
+                    "color": "#303B45",
+                    "fontWeight": "bold"
+                  }
+                }
+              ],
+              "horizontalTextAlignment": "left"
+            }
+          ]
+        }
+      }
+    ]
   }
 }

@@ -2,10 +2,94 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainerMobileState/2.4.0/schema.json",
   "position": {
     "x": 0,
-    "y": 431,
-    "width": 158,
-    "height": 126,
-    "z": 6,
-    "tabOrder": 6
+    "y": 80,
+    "width": 323,
+    "height": 100,
+    "z": 1,
+    "tabOrder": 1
+  },
+  "visualContainerObjects": {
+    "padding": [
+      {
+        "properties": {
+          "left": {
+            "expr": {
+              "Literal": {
+                "Value": "8D"
+              }
+            }
+          },
+          "right": {
+            "expr": {
+              "Literal": {
+                "Value": "8D"
+              }
+            }
+          },
+          "top": {
+            "expr": {
+              "Literal": {
+                "Value": "6D"
+              }
+            }
+          },
+          "bottom": {
+            "expr": {
+              "Literal": {
+                "Value": "6D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "general": [
+      {
+        "properties": {
+          "altText": {
+            "expr": {
+              "Literal": {
+                "Value": "'Visualización de análisis financiero.'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "title": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "12D"
+              }
+            }
+          },
+          "titleWrap": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "objects": {
+    "labels": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "24D"
+              }
+            }
+          }
+        }
+      }
+    ]
   }
 }

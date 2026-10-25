@@ -2,10 +2,156 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainerMobileState/2.4.0/schema.json",
   "position": {
     "x": 0,
-    "y": 1710,
+    "y": 1669,
     "width": 323,
-    "height": 223,
-    "z": 14,
-    "tabOrder": 14
+    "height": 350,
+    "z": 13,
+    "tabOrder": 13
+  },
+  "visualContainerObjects": {
+    "title": [
+      {
+        "properties": {
+          "show": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          },
+          "text": {
+            "expr": {
+              "Literal": {
+                "Value": "'Ticket medio por categoría'"
+              }
+            }
+          },
+          "titleWrap": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          },
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "11D"
+              }
+            }
+          },
+          "fontColor": {
+            "expr": {
+              "Literal": {
+                "Value": "'#303B45'"
+              }
+            }
+          },
+          "bold": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "padding": [
+      {
+        "properties": {
+          "left": {
+            "expr": {
+              "Literal": {
+                "Value": "7D"
+              }
+            }
+          },
+          "right": {
+            "expr": {
+              "Literal": {
+                "Value": "7D"
+              }
+            }
+          },
+          "top": {
+            "expr": {
+              "Literal": {
+                "Value": "5D"
+              }
+            }
+          },
+          "bottom": {
+            "expr": {
+              "Literal": {
+                "Value": "5D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "general": [
+      {
+        "properties": {
+          "altText": {
+            "expr": {
+              "Literal": {
+                "Value": "'Ticket promedio pagado por categoría.'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "objects": {
+    "categoryAxis": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "9D"
+              }
+            }
+          },
+          "labelColor": {
+            "expr": {
+              "Literal": {
+                "Value": "'#566775'"
+              }
+            }
+          },
+          "preferredCategoryWidth": {
+            "expr": {
+              "Literal": {
+                "Value": "44D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "valueAxis": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "9D"
+              }
+            }
+          },
+          "labelColor": {
+            "expr": {
+              "Literal": {
+                "Value": "'#566775'"
+              }
+            }
+          }
+        }
+      }
+    ]
   }
 }

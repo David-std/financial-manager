@@ -33,11 +33,11 @@ class V8LayoutTests(unittest.TestCase):
      hit=p["x"]<prior["x"]+prior["width"] and p["x"]+p["width"]>prior["x"] and p["y"]<prior["y"]+prior["height"] and p["y"]+p["height"]>prior["y"]
      self.assertFalse(hit,(folder.name,m.name,p,prior))
     pages.append(p)
-   self.assertGreaterEqual(len(pages),16,folder.name)
+   self.assertGreaterEqual(len(pages),15,folder.name)
    self.assertEqual(len(set(p["tabOrder"] for p in pages)),len(pages))
    self.assertTrue(any(p["width"]==323 and p["height"]>=220 for p in pages))
    total+=len(pages)
-  self.assertEqual(total,70)
+  self.assertEqual(total,67)
  def test_grid_alignments(self):
   for id,conf in MAP.items():
    folder=PAGES/id

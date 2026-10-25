@@ -2,10 +2,156 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainerMobileState/2.4.0/schema.json",
   "position": {
     "x": 0,
-    "y": 1170,
+    "y": 1312,
     "width": 323,
-    "height": 260,
+    "height": 300,
     "z": 12,
     "tabOrder": 12
+  },
+  "visualContainerObjects": {
+    "title": [
+      {
+        "properties": {
+          "show": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          },
+          "text": {
+            "expr": {
+              "Literal": {
+                "Value": "'Pagos por mes: importe y frecuencia'"
+              }
+            }
+          },
+          "titleWrap": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          },
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "11D"
+              }
+            }
+          },
+          "fontColor": {
+            "expr": {
+              "Literal": {
+                "Value": "'#303B45'"
+              }
+            }
+          },
+          "bold": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "padding": [
+      {
+        "properties": {
+          "left": {
+            "expr": {
+              "Literal": {
+                "Value": "7D"
+              }
+            }
+          },
+          "right": {
+            "expr": {
+              "Literal": {
+                "Value": "7D"
+              }
+            }
+          },
+          "top": {
+            "expr": {
+              "Literal": {
+                "Value": "5D"
+              }
+            }
+          },
+          "bottom": {
+            "expr": {
+              "Literal": {
+                "Value": "5D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "general": [
+      {
+        "properties": {
+          "altText": {
+            "expr": {
+              "Literal": {
+                "Value": "'Visualización de análisis financiero.'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "objects": {
+    "categoryAxis": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "9D"
+              }
+            }
+          },
+          "labelColor": {
+            "expr": {
+              "Literal": {
+                "Value": "'#566775'"
+              }
+            }
+          },
+          "preferredCategoryWidth": {
+            "expr": {
+              "Literal": {
+                "Value": "44D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "valueAxis": [
+      {
+        "properties": {
+          "fontSize": {
+            "expr": {
+              "Literal": {
+                "Value": "9D"
+              }
+            }
+          },
+          "labelColor": {
+            "expr": {
+              "Literal": {
+                "Value": "'#566775'"
+              }
+            }
+          }
+        }
+      }
+    ]
   }
 }

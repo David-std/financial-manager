@@ -219,6 +219,10 @@ def main():
             "outspace":base.props(color=base.color(v6.PAPER),transparency=base.literal(0))}
         path.write_text(json.dumps(page,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
         phone(board)
+    # Apply the mobile accessibility/spacing pass after desktop export.
+    # It only edits mobile.json; desktop visuals and semantic model stay intact.
+    from polish_power_bi_mobile_v9 import main as polish_mobile_v9
+    polish_mobile_v9()
     print("FOUR_PHONE_LAYOUTS_READY=True")
     print("FINANCIAL_WRITES=False")
 if __name__=="__main__":main()
