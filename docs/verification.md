@@ -64,9 +64,9 @@ This specification defines the acceptance criteria for Dataverse data integrity,
 | OPS-03 | Re-run repository workflow | Formatting, required files and docs links pass |
 | OPS-04 | Create new financial master-data values | Role access, validity and historical referential integrity preserved |
 
-## Model-driven app acceptance (interactive checks pending)
+## Model-driven app acceptance
 
-The following checks belong to the first release of the four-page **Financial Manager** model-driven app. Publishing and source validation are complete, but interaction with the rendered application has not yet been executed.
+The following checks belong to the four-page **Financial Manager** model-driven application. Deployment and source validation alone do not satisfy browser-level or role-based acceptance.
 
 | ID | Scenario | Expected result |
 | --- | --- | --- |
@@ -86,6 +86,6 @@ Do not mark UI-02 through UI-11 as passed merely because `pac model genpage tran
 
 ## Evidence
 
-Attach test fixture definitions, dates, environment, execution results, defects, and remediation links to release records. CI now runs repository/source checks, including model-app sitemap contracts, and two C# plug-in unit-test suites. The 15 previously completed Dataverse integration checks used controlled rollback-only transactions in the developer environment; GitHub Actions does **not** connect to live Dataverse and does **not** validate DAX or actual browser interaction.
+Store fixture definitions, dates, execution results, screenshots, defects and remediation references in controlled external release records, not Git. CI should run repository/source contracts and plug-in unit tests; it does **not** replace authenticated Dataverse checks, DAX reconciliation or browser acceptance.
 
 See [Data model](data-model.md), [Reporting](reporting.md), and [Security](security.md).

@@ -14,6 +14,7 @@ Microsoft Fabric Apps (preview) can produce code-driven data apps with authentic
 - Build an isolated Vite + React prototype under `experiments/financial-workspace/`, read-only and local. Use the *same deterministic synthetic* expense dataset as Power BI.
 - Focus on daily user orientation: period navigation, personalizable filters, readable expense summaries, recent activity, contextual record inspection, and adaptive layout. Keep the dashboard's deep analytical job in Power BI.
 - Treat the prototype as an **alternative UI/UX reference** and possible future frontend, not as a new finance backend or a real Fabric Apps deployment.
+- In-memory Draft capture, modification and discard are permitted solely to demonstrate UX. Such Drafts reset on unmount/reload, have local-only reference identifiers, and must carry an explicit no-Dataverse-write notice. This is not a server authorization test.
 - Keep sensitive operations disabled and visibly contextualized. Show budget readiness/explanation without fabricating budget figures or approvals.
 - No second SQL database, authentication store, ownership model, financial ledger or write-back path. No auto-approval.
 - Consider migrating the frontend patterns to a genuine Fabric Apps `dataapp` template only after workspace capacity, tenant approval, semantic model publication, access policies and licensing are validated.

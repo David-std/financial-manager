@@ -7,12 +7,9 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 - Power Apps: financial movement and budget workflows
 - Microsoft Dataverse: operational records, authorization, and auditing
 - Power BI: financial analysis, comparisons, and budget reporting
-- Exploratory read-only UX: [Financial Workspace prototype](experiments/financial-workspace/README.md), offline and synthetic only
+- Experimental workspace UI: [Financial Workspace](experiments/financial-workspace/README.md), synthetic records and temporary draft simulations, no Dataverse writes
 - Power Automate: approved workflow actions and optional future integrations
 
-## Status
-
-**Implementation status.** The repository contains a real unmanaged Dataverse solution exported from `financial-manager-dev`, server-side plug-ins for payment and budget integrity, and a published model-driven Power Apps application with four generative pages. Browser-level workflow and non-administrator permission testing are still pending. The application is model-driven, not Canvas. An experimental offline React workspace UI is also available under `experiments/financial-workspace/` but is not a deployed Fabric App or a financial write surface. A version-controlled Power BI Project (PBIP) contains four executive-v8 desktop expense-analysis pages and refined v9 mobile views, five semantic-model tables, four relationships and 31 DAX measures. The PBIP passes structural checks; a temporary authenticated Desktop copy successfully imported and reconciled the current Posted/PEN data against Dataverse. An authenticated temporary Desktop copy displayed the executive-v2 report and successfully imported the model; positive-payment scenarios, final visual acceptance, interactive permissions, accessibility and Power BI Service publication remain pending. Requirements remain subject to business review.
 
 ## Documentation
 
@@ -40,7 +37,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 | `integrations/` | Optional iOS and conversational reporting specifications |
 | `scripts/` | Repository checks |
 | `tests/` | Automated repository validation |
-| `experiments/financial-workspace/` | Read-only, synthetic React UX exploration; **not** deployed to Fabric |
+| `experiments/financial-workspace/` | Offline React UX exploration with synthetic data and in-memory Draft interactions; **not** a live Fabric or financial service |
 
 ## Working principles
 

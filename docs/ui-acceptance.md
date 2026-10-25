@@ -1,208 +1,57 @@
-# Financial Manager — UI acceptance and release gates
+# Financial Manager — UI acceptance contract
 
-Status: **planned manual/integration verification**, not a completed browser acceptance test.
-Environment: `financial-manager-dev`. Branch: `develop`. Test payment records must be explicitly identifiable, created only in development and cleaned up if still Draft. Do not enter actual business payments during this exercise.
+This document defines **observable acceptance criteria** for the operational Power Apps and Financial Workspace interfaces. It is a stable validation contract, not a release-history or execution-status log. Record screenshots, execution dates, environment-specific IDs, defect investigations and transient checklists outside the repository. Source compilation, CI and publish do not establish user-acceptance success.
 
-The four pages are published and their source/sitemap consistency is checked in CI. That does **not** establish that a page accepts record context, renders correctly, writes the expected Dataverse payload or enforces authorization for a real user.
+The authoritative scope and invariants are [screens](screens.md), [security](security.md), [data model](data-model.md) and [verification](verification.md). Live, irreversible financial actions must use clearly labeled, authorized development fixtures and explicit test safeguards.
 
-## Acceptance scenarios
+## Power Apps — authenticated and authorized workflow
 
-| ID | Page / action | Required observation | Test status |
-| --- | --- | --- | --- |
-| UI-01 | Open Financial Manager | Gastos, Presupuestos, Datos maestros and Detalle del gasto are present; no page shows a blank error | Not executed |
-| UI-02 | Gastos list | Reference, date, status, class, category/branch and PEN amount render from accessible rows; a blank dataset has an explanatory state | Not executed |
-| UI-03 | Search / status filter | A Draft, Posted and Voided record (when available) appears only in its appropriate filter; query truncation at 200 rows is disclosed | Not executed |
-| UI-04 | Create Draft | Creates **Draft**, never Posted; reference is assigned by Dataverse; response supplies a GUID and opens the intended detail page | **Observed 2026-10-23:** User-created `MOV-000008` appeared in Gastos and was confirmed as Draft by authenticated FetchXML. |
-| UI-05 | Record context | Clicking Abrir passes the selected `recordId` and `entityName` to the generative detail page; the page loads the exact record, not a blank or previous one | **Passed (user-observed 2026-10-23):** Authenticated runtime screenshot shows `MOV-000008`, matching FetchXML, Draft status and the original description; navigation URL contains record context. |
-| UI-06 | Edit Draft | Date, amount, payment class, scope, active leaf category, branch (where relevant), cash account, description and reference persist after Save and refresh | **Passed 2026-10-23:** After correcting generated-page `dataApi` lookup payload keys, the user saved and refreshed `MOV-000008`; authenticated FetchXML joined to the referenced catalog tables and confirmed Date `2026-10-23`, Amount PEN 1.23, OperatingPayment, Branch, `LM` (La Merced), Category `601` (Energía Eléctrica), Cash Account `Caja La Merced`, `TEST-UI-008`, and Draft state. The earlier lookup regression is resolved in this tested path. |
-| UI-07 | Clear Draft fields | Clearing a previously saved optional field must clear its persisted value or explicitly explain that it cannot be removed; the UI must not silently retain old amounts/relations | **Passed 2026-10-23:** User cleared saved document reference and Category from `MOV-000008`, saved and refreshed; authenticated FetchXML confirmed both values absent while Branch remained La Merced, Cash Account remained Caja La Merced, and Status remained Draft. |
-| UI-08 | Branch / Shared transition | Changing to Shared removes the branch from the persisted record and uses a shared account; changing back to Branch requires a valid active branch | **Partial pass 2026-10-23:** User saved and refreshed `MOV-000008` as Shared using `Cuenta bancaria principal`. Authenticated FetchXML confirmed Scope Shared, a null Branch, a shared Cash Account, and Status Draft. **Reverse Shared → Branch is not yet tested.** |
-| UI-09 | Post valid Draft | On authorized admin confirmation, the record transitions to Posted exactly once; the page becomes read-only; a stale-edit retry is rejected | Not executed |
-| UI-10 | Reject invalid post | Zero/invalid amount, missing mandatory data, inactive/group/999 category, mismatched/inactive cash account and non-PEN currency are rejected by Dataverse | Server-side tests passed previously; UI not executed |
-| UI-11 | Void valid Posted | Admin must provide a reason, no financial fields change, status becomes Voided and remains immutable | Server-side tests passed previously; UI not executed |
-| UI-12 | Budgets | View annual versions and allocations without an actionable Approve control; an unauthorized direct status change to Approved remains blocked | Server-side approval block verified; UI not executed |
-| UI-13 | Datos maestros | Active/inactive, group/leaf categories, branches and cash accounts render correctly; no accidental creation or mutation occurs in the consultative page | Not executed |
-| UI-14 | Error and loading states | API failure preserves user input, shows an actionable readable error and never reports success for a failed write | Not executed |
-| UI-15 | Responsive and keyboard use | Desktop, narrow/mobile width, tab navigation, form labels, focus and contrast remain usable | Not executed |
-| UI-16 | Non-admin identity | Owner/team and finance role permissions, restrictions on Post/Void and branch access | **Deferred by project decision** |
+| ID | Scenario | Required observation |
+| --- | --- | --- |
+| UI-01 | Launch authenticated app | Navigation to Gastos, Presupuestos, Datos maestros and Detalle del gasto; no blank page or unexpected access |
+| UI-02 | Expense list and filters | Reference, date, status, amount PEN, category, branch/scope and payment class correct; empty state clear; record-limit disclosure |
+| UI-03 | Status and search | Draft/Posted/Voided filters return only accessible matching data; no bypass of branch/team security |
+| UI-04 | Create Draft | A Draft record is created exactly once and Dataverse assigns its identity; never Posted from create |
+| UI-05 | Detail navigation | Selected record ID is passed and the correct record is shown after opening, refreshing and returning |
+| UI-06 | Edit Draft | Date, amount, class, scope, branch, active leaf category, cash account, description, optional reference and PEN currency round-trip correctly |
+| UI-07 | Clear nullable Draft fields | Clearing optional text/lookups actually persists a null; stale data is not silently retained |
+| UI-08 | Branch ↔ Shared | Branch→Shared clears prior branch association and accepts only permitted shared account; reverse path requires valid active branch/account |
+| UI-09 | Post authorized Draft | Server validates all required values and privilege, transitions once to Posted, rejects stale retry and prevents subsequent arbitrary updates |
+| UI-10 | Reject invalid Post | Missing/inactive/group/999 category, invalid or missing date, amount, account, scope/branch/currency are rejected while preserving Draft |
+| UI-11 | Void authorized Posted | Authorized, reasoned Void accepted and audited exactly once; no financial fields or void reason can be retroactively changed |
+| UI-12 | Budget authoring | Create versioned Draft budget and monthly allocations, update Draft, submit with confirmation; reject invalid lines and edits to submitted/approved versions |
+| UI-13 | Catalog views | Categories, branches and accounts display active/historical data correctly; only authorized admins mutate actual catalogs |
+| UI-14 | Loading, error and empty states | Server errors preserve input and never claim success; missing privileges are explained without leaking records |
+| UI-15 | Keyboard, responsive and accessibility | Desktop, tablet and phone navigation; labels, focus, controls, contrast, alerts, no clipped data or page-wide horizontal overflow |
+| UI-16 | Independent role and branch access | Verify non-admin owner/team scope, all denied Post/Void cases, shared-vs-branch isolation and audit access under real second identity |
 
-## Highest-risk test sequence
+**Budget approval gate:** Do not expose an effective Approve action while [ADR 0004](decisions/0004-safe-budget-approval.md) has not passed independent two-user role testing, separation of duties and competing-request rollback/concurrency acceptance. A hidden button is not permission. A simulated UI approval is not a real approval.
 
-1. Open Financial Manager through the authenticated Power Apps application, not a manually constructed URL.
-2. From **Gastos**, create one clearly marked disposable Draft. Confirm a reference is created; test whether the editor opens with the same record ID.
-3. Save complete but fictitious data with a valid active leaf category and branch/account pair. Refresh, compare every field and confirm the selected currency is PEN.
-4. Remove one previously saved optional value and refresh. Record whether it truly cleared; if it did not, do not accept UI-07.
-5. Test both the Branch and Shared routes, including cleanup of an old branch association.
-6. Test posting and voiding only when the development account's privileges are known and after verifying the record is explicitly disposable. Posted and Voided records are intentionally immutable and cannot be deleted via ordinary operations, so avoid creating them casually.
-7. Confirm errors and success notifications reflect server responses, not just button clicks.
+## Financial Workspace — synthetic preview only
 
-## Known limitations and immediate release blockers
+| ID | Scenario | Required observation |
+| --- | --- | --- |
+| WX-01 | Data truthfulness | The 310 invented Posted payments reconcile with fixture totals, never with production claims; Demo banner visible |
+| WX-02 | Period and scope filters | Month/year/category/scope filters update KPI, treemap, list and CSV identically |
+| WX-03 | Category explorer | Rectangle area is proportional to selected Posted amount, category drill to accounts and actual fixture movements works, list alternative is operable by keyboard |
+| WX-04 | In-memory Draft editor | Local-only Draft create/edit/discard works with field errors and visible non-persistence disclosure; no Direct Dataverse connection |
+| WX-05 | Transaction detail | Correct selected synthetic record, open/close panel, amount, account/scope and clear selection; no edit to Posted |
+| WX-06 | Mobile | 390px phone page has no horizontal root overflow, filters and treemap keyboard/touch work, table cards fit |
+| WX-07 | Security boundaries | No live financial endpoints, browser credentials, tokens, false role enforcement, posting, void or approval paths |
+| WX-08 | Demo role clarity | If future role preview exists, it is explicitly illustrative, never treated as real access permission |
 
-- Microsoft supports `Xrm.Navigation.navigateTo({pageType:"generative", pageId, recordId, entityName})`, but the target page **must be configured to accept** these input parameters. Verify this inside the running app. Reference: [Microsoft navigateTo](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-navigation/navigateto).
-- The editor currently assembles an `updateRow` payload in two stages: save Draft, then request Posted. Confirm the request really persists and that a failed Post never shows a false success.
-- Clearing the document reference and Category from an existing Draft passed UI-07 in the running app and was confirmed by FetchXML. Other optional fields and the Branch/Shared transition still require targeted tests; do not generalize UI-07 to every field without evidence.
-- All summary amounts on generated pages are restricted to loaded records; they are **not** complete financial reports or approved budget-versus-actual metrics.
-- The budget server plug-in deliberately forbids approval. Do not enable it through a button, flow, or modified user role. The planned independent approver preflight is implemented and tested in source but not registered or used by the live plug-in. See [ADR 0004](decisions/0004-safe-budget-approval.md).
-- Direct Activity Event writes are blocked until a trusted server-side event writer is designed and tested. Dataverse native audit remains authoritative.
-- The alternative full user/team role test is explicitly deferred.
-- Solution export packs with known PluginAssembly component warnings; independent cross-environment import verification is still pending.
+The current React Workspace is **not** an authorized Dataverse client. A production interface requires Entra authenticated access, server-side role checks, record ownership isolation, activity/audit validation, and independent negative security tests before any real write.
 
-**Release decision:** no production acceptance until UI-01 through UI-15 pass with evidence, the required authorization tests are eventually completed, and an independently imported solution has been verified. Keep source changes exclusively on `develop` until review.
+## Reproducible automated tests
 
-## Development deployment evidence — 2026-10-23
+```powershell
+python -m unittest discover -s tests -q
+python scripts/check_repository.py
+npm --prefix experiments/financial-workspace run build
+node experiments/financial-workspace/smoke.mjs
+powerbi-report-author validate power-bi/FinancialManager/FinancialManager.pbip
+```
 
-- Confirmed the `FinancialManagerDev` PAC profile was already authenticated to `financial-manager-dev`. No interactive sign-in or profile reset was needed.
-- Updated **Detalle del gasto** and **Gastos** in the development model-driven app using their existing generated-page IDs; did not create or reattach pages.
-- Power Platform CLI reported successful publish of both pages. Immediately downloaded each deployed page and compared its normalized TSX content with the source tree; both matched. The app still has four generated pages.
-- All nine model-app source tests passed and both edited pages transpiled. A read-only FetchXML request verified connectivity, without reading business-level financial records.
-- **Not an interactive acceptance pass.** UI-04 through UI-08 still require a disposable Draft, running-app navigation, saving/refreshing, clearing optional values, and checking Branch/Shared persistence. The CLI publish and source round-trip do not establish that `dataApi.updateRow` accepts every nullable lookup binding.
-- No Posted or Voided records were changed, no budget approvals were enabled, and no Activity Event writes were made. Second-user role verification remains deferred.
-- A fresh **unmanaged solution export** completed successfully to a local temporary ZIP (17 archive entries, including `solution.xml` and `customizations.xml`); this is not an independent import test and the ZIP was not added to the public repository.
+The browser smoke assumes an existing local preview at `http://127.0.0.1:5178/` and Microsoft Edge installed on the Windows device. Run it only with the local demo. Pass/fail of these tests does **not** replace actual acceptance of Dataverse write operations and permissions.
 
-## UI copy and observed Draft — 2026-10-23
-
-- The user supplied screenshots of the **Power Apps designer previews**: Gastos displayed one Draft, `MOV-000008`; a separate standalone preview of Detalle del gasto displayed the no-record-context message. This standalone preview is not evidence that record-context navigation failed. Live `Abrir` navigation remains untested.
-- A **read-only authenticated FetchXML** query confirmed `MOV-000008` in `fmg_financialtransaction` with description `Energia, octubre`, status `Draft`, and no payment date or amount. No record was created, posted, voided, or edited by the verification script. The user's already-created Draft can be used for UI-05 through UI-08.
-- Removed redundant scope/development badges, internal technical commentary, and long disclaimer text from Gastos and Detalle del gasto. The loaded-row limit remains visibly described in KPI text and the existing `hasMore` notice.
-- Both pages transpiled, were uploaded to their **existing page IDs**, and were published in `financial-manager-dev`. Fresh downloads of each page matched the repository source after normalizing BOM/end-of-file whitespace. The app still has exactly four generated pages.
-- **Acceptance status unchanged** for UI-05–UI-08: run the model-driven application (not individual designer previews), open `MOV-000008` through `Abrir`, save fictitious fields, refresh and compare Dataverse, clear optional fields, then test Branch/Shared. Do not Post or Void.
-
-## Live UI-05 acceptance and navigation-label blocker — 2026-10-23
-
-- A user-provided authenticated, running-app screenshot (not the isolated maker preview) shows the `Detalle de gasto` page opened with record context for `MOV-000008`. The rendered reference, status Draft and description match the authenticated Dataverse FetchXML read. UI-05 is accepted on that evidence; UI-06 to UI-08 remain unverified.
-- Read-only FetchXML confirmed the same record has no payment date or amount yet. Active catalog lookup identifies group `600 Servicios y operación fija`, leaf `601 Energía Eléctrica`, active `La Merced` branch and branch-specific `Caja La Merced` cash account. Use a fictitious `1.23` PEN, `2026-10-23`, `Pago operativo`, scope `Por sede`, and document reference `TEST-UI-008` to test Save Draft and reload. Do not Post or Void.
-- **Navigation defect:** the authenticated app displays four items labeled `Nueva subárea` and a group `Nuevo grupo`, despite the source sitemap containing the intended titles. The live sitemap was read by the existing DataverseDeployment SDK utility; it has exactly the four expected page IDs and **six** default `SitemapDesigner.NewArea/NewGroup/NewSubArea` resource IDs.
-- A guarded experiment attempted to remove those default resource IDs and add localized titles while keeping all page identifiers fixed. A backup XML was created in the computer's TEMP folder, but **the post-publish readback did not match**, and a second read-only inspection still found all six default IDs. The experiment is not considered successful. Its unverified source changes were reverted before commit. Do not retry blindly or use a full solution import just to update navigation labels; use the app's navigation designer, save/publish, then re-export and confirm the actual labels.
-- No Financial Transaction record or catalog row was modified by these inspections. Approval of budgets and direct Activity Event writes remain blocked.
-
-## Lookup persistence repair deployment — 2026-10-23
-
-- Root cause: `expense-detail.tsx` used raw Web API `@odata.bind` keys inside the generative-page `dataApi.updateRow` call. Those keys can be ignored as unknown properties, leaving lookups unassigned without a write failure. The actual generated `RuntimeTypes.ts` contract defines `_fmg_category_value`, `_fmg_branch_value`, `_fmg_cashaccount_value`, and `_transactioncurrencyid_value` as writable `/<logical-singular>(<guid>)` references.
-- Replaced the payload with typed FK fields and explicit `null` for cleared optional relationships. Added a post-write `dataApi.retrieveRow` check that verifies category, branch, account, and PEN currency, and reports mismatches instead of claiming success.
-- All **18 Python repository tests** passed; the generated detail page transpiled successfully. The corrected page was published to the **existing** `Detalle del gasto` ID, then freshly downloaded and compared: deployed source matches `develop`.
-- A fresh unmanaged `FinancialManager` solution export succeeded (17 entries, valid `solution.xml` and `customizations.xml`) to a local temporary ZIP, not the public repository. The correction's runtime Lookup persistence remains **pending explicit user Save/Refresh and authenticated Dataverse readback**; no test record was edited by the deployment.
-- Sources: Microsoft Power Platform generated-page guidance on writable `_<field>_value` fields and local `RuntimeTypes.ts`; standard Web API `@odata.bind` is a different interface. Do not label UI-06 passed before the live retest.
-
-## Expanded scope and budget authoring — 2026-10-23
-
-- The project owner authorized **phased financial-module expansion** beyond the existing expense-and-budget baseline. See [ADR 0003](decisions/0003-expanded-financial-scope.md). This is not permission to bypass budget approval controls or to treat income as an expense transaction.
-- A budget-authoring revision adds creation of a **Draft** annual budget (year, scope, active branch where relevant, version and effective month) and creation of nonnegative two-decimal PEN **monthly allocations** against active leaf expense categories, excluding code `999`. Creation requests use generated-page typed Dataverse foreign keys; server-side plug-ins remain authoritative.
-- The existing budget Approval action is **not** enabled. No write paths for Approved status, Activity Event, master catalogs, or changes/deletion of existing budget records were added. The native `Abrir` form can still be limited to its system-generated fields and is not treated as full editing of an existing budget.
-- The budget revision passed the repository's 19 static Python tests and generated-page TypeScript transpilation. **Interactive creation, uniqueness rejection, branch/scope authorization and monthly allocation readback remain untested** and must be evidenced before marking UI-12 accepted.
-- UI-08 passed its **Branch → Shared** half with authenticated FetchXML confirming no Branch lookup and a valid shared bank account on `MOV-000008`; the reverse path remains pending. No payment was Posted or Voided.
-
-## Budget-authoring deployment evidence — 2026-10-23
-
-- The existing **Presupuestos** generated page was updated in place to expose **New Draft Budget** and **New Monthly Allocation** forms using typed Dataverse `dataApi.createRow` calls. Added active-branch and active-leaf selectors, PEN currency lookup and basic format validation. No approval button, history rewrite or Activity Event mutation was added.
-- The page was transpiled successfully and published to the original budget page ID; a fresh download from the environment exactly matched the source committed on `develop`.
-- The authenticated development table had **zero budget headers** before this rollout (aggregate read only). A successful publish therefore **does not verify the new Create UI workflows**. Test a clearly labeled synthetic Draft and one allocation with Save/Refresh/FetchXML before marking UI-12 passed.
-- A new unmanaged `FinancialManager` solution export completed successfully with `solution.xml` and `customizations.xml`; it was held in TEMP and not committed. This is not an independent import/migration acceptance test.
-- Power BI Desktop was installed locally using the official Microsoft Store package and launched. Authentication inside Power BI is a separate user action; no PBIP report was created or published in this rollout.
-
-## Budget page rendering and server acceptance check — 2026-10-23
-
-- User screenshot shows the **running Presupuestos page** with zero budget versions, zero allocations and zero submitted budgets. The New Budget button is enabled and New Allocation is disabled until a Draft budget exists. This confirms only the **initial list/empty state rendering**; it does not prove successful browser creation.
-- A fresh authenticated SDK `budget-verify --apply` passed **9/9 rollback-only live tests** in `financial-manager-dev`: create-and-submit with allocation allowed, creation directly Approved denied, empty submission denied, approval blocked, duplicate allocations denied, changes to Submitted records denied, direct Activity Event create denied, and administrator rejection allowed. All test transactions were deliberately rolled back. Existing application data was not modified.
-- The next interactive acceptance is a clearly labeled synthetic **Branch/La Merced 2027 Draft budget** and one `601 Energía Eléctrica` monthly allocation in PEN. Confirm persistence via FetchXML and verify UI refresh; do not approve or introduce actual company figures.
-
-## Branch and category Yes/No selector fix — 2026-10-23
-
-- During the first live Draft-budget UI-12 attempt, the user reported that changing Scope to Branch showed an empty Branch selector.
-- An authenticated read-only FetchXML query confirmed `La Merced (LM)` and `San Ramón (SR)` both exist and are active; catalog data is not missing.
-- Root cause identified in `budgets.tsx`: the selectors and allocation validation compared Dataverse Yes/No fields with `===1`, which excludes `true` values returned by some generated-page DataAPI paths. The already accepted expense-detail page uses `active(v) => v===1 || v===true`.
-- Updated budget Branch and active-leaf Category selectors and allocation validation to handle either representation, and changed the page cache key to load the new revision. Added a regression test. This change affects only client read/filter logic; no budget, allocation, approval or payment record is written during diagnosis.
-- **Interactive acceptance is still pending**: refresh the running app, select Scope Branch, check LM/SR dropdown, and create the synthetic Draft budget only after confirming expected branch availability. Then verify the newly persisted lookup in Dataverse.
-
-## Budget allocation workspace implementation — 2026-10-23
-
-- The user-created `UI-TEST-BUDGET-2027-LM` was found in Dataverse: 2027, version 1, Branch/La Merced, effective from month 1, status Draft. This was a read-only check.
-- Expanded the existing `Presupuestos` page with a per-budget monthly allocation table. An administrator/owner can select a version, inspect month/category/amount, create allocations for Draft budgets, and edit **only the amount** of an existing Draft allocation. The parent Budget/Category/Month fields remain fixed during edits; the server BudgetIntegrity plug-in remains the source of authority.
-- New allocation editing and display were implemented and transpiled; interactive confirmation and complete access/permissions testing are deferred to the final Power Apps acceptance pass, at the owner's request.
-- No budget approval, Activity Event writing, or update to existing company financial data is introduced.
-
-## Budget presentation workflow — 2026-10-23
-
-- Added explicit **Presentar** workflow to the existing budget page, available only for Draft budgets that have at least one queried allocation. The UI displays an irreversible-state confirmation before calling `dataApi.updateRow("fmg_budget", id, {fmg_status:797280401})`.
-- This is **submission, not approval**: it does not set Approved, ApprovedBy, or ApprovedOn and does not write Activity Event. The existing synchronous BudgetIntegrity server plug-in remains authoritative for owner/role, version uniqueness, nonempty allocation, and transition checks.
-- Submitting a budget makes its allocations read-only within the page; the server blocks direct edits of Submitted allocations. Rejection/approval roles and concurrent-version safety remain deferred for final authorization acceptance.
-- The owner requested to postpone extensive interactive test scripts until completion of the Power Apps layer. Compilation and repository/CI checks continue to be required for every deployment. Do not mark interactive presentation as accepted based only on compilation or publication.
-
-## Source hygiene and budget Draft editing — 2026-10-23
-
-- Audited repository source legibility. The four `power-platform/model-apps/financial-manager/*.tsx` **hand-maintained page** files now use pinned Prettier 3.6.2 rules (100-column print width, 2-space indent, consistent line endings) with `npm ci`, `npm run format:app`, and `npm run check:format`; the quality GitHub Actions job enforces formatting on future changes.
-- **Excluded vendor-generated material**: `RuntimeTypes.ts`, unpacked Dataverse solution XML, and plug-in assemblies were not reformatted. The workspace's `.editorconfig`, `.gitattributes`, `.prettierignore` and ignore rules document these boundaries.
-- Refactored whitespace-sensitive Python structural assertions to check code regardless of Prettier spacing, without removing the Dataverse mutation/security guardrails.
-- Added **Edit** to Draft budgets in the Presupuestos workspace. Before allocations exist, title, year, version, effective month, scope and branch can be edited subject to server validation. Once allocations exist, only the budget title can change in this editor, with server lifecycle validation still authoritative. The UI never enables Approved or directly writes Activity Event.
-- Static Python tests, guard checks, formatting and all four CLI TypeScript transpilation steps completed successfully. Interactive edit and any access/permissions implications remain part of deferred acceptance; do not claim operational UI acceptance based on these checks alone.
-- **Navigation remains a known defect**: runtime can show `Nuevo grupo`/`Nueva subárea` even though exported sitemap source has correctly named `Titles`. Official navigation-design guidance recommends editing localized titles in the model-driven app designer and choosing **Save and Publish**; an earlier programmatic SDK write did not pass readback. Do not treat it as fixed until the runtime labels are checked. Preserve the four existing page IDs and original sitemap navigation nodes.
-
-### Four-page deployment source roundtrip — 2026-10-23
-
-- After the formatting and Draft budget-editing commit `6c78c10`, the **same four page IDs** (Gastos, Detalle del gasto, Datos maestros and Presupuestos) were updated in `financial-manager-dev` with PAC CLI, preserving the existing app and data-source declarations.
-- Fresh authenticated `pac model genpage download` results matched all four hand-maintained repository TSX files after normalizing only BOM and trailing whitespace. `pac model genpage list` showed exactly four registered pages.
-- GitHub Actions **Repository validation** for `6c78c10` passed, including the pinned Prettier formatting check. None of the generated `RuntimeTypes.ts` or exported solution XML files were changed by the formatting pass.
-- This is a **source/deployment acceptance gate**, not interactive UI acceptance: Draft budget edit/save, navigation menu labels, permissions, and financial lifecycle screens still need the final running-app acceptance.
-
-## Navigation label remediation — 2026-10-23
-
-- Root cause: the original app-aware sitemap contained only `1033` title nodes while the sole enabled Dataverse language was **3082 (es-ES)**. Initial template ResourceIds had been removed from the live sitemap but remained in an older source export; this explains why the two versions must be compared directly.
-- Rebuilt a guarded SDK navigation command that verifies the unique sitemap and all **four original generated-page GUIDs**, preserves Area/Group/SubArea IDs, and sets localized titles `Financial Manager` (area), `Gestión financiera` (group), `Gastos`, `Presupuestos`, `Datos maestros`, `Detalle del gasto`.
-- The unpublished XML change was retained and verified. A sitemap-only `PublishXmlRequest` did **not** promote the unpublished labels. Publishing the **existing application module** through `PublishXmlRequest` with `<appmodules>` successfully promoted them; a new published read verified all six titles and no ResourceId placeholders.
-- A separately obtained unmanaged `FinancialManager` solution export and unpack confirmed the published site map includes LCID `3082` for every node with the four original page IDs. Only this real exported sitemap XML is updated in Git; its structures are not hand-formatted. The 3082 names and absence of template resources are now enforced in source tests.
-- **Remaining UI acceptance:** refresh the running Financial Manager app and confirm the sidebar actually displays `Gestión financiera` and the four intended page labels. Dataverse published metadata verification is complete; browser cache/runtime inspection is not yet marked as accepted.
-
-## Approval arbitration and Power BI source preparation — 2026-10-23
-
-- Added `BudgetApprovalOperation` as an **unregistered server-side transaction primitive**. It refuses missing transaction context, verifies explicit approver role membership and segregation, requires a Submitted budget with allocations and RowVersion, attempts an exclusive annual scope claim (`fmg_budgetapprovalclaim.fmg_scopekey`), then uses an optimistic-concurrency `UpdateRequest` to set Approved and server-attributed ApprovedBy/ApprovedOn. A UNIQUE ACTIVE alternate key and synchronized Dataverse custom API transaction are prerequisites, **not yet provisioned**.
-- Live read-only Dataverse query found **zero** roles named `Financial Manager Budget Approver`. No second human identity was verified or assigned. The previously deployed `BGV009` blocker was not altered; the new operation is not callable from Power Apps. See [ADR 0004](decisions/0004-safe-budget-approval.md).
-- Added fake-service tests including conflicting annual version claims, role denial, missing allocation, no transaction and missing RowVersion. The 53 C# tests pass locally. A fake-service conflict test is **not** a real concurrent Dataverse transaction test.
-- Created separate, parameterized Power BI M starter queries for category, branch, cash account and calendar, added proposed DAX, and tightened the Posted expense fact to require the PEN currency code. All files are code only; no tenant host, tokens or financial data were committed. **No PBIP or authenticated Desktop refresh exists yet.**
-- The Power BI Service user screenshot showed only UPC in the tenant switcher, with no other available tenants. This is an identity/Power BI service tenant availability issue, not a Power Apps budget-approval feature. The existing 59-day Power BI trial should not be cancelled as a workaround.
-
-## Approval infrastructure provisioned — 2026-10-23
-
-- Provisioned `fmg_budgetapprovalclaim` in `financial-manager-dev`, with required scope key, budget lookup and the unique `fmg_BAC_AnnualScopeUnique` alternate key. Read-only SDK metadata subsequently confirmed **Active** index. No claim records or budgets were approved.
-- Provisioned one `Financial Manager Budget Approver` role in the root business unit, not auto-assigned or manually assigned. Its unmanaged solution role XML includes nine automatic Dataverse platform privileges (including SharePoint operations); privilege review is required before any user gets this role.
-- Prepared `BG_ApproveBudget`, an unregistered bound Custom API plug-in, and an internal-only BudgetGuard approval-marker exception. Existing live `BGV009` remains deployed; the Custom API does not exist yet, so approval is still unavailable.
-- An authentic unmanaged `FinancialManager` solution export was unpacked into a temporary folder; only new generated Claim entity/Role components and the five affected generated relationship/solution XML files were copied into Git. No record rows, secrets or raw ZIP exports were committed.
-- Implementation source passed in-process C# tests for direct-write rejection and nested trusted approval metadata only. **Do not call this end-to-end validated or enable UI approval** until the second identity, hardened security role, exclusive claim write protection, API registration and real concurrent two-user Dataverse tests pass.
-
-## Claim write protection deployment blocked safely — 2026-10-23
-
-- Added a fail-closed `BAC_BlockDirectClaimWrites` plug-in in source: direct claim Create, Update and Delete are denied unless a trusted nested transactional `fmg_ApproveBudget` operation creates the claim for the same budget; claims are immutable. Added C# guard tests and registered **plans** (source only) for three synchronous PreValidation steps.
-- Source code for the dedicated `BG_ApproveBudget` Custom API and the original BudgetGuard marker path is compiled/tested but **not deployed**; the production development-environment guard remains the earlier BGV009 version.
-- Attempted a guarded in-place package upgrade in `financial-manager-dev`, which **aborted before changing the package** because the currently deployed plugin package content could not be retrieved for backup using the SDK's standard `content` attribute. No new Claim plug-in steps were registered. Microsoft stores plug-in package content in file storage; future upgrade should use a supported PRT / PAC Plug-in Push route with a separately verified recoverable baseline and afterward independently verify all active steps.
-- No approval API is registered, the approver role is unassigned (0 direct and 0 team assignments), the annual scope key is Active. No budget status was changed, and no approval or claim data rows were created.
-
-## Power BI Desktop connection and first PBIP — 2026-10-23
-
-- User screenshot of the native **Dataverse Navigator** in Power BI Desktop showed the authenticated **financial-manager-dev** environment and its Dataverse table catalog; it requested sign-in but not a hostname. This verifies **environment discovery and authentication**, not an imported table, a successful TDS query, a model refresh or an available Power BI Service workspace.
-- Generated the report skeleton using the official Microsoft powerbi-report-author CLI. Source now contains the real FinancialManager PBIP file, a PBIR report with two pages/nine visuals, and five TMDL Import tables, four one-direction relationships and twelve proposed DAX measures. The M query sources are separated by table, and the Posted/PEN fact still excludes Draft/Voided rows.
-- Power BI's PBIR validator returned zero errors and warnings. Microsoft's Analysis Services TmdlSerializer successfully deserialized the model with the expected table/measure/relationship counts. **No interactive Desktop visual preview, refresh, reconciliation or publication** has been performed. This matches the owner's request to defer extensive acceptance.
-- The DataverseHost parameter is a placeholder in Git rather than a committed tenant URL; credentials, cached rows, ABF and PBIX must remain local. When the Desktop project is opened for interactive acceptance, set the parameter to the verified environment, refresh and reconcile with independently sourced Dataverse totals.
-- A valid but empty Posted spending report is expected if the development environment contains only synthetic Draft expense records. Do not manufacture Posted transactions solely to populate visualizations.
-
-## Package recovery and Power BI expansion — 2026-10-23
-
-- Fixed the previous package-backup blocker with Dataverse's supported `InitializeFileBlocksDownload` and `DownloadBlock` messages against the `pluginpackage.package` file column. Recovered the **actual deployed** `fmg_BudgetIntegrity` NuGet (11,536 bytes), verified that it contains a NuGet manifest, read the saved bytes back and recorded SHA-256 locally. Backup stays under the developer PC's TEMP directory and is excluded from Git.
-- Existing package ID was preserved. The **first** PAC push succeeded but used a stale NuGet from `bin/Release`: its SHA-256 exactly matched the old deployed backup, and the new plug-in classes were absent. A fresh `dotnet pack` into an **empty external PackageOutputPath** produced a distinct NuGet with the correct 29,184-byte assembly and both new types. The **second** PAC push succeeded. Fresh authenticated read-only Dataverse inspection confirmed `PLUGIN_TYPE_BG_ApproveBudget=1` and `PLUGIN_TYPE_BAC_BlockDirectClaimWrites=1`, with all nine previous financial guard steps still present. Neither class has been registered as a new step or API.
-- A combined attempt to register the three new `BAC_BlockClaim*` steps and execute rollback-only budget integration tests was blocked by the remote execution security controls. No completion is claimed for those steps. Read-only inspection verified **zero registered Claim protection steps**. The approval Custom API still has not been registered and no approver role is assigned, so **approval must remain disabled**. The next permitted action is separately authorized step registration followed by negative/rollback tests, role review and two-identity concurrency verification, before any UI enablement.
-- The now-obsolete SDK update on `pluginpackage.content` has been removed as a deployment path; `budget-upgrade` fails closed with instructions to use PAC. Keep the recovered baseline available for a reviewed rollback.
-- Extended the version-controlled PBIR from two to **four** pages: `Resumen de gastos`, `Sedes y movimientos`, `Análisis de categorías` and `Tendencias de pagos`. It now has **16 native visuals**, while retaining five Import tables, four one-way relationships and twelve DAX measures. PBIR schema validation passed. No Desktop refresh, numeric reconciliation, report publication or RLS acceptance has been performed.
-
-## Budget approval development infrastructure integration — 2026-10-23
-
-- Verified `pac auth list` has the `FinancialManagerDev` account selected and SDK `WhoAmI` matches the known development organization.
-- Used the current, validated budget plug-in package. All **12** synchronous PreValidation steps now exist and were inspected, including `BAC_BlockClaimCreate`, `BAC_BlockClaimUpdate` and `BAC_BlockClaimDelete`. The `budget-verify` live suite passed **10 rollback-only transactions**, including direct claim creation blocked with `BAC003` and status mutation blocked with `BGV009`. No synthetic rows remained committed.
-- Created a **private, budget-bound, privilege-gated** `fmg_ApproveBudget` Custom API with main plug-in type `BG_ApproveBudget`, disabled third-party processing steps, and execution privilege `prvCreatefmg_BudgetApprovalClaim`. Confirmed it appears in the authentic unmanaged solution export.
-- Hardened `BudgetApprovalPreflight` to reject a creator, owner, the submitted row's immutable `modifiedby` user, and a `modifiedonbehalfby` identity. Added three separate C# tests (66 budget tests passed). The API rejects an identity without the explicit role **before** budget retrieval.
-- One negative live API probe using a random nonexistent budget initially failed its expectation: the old plug-in binary reported `budget not found`. Diagnosed that `dotnet pack` consumed an old `bin/Release/net48/publish` assembly. Resolved with explicit `dotnet publish -p:PublishOnBuild=false` (Power Apps MSBuild otherwise creates a circular target), then fresh `dotnet pack -p:PublishOnBuild=false` and byte-level verification of both security behavior strings in the NuGet. Re-deployed with `pac plugin push` after a separate checksum-verified backup of the previously deployed package. **The repeat live API probe passed with BAP003**, proving unauthorized rejection before budget access.
-- The approver role remains **unassigned to users and teams**, with nine requested functional privileges (no allocation-write/event-write/delete grants). The next solution export showed Dataverse retained four SharePoint default privileges alongside the nine. A follow-up attempt to remove defaults never produced a completion response and the long-running client process was stopped; the source command was removed from the public runbook. Recheck current role privileges before any assignment. Do not state the four privileges were removed without evidence.
-- Actual Authorized/Independent approval, two-identity segregation, concurrent same-scope claims, rollback on write collision, updated Power Apps approval button, and approved-budget Power BI measures remain **unaccepted and disabled**. No user was granted approver powers; no real or synthetic budget was approved.
-
-## Power Apps live source and navigation recheck — 2026-10-24
-
-- Against the authenticated `financial-manager-dev` organization, `app-nav-inspect` returned `SITEMAP_ID_MATCH=True`, both published and unpublished Spanish 3082 localization present, and **zero** published/unpublished placeholder resource IDs. The four original generated-page identifiers were preserved.
-- `pac model genpage list` returned precisely four existing pages: Gastos, Presupuestos, Datos maestros, and Detalle del gasto.
-- All four were downloaded afresh to a temporary directory with `pac model genpage download`. Comparing each published `page.tsx` against its committed file, normalizing only BOM and trailing whitespace, returned **four exact matches**. No page update or publish operation was performed.
-- These checks establish published source and sitemap parity, **not** browser-level approval of save/edit/presentation, permissions, navigation clicks, error states, or accessibility. Those remain deferred to the final interactive acceptance round. Approval is not exposed in the UI, and no financial row was mutated.
+For release, validate source exports, installed solution compatibility, explicit signed-in role identities, debit/credit interpretation where applicable, server plug-in denial paths, budget versioning, recovery procedures, and Power BI publishing/RLS. Do not declare a real role or transaction accepted without corresponding server readback and denial tests.

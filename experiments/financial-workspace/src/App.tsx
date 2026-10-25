@@ -3,7 +3,7 @@ import {
   Activity, ArrowDownLeft, ArrowRight, ArrowUpRight, BarChart3, Building2,
   CalendarDays, Check, CheckCheck, ChevronDown, ChevronLeft, ChevronRight, CircleHelp,
   Copy, Download, ExternalLink, FileText, LayoutDashboard, Layers3,
-  LockKeyhole, Menu, Moon, Plus, ReceiptText, Search, ShieldCheck, SlidersHorizontal,
+  LockKeyhole, Menu, Moon, ReceiptText, Search, ShieldCheck, SlidersHorizontal,
   Sun, Wallet, X,
 } from "lucide-react";
 import {
@@ -11,6 +11,8 @@ import {
   Tooltip, XAxis, YAxis,
 } from "recharts";
 import fixture from "./data/demo.json";
+import CategoryExplorer from "./CategoryExplorer";
+import LocalDraftWorkbench from "./LocalDraftWorkbench";
 
 type Payment = {
   id: string;
@@ -24,11 +26,12 @@ type Payment = {
   flow: string;
   status: string;
 };
-type Page = "inicio" | "movimientos" | "presupuestos" | "analisis";
+type Page = "inicio" | "movimientos" | "categorias" | "presupuestos" | "analisis";
 const transactions: Payment[] = fixture.records as Payment[];
 const NAV = [
   { id: "inicio", label: "Inicio", icon: LayoutDashboard },
   { id: "movimientos", label: "Movimientos", icon: ReceiptText },
+  { id: "categorias", label: "Categorías", icon: Layers3 },
   { id: "presupuestos", label: "Presupuestos", icon: Wallet },
   { id: "analisis", label: "Análisis", icon: BarChart3 },
 ] as const;
@@ -37,7 +40,7 @@ const MONTH_LONG = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "juli
 const number = new Intl.NumberFormat("es-PE", { maximumFractionDigits: 0 });
 const pen = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", minimumFractionDigits: 2 });
 const compact = (v: number) => v >= 1000 ? `S/ ${(v / 1000).toLocaleString("es-PE", { maximumFractionDigits: 1 })} mil` : pen.format(v);
-const palette = ["#7d99ad", "#9db5a8", "#cfb6b0", "#aca1c2", "#c5b68f", "#879fae", "#b7b4a2", "#71958b", "#bcb3cc"];
+const palette = ["#416c77", "#7ca399", "#abc2bb", "#d4c3a5", "#889fa7", "#a7bcae", "#c7b6a5", "#7b9c96", "#cad8d5"];
 function dateLabel(input: string) {
   const [y, m, day] = input.split("-").map(Number);
   return new Date(y, m - 1, day).toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" });
@@ -133,8 +136,8 @@ function App() {
       </header>
       <main className="content">
         <div className="hero"><div className="hero-copy"><span className="hero-overline"><span/> FINANZAS MÁS CLARAS, CADA DÍA</span>
-          <h1>{page === "inicio" ? <>Todo en orden,<br/><em>a tu manera.</em></> : page === "movimientos" ? <>Cada movimiento,<br/><em>en contexto.</em></> : page === "presupuestos" ? <>Planifica con<br/><em>responsabilidad.</em></> : <>Los números cuentan<br/><em>una historia.</em></>}</h1>
-          <p>{page === "inicio" ? "Una vista tranquila de lo importante: gastos, movimientos y decisiones." : page === "movimientos" ? "Busca, filtra e inspecciona los pagos confirmados sin perderte entre tablas." : page === "presupuestos" ? "Los controles y aprobaciones siguen protegidos en Dataverse." : "Explora patrones y categorías, y continúa el análisis profundo en Power BI."}</p>
+          <h1>{page === "inicio" ? <>Todo en orden,<br/><em>a tu manera.</em></> : page === "movimientos" ? <>Cada movimiento,<br/><em>en contexto.</em></> : page === "presupuestos" ? <>Planifica con<br/><em>responsabilidad.</em></> : page === "categorias" ? <>Cada categoría,<br/><em>en perspectiva.</em></> : <>Los números cuentan<br/><em>una historia.</em></>}</h1>
+          <p>{page === "inicio" ? "Una vista tranquila de lo importante: gastos, movimientos y decisiones." : page === "movimientos" ? "Busca, filtra e inspecciona los pagos confirmados sin perderte entre tablas." : page === "presupuestos" ? "Los controles y aprobaciones siguen protegidos en Dataverse." : page === "categorias" ? "Profundiza por categoría y cuenta: importes, frecuencia y movimientos en su contexto." : "Explora patrones y categorías, y continúa el análisis profundo en Power BI."}</p>
         </div><div className="hero-aside"><span className="hero-decoration" aria-hidden="true">✳</span><span className="hero-year">{year}</span><span className="hero-period">GESTIÓN FINANCIERA</span></div></div>
 
         <div className="period-container"><div className="period-caption"><CalendarDays size={18}/><div><span>PERÍODO DE TRABAJO</span><strong>{year}</strong></div><div className="year-stepper"><button aria-label="Año anterior" onClick={() => { setYear(y => Math.max(2024, y - 1)); setMonth(0); }} disabled={year === 2024}><ChevronLeft size={16}/></button><button aria-label="Año siguiente" onClick={() => { setYear(y => Math.min(2026, y + 1)); setMonth(0); }} disabled={year === 2026}><ChevronRight size={16}/></button></div></div>
@@ -156,14 +159,19 @@ function App() {
           <div className="large-chart" role="img" aria-label="Gráfico del gasto total por mes"><ResponsiveContainer width="100%" height="100%"><AreaChart data={summary.monthly} margin={{ top: 15, right: 6, left: -13, bottom: 2 }}><defs><linearGradient id="spendingArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#91b0b0" stopOpacity=".35"/><stop offset="95%" stopColor="#91b0b0" stopOpacity=".02"/></linearGradient></defs><CartesianGrid vertical={false} stroke="var(--grid)" strokeDasharray="2 5"/><XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} interval={0}/><YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} tickFormatter={v => `${Math.round(v/1000)}k`}/><Tooltip content={<TooltipMoney/>}/><Area name="Gasto" type="monotone" dataKey="amount" stroke="#587e83" strokeWidth={2.7} fill="url(#spendingArea)" dot={false} activeDot={{r:5}} isAnimationActive={false}/></AreaChart></ResponsiveContainer></div>
           <div className="chart-bottom"><span><span className="legend-dot teal"/>Gasto mensual</span><span>Fuente: demostración determinística</span></div>
         </article>
-        <article className="surface category-surface"><div className="surface-heading"><div><h3>¿Dónde se concentra?</h3><ChartHint>Categorías con mayor gasto</ChartHint></div><IconBubble icon={Layers3} tone="lavender"/></div><div className="category-list">{summary.byCategory.slice(0,5).map((cat,i) => <button className="category-row" key={cat.name} onClick={() => { setCategory(cat.name); navigate("movimientos"); }}><span className="category-square" style={{background:palette[i%palette.length]}}/><span className="category-name">{cat.name}</span><span className="category-money">{compact(cat.amount)}</span><span className="category-progress"><span style={{width:`${summary.total ? 100*cat.amount/summary.total : 0}%`,background:palette[i%palette.length]}}/></span></button>)}</div><button className="subtle-link" onClick={() => navigate("analisis")}>Ver todas las categorías <ArrowRight size={16}/></button></article></div>
+        <article className="surface category-surface"><div className="surface-heading"><div><h3>¿Dónde se concentra?</h3><ChartHint>Categorías con mayor gasto</ChartHint></div><IconBubble icon={Layers3} tone="lavender"/></div><div className="category-list">{summary.byCategory.slice(0,5).map((cat,i) => <button className="category-row" key={cat.name} onClick={() => { setCategory(cat.name); navigate("movimientos"); }}><span className="category-square" style={{background:palette[i%palette.length]}}/><span className="category-name">{cat.name}</span><span className="category-money">{compact(cat.amount)}</span><span className="category-progress"><span style={{width:`${summary.total ? 100*cat.amount/summary.total : 0}%`,background:palette[i%palette.length]}}/></span></button>)}</div><button className="subtle-link" onClick={() => navigate("categorias")}>Ver todas las categorías <ArrowRight size={16}/></button></article></div>
         <SectionHead eyebrow="ACTIVIDAD DEL EQUIPO" title="Movimientos a la vista" more={<button className="inline-link" onClick={() => navigate("movimientos")}>Ver historial <ArrowRight size={16}/></button>}/>
         <div className="operational-grid"><TransactionList payments={visible} onSelect={setSelected} selected={selected?.id} compactList/><aside className="insight-panel"><div className="insight-overline">LECTURA RÁPIDA</div><div className="insight-graphic"><span className="insight-ring" style={{background:`conic-gradient(#698c8b ${summary.total ? (summary.shared/summary.total)*100 : 0}%, #e4e9e6 0)`}}><span>{summary.total ? ((summary.shared/summary.total)*100).toFixed(1) : "0"}<small>%</small></span></span><span><strong>Compartido</strong><small>Del importe confirmado</small></span></div><div className="insight-rule"/>{summary.byFlow.map((flow, i) => <div className="flow-row" key={flow.name}><span className="flow-dot" style={{background:palette[i]}}/>{flow.name}<strong>{compact(flow.amount)}</strong></div>)}<p>Los importes reflejan solo pagos ficticios contabilizados; no equivalen a saldo disponible.</p></aside></div>
         </>}
-        {page === "movimientos" && <><SectionHead eyebrow="GESTIÓN DIARIA" title="Registro de pagos" more={<button className="primary-button ghost-disabled" onClick={() => setHelpOpen(true)}><Plus size={17}/> Nueva operación <LockKeyhole size={14}/></button>}/>
+        {page === "movimientos" && <><SectionHead eyebrow="GESTIÓN DIARIA" title="Registro de pagos" more={<span className="demo-tag"><span/> EDICIÓN LOCAL · SOLO PRUEBA</span>}/>
+          <LocalDraftWorkbench categories={categories.slice(1)} branches={[...new Set(transactions.map(t=>t.branch).filter(name=>name && name!=="Compartido"))].sort()} accounts={[...new Set(transactions.map(t=>t.account))].sort()}/>
           <div className="toolstrip"><label className="search-field"><Search size={18}/><input aria-label="Buscar movimiento" value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar referencia, cuenta o categoría..."/></label><button className="outline-button" onClick={exportCSV} disabled={!filtered.length}><Download size={16}/> Exportar demo</button></div>
           <div className="page-summary"><div><span>REGISTROS EN LA SELECCIÓN</span><strong>{number.format(summary.count)}</strong></div><div><span>IMPORTE TOTAL</span><strong>{compact(summary.total)}</strong></div><div><span>ÚLTIMO MOVIMIENTO</span><strong>{latest.length ? dateLabel(latest[0].date) : "Sin datos"}</strong></div></div>
           <TransactionList payments={visible} onSelect={setSelected} selected={selected?.id}/>{visible.length < filtered.length && <p className="table-footnote">Mostrando los 80 movimientos más recientes del filtro. La exportación incluye todos los registros filtrados.</p>}
+        </>}
+        {page === "categorias" && <>
+          <SectionHead eyebrow="EXPLORACIÓN FINANCIERA" title="Comprende el origen del gasto" more={<button className="inline-link" onClick={() => navigate("movimientos")}>Ver registro completo <ArrowRight size={16}/></button>}/>
+          <CategoryExplorer records={filtered} onOpenTransactions={name=>{setCategory(name);setSearch("");navigate("movimientos");}}/>
         </>}
         {page === "presupuestos" && <><SectionHead eyebrow="CONTROL PRESUPUESTARIO" title="Planificación y decisiones"/>
           <div className="budget-layout"><article className="surface budget-main"><span className="budget-icon"><ShieldCheck size={28}/></span><span className="eyebrow">ENTORNO DE DEMOSTRACIÓN · SOLO LECTURA</span><h3>Las decisiones sensibles tienen su propio espacio.</h3><p>Los presupuestos, las revisiones y las aprobaciones están protegidos por el servidor de Dataverse. Esta vista visual es una exploración del futuro espacio operativo y no muestra presupuestos simulados como si estuvieran aprobados.</p><div className="gate-grid"><div><Check size={18}/><strong>Integridad del servidor</strong><small>Reglas y validaciones independientes de la interfaz.</small></div><div><LockKeyhole size={18}/><strong>Separación de funciones</strong><small>Sin botones de aprobación ni acceso directo.</small></div><div><FileText size={18}/><strong>Versiones auditables</strong><small>Los cambios reales se revisan en Power Apps.</small></div></div></article>

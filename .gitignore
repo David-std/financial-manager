@@ -27,3 +27,8 @@ TestResults/
 # Operating system
 .DS_Store
 Thumbs.db
+
+# Local-only planning and historical execution notes
+/power-bi/EXECUTIVE-*.md
+/MASTER-PLAN.md
+/STATUS.md

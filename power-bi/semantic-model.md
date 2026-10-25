@@ -1,6 +1,5 @@
 # Financial Manager — semantic model contract
 
-Status: **Executive v7 PBIP source implemented** with 31 DAX measures and an authenticated earlier Desktop/Dataverse reconciliation (empty Posted/PEN fact). Positive-data visual acceptance and Power BI Service publication remain pending. See [Executive v7 specification](EXECUTIVE-V7.md). The project is versioned under [FinancialManager/](FinancialManager/).
 Source of truth: authenticated Financial Manager Dataverse, not files copied from the operational environment.
 Primary baseline: posted expense payments and budget versions. Subsequent receipt and transfer domains require separate facts and measures; see [ADR 0003](../docs/decisions/0003-expanded-financial-scope.md).
 
