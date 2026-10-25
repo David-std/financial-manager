@@ -3,9 +3,9 @@
   "name": "b8b39ec6450854ca0a5a",
   "position": {
     "x": 20,
-    "y": 256,
+    "y": 257,
     "z": 2000,
-    "height": 362,
+    "height": 351,
     "width": 847,
     "tabOrder": 15
   },
@@ -59,6 +59,51 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            },
+            "preferredCategoryWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "72D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
                 }
               }
             }
