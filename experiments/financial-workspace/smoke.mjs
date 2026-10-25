@@ -1,0 +1,57 @@
+import { chromium } from "playwright-core";
+import assert from "node:assert/strict";
+import os from "node:os";
+import path from "node:path";
+const EDGE = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+const browser = await chromium.launch({ executablePath: EDGE, headless: true, args: ["--disable-gpu"] });
+const base = "http://127.0.0.1:5178/";
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+const errors = [];
+page.on("pageerror", e => errors.push(e.message));
+try {
+  await page.goto(base,{waitUntil:"networkidle"});
+  await assertVisible(page,"Todo en orden");
+  await assertVisible(page,"DATOS SINTÉTICOS");
+  await assertVisible(page,"Transacciones");
+  await page.screenshot({path:path.join(os.tmpdir(),"FM-workspace-desktop-v1.png"),fullPage:true});
+  // Filtering affects values and operations; test the year change and reset.
+  await page.getByRole("button",{name:"Año anterior"}).click();
+  await assertVisible(page,"2025");
+  await page.getByRole("button",{name:"Año siguiente"}).click();
+  await page.getByRole("button",{name:/Feb/}).click();
+  await assertVisible(page,"febrero de 2026");
+  await page.getByRole("button",{name:"Restablecer"}).click();
+  await assertVisible(page,"el año 2026");
+  await page.getByRole("button",{name:"Movimientos",exact:true}).click();
+  await assertVisible(page,"Registro de pagos");
+  await page.getByRole("textbox",{name:"Buscar movimiento"}).fill("DEMO-EXP-0005");
+  const matching = await page.locator("tbody tr").count();
+  assert.equal(matching,1,"Search matches single deterministic transaction");
+  await page.locator("tbody tr").first().click();
+  await assertVisible(page,"DETALLE DEL MOVIMIENTO");
+  await page.getByRole("complementary",{name:"Detalle del movimiento"}).getByRole("button",{name:"Cerrar detalle"}).click();
+  await page.getByRole("textbox",{name:"Buscar movimiento"}).fill("");
+  await page.getByRole("button",{name:"Presupuestos",exact:true}).click();
+  await assertVisible(page,"Las decisiones sensibles");
+  await assertVisible(page,"Operaciones deshabilitadas");
+  await page.getByRole("button",{name:"Análisis",exact:true}).click();
+  await assertVisible(page,"Composición por mes");
+  await page.getByRole("button",{name:"Cambiar a tema oscuro"}).click();
+  assert.equal(await page.locator(".application.dark").count(),1);
+  await page.getByRole("button",{name:"Cambiar a tema claro"}).click();
+  await page.setViewportSize({width:390,height:844});
+  await page.reload({waitUntil:"networkidle"});
+  await page.screenshot({path:path.join(os.tmpdir(),"FM-workspace-mobile-v1.png"),fullPage:true});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > window.innerWidth + 3),false,"Unexpected horizontal page overflow at phone viewport");
+  await page.getByRole("button",{name:"Abrir navegación"}).click();
+  await assertVisible(page,"Movimientos");
+  await page.getByRole("button",{name:"Movimientos",exact:true}).click();
+  await assertVisible(page,"Registro de pagos");
+  await page.waitForTimeout(300);
+  await page.screenshot({path:path.join(os.tmpdir(),"FM-workspace-mobile-transactions-v1.png"),fullPage:true});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > window.innerWidth + 3),false,"Unexpected horizontal overflow on transactions");
+  assert.deepEqual(errors,[],"Frontend runtime errors");
+  console.log("WORKSPACE_SMOKE_PASS");
+  console.log("SCREENS="+[path.join(os.tmpdir(),"FM-workspace-desktop-v1.png"),path.join(os.tmpdir(),"FM-workspace-mobile-v1.png"),path.join(os.tmpdir(),"FM-workspace-mobile-transactions-v1.png")].join("|"));
+} finally { await browser.close(); }
+async function assertVisible(page,text) { assert.equal(await page.getByText(text,{exact:false}).first().isVisible(),true, "Expected text: "+text); }
