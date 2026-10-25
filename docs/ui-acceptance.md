@@ -31,14 +31,19 @@ The authoritative scope and invariants are [screens](screens.md), [security](sec
 
 | ID | Scenario | Required observation |
 | --- | --- | --- |
-| WX-01 | Data truthfulness | The 310 invented Posted payments reconcile with fixture totals, never with production claims; Demo banner visible |
+| WX-01 | Data truthfulness | The 310 invented Posted payments reconcile with fixture totals, never with production claims; One persistent, discreet environment indication visible in the header |
 | WX-02 | Period and scope filters | Month/year/category/scope filters update KPI, treemap, list and CSV identically |
 | WX-03 | Category explorer | Rectangle area is proportional to selected Posted amount, category drill to accounts and actual fixture movements works, list alternative is operable by keyboard |
-| WX-04 | In-memory Draft editor | Local-only Draft create/edit/discard works with field errors and visible non-persistence disclosure; no Direct Dataverse connection |
+| WX-04 | In-memory Draft editor | Local-only Draft create/edit/discard validates fields, survives in-app navigation and resets on refresh; single global environment disclosure; no Dataverse connection |
 | WX-05 | Transaction detail | Correct selected synthetic record, open/close panel, amount, account/scope and clear selection; no edit to Posted |
-| WX-06 | Mobile | 390px phone page has no horizontal root overflow, filters and treemap keyboard/touch work, table cards fit |
+| WX-06 | Mobile | 390px phone and 768px tablet have no horizontal root overflow, filters and treemap keyboard/touch work, table cards fit |
 | WX-07 | Security boundaries | No live financial endpoints, browser credentials, tokens, false role enforcement, posting, void or approval paths |
 | WX-08 | Demo role clarity | If future role preview exists, it is explicitly illustrative, never treated as real access permission |
+| WX-09 | Budget Draft planning | Create/edit Draft with month/category allocation, unique category/month pairs, total reconciliation, annual bars, discard; no approval or publish |
+| WX-10 | Work queue | Counts and items are derived only from session Drafts and disappear after refresh; incomplete fields accurately flagged, navigation retains Draft |
+| WX-11 | Activity feed | Only records actual local create/edit/delete actions in sequence; states non-authoritative; official Dataverse auditing is not simulated |
+| WX-12 | Single status indication | Only the topbar identifies the demo environment; individual forms show normal professional language, without suggesting real persistence |
+
 
 The current React Workspace is **not** an authorized Dataverse client. A production interface requires Entra authenticated access, server-side role checks, record ownership isolation, activity/audit validation, and independent negative security tests before any real write.
 

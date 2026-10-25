@@ -43,3 +43,41 @@
   .transaction-list tbody tr:has(.empty-state) { display:block; }
   .transaction-list tbody td.empty-state { display:block; white-space:normal; }
 }
+
+/* Product-level navigation and operational surface. Avoid repeating 'demo' labels
+   inside actionable screens; the top bar remains the authoritative environment cue. */
+.environment-indicator{border:1px solid #bfd8ce;border-radius:30px;background:#e8f2ee;color:#315f5a;padding:7px 10px;font-size:10px;letter-spacing:.1px;font-weight:800;white-space:nowrap}
+.environment-indicator:hover{background:#d7eae2}
+.dark .environment-indicator{background:#22463f;border-color:#426760;color:#c3e0d6}
+.hero-compact{min-height:155px;padding:24px 33px;background:linear-gradient(110deg,#edf4ef 0%,#dcebe8 72%,#d3e7e0 100%)}
+.hero-compact .hero-copy h1{font-size:clamp(26px,3vw,40px);line-height:1.1}
+.hero-compact .hero-aside{height:115px}
+.hero-compact .hero-year{font-size:46px}
+.home-command-rail{display:flex;align-items:center;gap:11px;border:1px solid var(--line);background:var(--surface);padding:17px 18px;border-radius:13px;margin:22px 0 18px}
+.home-command-rail>div{flex:1;min-width:0}.home-command-rail strong{display:block;font:760 15px/1.35 Manrope,sans-serif;margin:5px 0}
+.home-command-rail p{font-size:11px;line-height:1.6;color:var(--muted);margin:0}
+.home-command-rail button{display:flex;gap:9px;align-items:center;justify-content:space-between;min-height:45px;padding:10px 13px;border:1px solid var(--line);background:var(--surface-soft);color:var(--ink);border-radius:9px;font-size:11px;font-weight:750;white-space:nowrap}
+.home-command-rail button:hover{background:#e6f1ee}
+.home-command-rail button:first-of-type{background:#1e5963;color:white}
+.home-command-rail button:first-of-type:hover{background:#14434d}
+.nav-heading.secondary{margin-top:25px}
+@media(max-width:1220px){.home-command-rail{flex-wrap:wrap}.home-command-rail>div{flex:0 0 100%}}
+@media(max-width:650px){.home-command-rail{padding:13px;gap:8px}.home-command-rail button{flex:1;min-width:135px;white-space:normal;line-height:1.4}.environment-indicator{font-size:9px;padding:6px 8px}.hero-compact{min-height:125px;padding:22px}.hero-compact .hero-aside{display:none}}
+@media(prefers-reduced-motion:reduce){.treemap-tile,.nav-item,.home-command-rail button{transition:none!important}}
+
+/* Mobile header: breadcrumb and environment state have guaranteed non-overlapping lanes. */
+@media(max-width:600px){
+ .topbar{padding:0 13px;gap:8px}
+ .breadcrumbs{min-width:0;flex:1;overflow:hidden;gap:7px}
+ .breadcrumbs>span:nth-child(2),.breadcrumbs .crumb-slash{display:none}
+ .breadcrumbs b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .top-actions{flex-shrink:0;gap:9px}
+ .system-status,.status-dot{display:none}
+ .work-stats>div{min-height:98px}
+ .work-stats>div>span{padding-right:26px;max-width:100%;line-height:1.4;min-height:32px}
+}
+@media(max-width:410px){
+ .top-avatar{display:none}
+ .environment-indicator{font-size:9px;padding:6px 8px}
+ .top-actions{gap:7px}
+}

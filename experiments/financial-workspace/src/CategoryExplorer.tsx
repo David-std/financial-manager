@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BarChart3, ChevronRight, List, LayoutGrid, ReceiptText } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, ChevronRight, List, LayoutGrid } from "lucide-react";
 import "./category-explorer.css";
 
 export type ExplorePayment = {
@@ -134,7 +134,7 @@ export default function CategoryExplorer({records,onOpenTransactions,compact=fal
           </> : <>
             <div className="explorer-separator"/>
             <p className="explorer-guidance"><BarChart3 size={17}/> Vista financiera de pagos confirmados; no representa compromisos, ingresos ni presupuestos aprobados.</p>
-            <span className="explorer-footer"><ReceiptText size={14}/> Solo demostración sintética</span>
+
           </>}
         </aside>
       </div>
