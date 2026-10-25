@@ -21,6 +21,7 @@ For build and browser checks, start the development server and run:
 
 ```powershell
 npm run build
+node analytics-model.test.mjs
 node smoke.mjs
 ```
 
@@ -34,10 +35,11 @@ The browser smoke requires Edge at the configured Windows path. It exercises the
 | Mi trabajo | Continue open expense and budget Drafts | Computed from local records; no invented outstanding approvals |
 | Movimientos | Prepare/edit Drafts and inspect/CSV-export historical Posted payments | Drafts exist only in session; Posted payments are read-only |
 | Presupuestos | Prepare a version with editable category/month allocations, calendar and computed annual total | Draft only; no Submit/Approve |
-| Categorías | Explore proportional treemap, switch to readable list, drill category → source account → expense transactions | Uses filtered actual synthetic records, no invented subcategories |
-| Análisis | Examine classified outgoing payments and follow PBIP source | Only expenses; no income/balances |
+| Categorías | Explore proportional treemap, switch between map/list/exact matrix, drill category → source account → confirmed payments | Tile labels adapt to measured pixel dimensions; narrow tiles show index only and use matching external legend; no invented subcategories |
+| Análisis | Compare same calendar months year over year, explain category deltas, inspect monthly heatmap, cash-account/branch concentration, category ranking, and navigate to source payments | Only confirmed expenses, no revenue/profit/cash balances or unapproved budgets |
 | Actividad | Understand the sequence of operations made in this session | This is **not** Dataverse's authoritative audit ledger |
 
+In the home view, selecting a single month changes the trend to **weekly buckets of that month** instead of showing 11 artificial zeros; future months beyond available synthetic data cannot be selected. All analytics compare equivalent selected months and show absence of a prior-year baseline explicitly.
 Navigation, filters, controls and layouts adapt to mobile and tablet. The neutral petroleum/sage theme is designed for a financial operations workspace, not marketing or purely decorative cards.
 
 ## Session and financial semantics

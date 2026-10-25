@@ -2,16 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Activity, ArrowDownLeft, ArrowRight, ArrowUpRight, BarChart3, Building2,
   CalendarDays, Check, CheckCheck, ChevronLeft, ChevronRight, CircleHelp,
-  Copy, Download, ExternalLink, LayoutDashboard, Layers3,
+  Copy, Download, LayoutDashboard, Layers3,
   Menu, Moon, ReceiptText, Search, ShieldCheck, SlidersHorizontal,
   Sun, Wallet, X,
 } from "lucide-react";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer,
+  Area, AreaChart, CartesianGrid, ResponsiveContainer,
   Tooltip, XAxis, YAxis,
 } from "recharts";
 import fixture from "./data/demo.json";
 import CategoryExplorer from "./CategoryExplorer";
+import AnalyticsWorkbench from "./AnalyticsWorkbench";
 import LocalDraftWorkbench from "./LocalDraftWorkbench";
 import BudgetPlanner from "./BudgetPlanner";
 import WorkflowHub from "./WorkflowHub";
@@ -32,6 +33,7 @@ type Payment = {
 };
 type Page = "inicio" | "bandeja" | "movimientos" | "categorias" | "presupuestos" | "analisis" | "auditoria";
 const transactions: Payment[] = fixture.records as Payment[];
+const DATA_MONTH_LIMIT=new Map([2024,2025,2026].map(y=>[y,Math.max(0,...transactions.filter(t=>Number(t.date.slice(0,4))===y).map(t=>Number(t.date.slice(5,7))))]));
 const NAV = [
   { id: "inicio", label: "Inicio", icon: LayoutDashboard },
   { id: "bandeja", label: "Mi trabajo", icon: ClipboardList },
@@ -90,10 +92,15 @@ function App() {
   const summary = useMemo(() => {
     const total = filtered.reduce((sum, t) => sum + t.amount, 0);
     const shared = filtered.filter(t => t.scope === "Compartido").reduce((sum, t) => sum + t.amount, 0);
-    const monthly = Array.from({ length: year === 2026 ? 10 : 12 }, (_, i) => {
-      const current = filtered.filter(t => Number(t.date.slice(5, 7)) === i + 1);
-      return { name: MONTHS[i], amount: Number(current.reduce((s, t) => s + t.amount, 0).toFixed(2)), count: current.length };
-    });
+    const monthly = month
+      ? Array.from({length:Math.ceil(new Date(year,month,0).getDate()/7)},(_,i)=>{
+          const current=filtered.filter(t=>{const day=Number(t.date.slice(8,10));return day>=i*7+1&&day<=(i+1)*7;});
+          return {name:`Sem ${i+1}`,amount:Number(current.reduce((sum,t)=>sum+t.amount,0).toFixed(2)),count:current.length};
+        })
+      : Array.from({length:DATA_MONTH_LIMIT.get(year)??12},(_,i)=>{
+          const current=filtered.filter(t=>Number(t.date.slice(5,7))===i+1);
+          return {name:MONTHS[i],amount:Number(current.reduce((sum,t)=>sum+t.amount,0).toFixed(2)),count:current.length};
+        });
     const byCategory = Array.from(new Set(filtered.map(t => t.category))).map(name => ({
       name, amount: filtered.filter(t => t.category === name).reduce((s, t) => s + t.amount, 0),
       count: filtered.filter(t => t.category === name).length
@@ -151,7 +158,7 @@ function App() {
         </div><div className="hero-aside"><span className="hero-decoration" aria-hidden="true">✳</span><span className="hero-year">{year}</span><span className="hero-period">GESTIÓN FINANCIERA</span></div></div>}
 
         {(["inicio","movimientos","categorias","analisis"] as Page[]).includes(page)&&<><div className="period-container"><div className="period-caption"><CalendarDays size={18}/><div><span>PERÍODO DE TRABAJO</span><strong>{year}</strong></div><div className="year-stepper"><button aria-label="Año anterior" onClick={() => { setYear(y => Math.max(2024, y - 1)); setMonth(0); }} disabled={year === 2024}><ChevronLeft size={16}/></button><button aria-label="Año siguiente" onClick={() => { setYear(y => Math.min(2026, y + 1)); setMonth(0); }} disabled={year === 2026}><ChevronRight size={16}/></button></div></div>
-          <div className="month-pills" aria-label="Seleccionar mes"><button className={month === 0 ? "selected" : ""} onClick={() => setMonth(0)} aria-pressed={month === 0}>Año</button>{MONTHS.map((name, i) => <button className={month === i + 1 ? "selected" : ""} key={name} onClick={() => setMonth(i + 1)} aria-pressed={month === i + 1}>{name}<small>{i + 1}</small></button>)}</div>
+          <div className="month-pills" aria-label="Seleccionar mes"><button className={month === 0 ? "selected" : ""} onClick={() => setMonth(0)} aria-pressed={month === 0}>Año</button>{MONTHS.map((name,i)=><button className={month===i+1?"selected":""} key={name} disabled={i+1>(DATA_MONTH_LIMIT.get(year)??12)} title={i+1>(DATA_MONTH_LIMIT.get(year)??12)?"Mes aún no disponible":undefined} onClick={()=>setMonth(i+1)} aria-pressed={month===i+1}>{name}<small>{i+1}</small></button>)}</div>
         </div>
         <div className="filterline"><div className="filterline-left"><SlidersHorizontal size={16}/><span>Vista de <b>{currentPeriod}</b></span>
           <label>Ámbito <select aria-label="Filtrar por ámbito" value={scope} onChange={e => setScope(e.target.value)}>{scopes.map(s => <option key={s}>{s}</option>)}</select></label>
@@ -172,7 +179,7 @@ function App() {
           <div className="support-metrics"><div><IconBubble icon={ReceiptText} tone="blue"/><span>Transacciones</span><b>{number.format(summary.count)}</b><small>Confirmadas</small></div><div><IconBubble icon={Activity} tone="rose"/><span>Ticket promedio</span><b>{compact(summary.count ? summary.total / summary.count : 0)}</b><small>Por movimiento</small></div><div><IconBubble icon={Layers3} tone="lavender"/><span>Gasto compartido</span><b>{compact(summary.shared)}</b><small>{summary.total ? ((summary.shared/summary.total)*100).toFixed(1) : "0"}% del gasto</small></div></div>
         </section>
         <SectionHead eyebrow="TU PULSO FINANCIERO" title="Lo que pasó en este período" more={<button className="inline-link" onClick={() => navigate("analisis")}>Profundizar <ArrowUpRight size={16}/></button>}/>
-        <div className="analysis-grid"><article className="surface chart-surface"><div className="surface-heading"><div><h3>Movimiento del gasto</h3><ChartHint>Importes mensuales expresados en PEN</ChartHint></div><span className="mini-label">Evolución {year}</span></div>
+        <div className="analysis-grid"><article className="surface chart-surface"><div className="surface-heading"><div><h3>Movimiento del gasto</h3><ChartHint>{month?"Distribución semanal del mes en PEN":"Importes mensuales expresados en PEN"}</ChartHint></div><span className="mini-label">{month?`Semanas de ${MONTH_LONG[month-1]}`:`Evolución ${year}`}</span></div>
           <div className="large-chart" role="img" aria-label="Gráfico del gasto total por mes"><ResponsiveContainer width="100%" height="100%"><AreaChart data={summary.monthly} margin={{ top: 15, right: 6, left: -13, bottom: 2 }}><defs><linearGradient id="spendingArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#91b0b0" stopOpacity=".35"/><stop offset="95%" stopColor="#91b0b0" stopOpacity=".02"/></linearGradient></defs><CartesianGrid vertical={false} stroke="var(--grid)" strokeDasharray="2 5"/><XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} interval={0}/><YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} tickFormatter={v => `${Math.round(v/1000)}k`}/><Tooltip content={<TooltipMoney/>}/><Area name="Gasto" type="monotone" dataKey="amount" stroke="#587e83" strokeWidth={2.7} fill="url(#spendingArea)" dot={false} activeDot={{r:5}} isAnimationActive={false}/></AreaChart></ResponsiveContainer></div>
           <div className="chart-bottom"><span><span className="legend-dot teal"/>Gasto mensual</span><span>Periodo seleccionado · PEN</span></div>
         </article>
@@ -193,12 +200,11 @@ function App() {
         {page === "bandeja" && <WorkflowHub view="bandeja" onNavigate={navigate}/>}
         {page === "presupuestos" && <BudgetPlanner categories={categories.slice(1)} branches={[...new Set(transactions.map(t=>t.branch).filter(Boolean))].sort()}/>}
         {page === "auditoria" && <WorkflowHub view="auditoria" onNavigate={navigate}/>}
-        {page === "analisis" && <><SectionHead eyebrow="EXPLORACIÓN VISUAL" title="Entender antes de decidir" more={<a className="inline-link" target="_blank" rel="noopener noreferrer" href="https://github.com/David-std/financial-manager/tree/develop/power-bi">Proyecto Power BI <ExternalLink size={16}/></a>}/>
-          <div className="analysis-summary"><div><span>PERÍODO</span><strong>{currentPeriod}</strong></div><div><span>GASTO CONFIRMADO</span><strong>{compact(summary.total)}</strong></div><div><span>TRANSACCIONES</span><strong>{summary.count}</strong></div></div>
-          <div className="analytics-layout"><article className="surface chart-surface"><div className="surface-heading"><div><h3>Composición por mes</h3><ChartHint>Gasto confirmado · soles peruanos</ChartHint></div></div><div className="large-chart"><ResponsiveContainer width="100%" height="100%"><BarChart data={summary.monthly} margin={{top:10,right:3,left:-15,bottom:0}}><CartesianGrid vertical={false} stroke="var(--grid)"/><XAxis dataKey="name" tick={{fill:"var(--muted)",fontSize:11}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v => `${Math.round(v/1000)}k`} tick={{fill:"var(--muted)",fontSize:11}} axisLine={false} tickLine={false}/><Tooltip content={<TooltipMoney/>}/><Bar name="Importe" dataKey="amount" fill="#7898aa" radius={[5,5,0,0]} maxBarSize={42} isAnimationActive={false}/></BarChart></ResponsiveContainer></div></article>
-          <article className="surface category-surface"><div className="surface-heading"><div><h3>Clases de gasto</h3><ChartHint>Operativo · capital · impuestos</ChartHint></div></div><div className="type-stack"><div className="stack-track">{summary.byFlow.map((f,i) => <span key={f.name} style={{width:`${summary.total ? f.amount/summary.total*100 : 0}%`,background:palette[i]}}/>)}</div>{summary.byFlow.map((flow,i)=><div className="stack-item" key={flow.name}><span className="flow-dot" style={{background:palette[i]}}/>{flow.name}<strong>{compact(flow.amount)}</strong></div>)}</div><div className="analysis-disclaimer">La clasificación responde a flujos de salida, no a utilidad ni rentabilidad.</div></article></div>
-          <article className="surface full-category"><div className="surface-heading"><div><h3>Detalle por categoría</h3><ChartHint>Gasto confirmado y participación en el período seleccionado</ChartHint></div></div>{summary.byCategory.map((c,i)=><div className="detail-category" key={c.name}><span className="category-index">{String(i+1).padStart(2,"0")}</span><span>{c.name}</span><span>{number.format(c.count)} pagos</span><b>{compact(c.amount)}</b><span className="percent">{summary.total ? (100*c.amount/summary.total).toFixed(1) : "0"}%</span></div>)}</article>
-        </>}
+        {page === "analisis" && <AnalyticsWorkbench payments={transactions} year={year} month={month}
+          scope={scope} category={category}
+          onOpenCategory={name=>{setCategory(name);setSearch("");navigate("movimientos");}}
+          onOpenTransaction={record=>{setSearch("");navigate("movimientos");setSelected(transactions.find(t=>t.id===record.id)??null);}}
+        />}
         <footer className="main-footer"><span><span className="footer-glyph">✳</span> Financial Manager</span><span>Control de gastos · PEN</span></footer>
       </main>
     </div>

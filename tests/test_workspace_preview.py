@@ -78,7 +78,7 @@ class WorkspacePreviewTests(unittest.TestCase):
     def test_category_explorer_uses_fixture_payments(self):
         self.assertIn("categoryGroups(records", self.explorer)
         self.assertIn("categoryTreemap(groups)", self.explorer)
-        self.assertIn("focusRecords", self.explorer)
+        self.assertIn("categoryRecords", self.explorer)
         self.assertIn("onOpenTransactions", self.explorer)
         self.assertIn('role="listitem"', self.explorer)
 

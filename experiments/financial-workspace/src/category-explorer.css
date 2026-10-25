@@ -49,3 +49,30 @@
 @media(max-width:1150px){.explorer-layout{grid-template-columns:minmax(0,1fr) 235px;gap:12px}.explorer-legend-row{gap:6px}.explorer-legend-row{grid-template-columns:11px minmax(60px,1fr) 66px 75px 40px 14px}.explorer{padding:17px}}
 @media(max-width:820px){.explorer-layout{grid-template-columns:1fr}.explorer-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}.explorer-side>.eyebrow,.explorer-total,.explorer-meta,.explorer-guidance,.explorer-footer,.explorer-recent-title,.explorer-action{grid-column:1/-1}.explorer-separator{display:none}.explorer-figure{display:flex;flex-direction:column;align-items:start;background:var(--surface);padding:14px;border-radius:10px}.explorer-record{grid-column:1/-1}.treemap{height:370px}}
 @media(max-width:570px){.explorer{padding:14px}.explorer-header{flex-direction:column;gap:11px}.explorer-view-switch{align-self:flex-start}.treemap{height:375px}.treemap-tile{border-width:2px;padding:7px;gap:4px}.treemap-tile strong{font-size:11px}.treemap-tile small{font-size:10px}.explorer-legend-row{grid-template-columns:10px minmax(70px,1fr) 83px 38px 14px;min-height:48px;gap:6px;padding:5px 2px}.explorer-legend-row .legend-count{display:none}.explorer-side{padding:17px}.explorer-total{font-size:26px}}
+
+/* Treemap v2: labels respond to real measured rectangles, never arbitrary percentages. */
+.treemap{height:390px}
+.treemap-tile{border-width:3px;padding:clamp(7px,1vw,14px);gap:7px;justify-content:center;overflow:hidden;contain:layout paint}
+.treemap-tile.treemap-medium{padding:9px;gap:4px}
+.treemap-tile.treemap-medium strong{font-size:12px;line-height:1.35;max-height:3.8em;-webkit-line-clamp:2}
+.treemap-tile.treemap-full strong{font-size:clamp(12px,1.1vw,17px);max-height:3.8em;-webkit-line-clamp:2}
+.treemap-tile.treemap-code{align-items:center;justify-content:center;padding:3px}
+.treemap-tile.treemap-code .treemap-number{font-size:clamp(10px,1vw,14px);opacity:.9}
+.treemap-tile strong{word-break:normal;overflow-wrap:break-word;max-width:100%}
+.treemap-tile.treemap-selected{outline:3px solid #245c65;outline-offset:-5px;z-index:3}
+.treemap-key{margin:9px 4px 0;font-size:10px;line-height:1.6;color:var(--muted)}
+.explorer-legend-row{grid-template-columns:25px 10px minmax(75px,1fr) 64px minmax(70px,89px) 48px 16px;gap:9px}
+.legend-code{font-size:10px;font-weight:800;color:#52767b}
+.explorer-side-name{font-size:14px;line-height:1.5;margin:8px 0 0;overflow-wrap:anywhere}
+.explorer-back-account{border:0;background:transparent;color:#316d72;font-size:11px;font-weight:750;text-align:left;margin:14px 0;padding:3px}
+.explorer-matrix-wrap{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.explorer-matrix{width:100%;min-width:670px;border-collapse:collapse;font-size:11px}
+.explorer-matrix th,.explorer-matrix td{padding:13px 11px;border-bottom:1px solid var(--line);text-align:right}
+.explorer-matrix th:first-child,.explorer-matrix td:first-child{text-align:left;min-width:140px}
+.explorer-matrix thead{background:var(--surface-soft);color:var(--nav)}
+.explorer-matrix tbody tr:nth-child(even){background:var(--surface-soft)}
+.explorer-matrix tfoot{background:var(--surface-soft);font-weight:800}
+.explorer-matrix button{display:inline-flex;align-items:center;gap:3px;background:none;border:0;color:#2a7474;font-size:10px;font-weight:750}
+.explorer-matrix-wrap:focus-within{outline:1px solid #91b9b5}
+@media(max-width:1150px){.explorer-legend-row{grid-template-columns:22px 10px minmax(62px,1fr) 54px 79px 38px 13px;gap:5px}}
+@media(max-width:570px){.treemap{height:340px}.treemap-tile{border-width:2px}.explorer-legend-row{grid-template-columns:22px 10px minmax(70px,1fr) 78px 35px 11px;gap:5px}.explorer-legend-row .legend-count{display:none}.explorer-view-switch button{min-height:36px;padding:8px 9px}}

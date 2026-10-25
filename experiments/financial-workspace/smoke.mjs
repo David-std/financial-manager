@@ -13,9 +13,13 @@ const nav=async(name)=>page.getByRole("button",{name,exact:true}).click();
 const screenshot=async(name,fullPage=false)=>page.screenshot({path:path.join(os.tmpdir(),name),fullPage,animations:"disabled"});
 const noOverflow=async(label)=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+3),false,label);
 try{
-  await page.goto("http://127.0.0.1:5178/",{waitUntil:"networkidle"});
+  await page.goto("http://127.0.0.1:5178/",{waitUntil:"domcontentloaded",timeout:30000});
   await test("Todo en orden"); await test("Entorno de ejemplo");
   await test("Registrar movimiento");
+  assert.equal(await page.locator(".month-pills button").nth(11).isDisabled(),true,"November 2026 is outside available records");
+  await page.locator(".month-pills button").nth(2).click();
+  await test("Distribución semanal del mes");
+  await page.locator(".month-pills button").first().click();
   await screenshot("FM-workspace-product-desktop.png");
 
   await nav("Mi trabajo");
@@ -50,9 +54,21 @@ try{
   await nav("Categorías");
   await test("Distribución por categorías");
   assert.ok(await page.locator(".treemap-tile").count()>=5);
+  const treemapArea=await page.locator(".treemap-tile").evaluateAll(tiles=>tiles.reduce((sum,t)=>sum+(parseFloat(t.style.width)*parseFloat(t.style.height))/100,0));
+  assert.ok(Math.abs(treemapArea-100)<0.1,"Treemap rectangle areas reconcile to 100%");
   await page.locator(".treemap-tile").first().click();
-  await test("Movimientos de esta categoría");
+  await test("Movimientos de esta selección");
   assert.ok(await page.locator(".explorer-record").count()>0);
+  const clipped=await page.locator(".treemap-tile").evaluateAll(tiles=>tiles.filter(tile=>{
+    const label=tile.querySelector("strong");
+    if(tile.dataset.level==="code")return Boolean(label);
+    if(!label)return true;
+    const a=tile.getBoundingClientRect(),b=label.getBoundingClientRect();
+    return b.left<a.left-1||b.right>a.right+1||b.top<a.top-1||b.bottom>a.bottom+1;
+  }).map(tile=>tile.dataset.group));
+  assert.deepEqual(clipped,[],"Treemap titles cannot overflow their tiles");
+  await page.getByRole("button",{name:"Matriz",exact:true}).click();
+  assert.ok(await page.locator(".explorer-matrix tbody tr").count()>=1);
   await page.getByRole("button",{name:"Lista",exact:true}).click();
   await page.getByRole("button",{name:"Ver movimientos"}).click();
   await test("Registro de movimientos");
@@ -97,14 +113,34 @@ try{
   await screenshot("FM-workspace-product-activity.png");
 
   await nav("Análisis");
-  await test("Composición por mes");
+  await test("Comprende el gasto. Decide con contexto.");
+  await test("Factores de variación");
+  await test("Mapa temporal");
+  await test("Ranking de categorías");
+  assert.ok(await page.locator(".analysis-bridge-bar").count()>=5,"Variation bridge with category drivers");
+  assert.equal(await page.locator(".analysis-heat-row").count(),3,"Three years of calendar history");
+  await page.getByRole("button",{name:"Ticket",exact:true}).click();
+  await screenshot("FM-workspace-analysis-desktop.png",true);
+  await page.locator(".analysis-payment").first().click();
+  await test("DETALLE DEL MOVIMIENTO");
+  await page.getByRole("complementary",{name:"Detalle del movimiento"}).getByRole("button",{name:"Cerrar detalle"}).click();
+  await nav("Análisis");
+  await page.locator(".analysis-table tbody button").first().click();
+  await test("Registro de movimientos");
+  await page.getByLabel("Filtrar por categoría").selectOption("Todas");
+  await nav("Análisis");
+  await page.getByRole("button",{name:"Año anterior"}).click();
+  await page.getByRole("button",{name:"Año anterior"}).click();
+  await test("Sin año de referencia");
+  await page.getByRole("button",{name:"Año siguiente"}).click();
+  await page.getByRole("button",{name:"Año siguiente"}).click();
   await page.getByRole("button",{name:"Cambiar a tema oscuro"}).click();
   assert.equal(await page.locator(".application.dark").count(),1);
   await page.getByRole("button",{name:"Cambiar a tema claro"}).click();
   assert.equal(await page.locator(".application.dark").count(),0);
 
   // On navigation records remain. Reload clears the local session.
-  await page.reload({waitUntil:"networkidle"});
+  await page.reload({waitUntil:"domcontentloaded",timeout:30000});
   await nav("Mi trabajo");
   await test("Sin registros pendientes");
   await nav("Actividad");
@@ -112,12 +148,19 @@ try{
 
   for(const [width,height] of [[320,700],[390,844],[430,900],[768,1024]]){
     await page.setViewportSize({width,height});
-    await page.reload({waitUntil:"networkidle"});
+    await page.reload({waitUntil:"domcontentloaded",timeout:30000});
     await noOverflow("Home root overflow at "+width);
     await screenshot(`FM-workspace-product-home-${width}.png`,true);
     if(width<=760)await page.getByRole("button",{name:"Abrir navegación"}).click();
     await nav("Categorías");await noOverflow("Category root overflow at "+width);
+    const labels=await page.locator(".treemap-tile").evaluateAll(tiles=>tiles.map(tile=>({
+      level:tile.dataset.level,hasName:Boolean(tile.querySelector("strong"))
+    })));
+    assert.ok(labels.every(tile=>tile.level!=="code"||!tile.hasName),"No cropped text in tiny treemap tiles");
     await screenshot(`FM-workspace-product-category-${width}.png`,true);
+    if(width<=760)await page.getByRole("button",{name:"Abrir navegación"}).click();
+    await nav("Análisis");await noOverflow("Analytics root overflow at "+width);
+    await screenshot(`FM-workspace-analysis-${width}.png`,false);
     if(width<=760)await page.getByRole("button",{name:"Abrir navegación"}).click();
     await nav("Movimientos");await noOverflow("Transactions root overflow at "+width);
     if(width<=760)await page.getByRole("button",{name:"Abrir navegación"}).click();

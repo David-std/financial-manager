@@ -43,6 +43,11 @@ The authoritative scope and invariants are [screens](screens.md), [security](sec
 | WX-10 | Work queue | Counts and items are derived only from session Drafts and disappear after refresh; incomplete fields accurately flagged, navigation retains Draft |
 | WX-11 | Activity feed | Only records actual local create/edit/delete actions in sequence; states non-authoritative; official Dataverse auditing is not simulated |
 | WX-12 | Single status indication | Only the topbar identifies the demo environment; individual forms show normal professional language, without suggesting real persistence |
+| WX-13 | Accessible treemap hierarchy | Map tiles use measured pixels; no clipped text in narrow cells; codes reconcile with adjacent full legend; matrix lists exact amounts and ticket per category; keyboard and focus operate at 320/390/430/768/1440 widths |
+| WX-14 | Financial analytics consistency | Confirmed/PEN only, same available calendar months year-on-year, delta bridge adds to current total, groupings reconcile to row sums, Shared not duplicated, 2024 has no invented prior baseline, 2026 future months unavailable |
+| WX-15 | Explanatory, actionable analysis | Category drivers, temporal comparison, heatmap, branch/account concentration, cash-outflow classification, sortable category ranking and largest payments point to the same underlying records; no revenue/profit/cash-balance figures |
+| WX-16 | Month-specific time drill | Selecting a single month on home changes the trend to weekly buckets for that month; the displayed number of payments and amount reconcile, and excluded months are never shown as zeros |
+
 
 
 The current React Workspace is **not** an authorized Dataverse client. A production interface requires Entra authenticated access, server-side role checks, record ownership isolation, activity/audit validation, and independent negative security tests before any real write.
@@ -53,6 +58,7 @@ The current React Workspace is **not** an authorized Dataverse client. A product
 python -m unittest discover -s tests -q
 python scripts/check_repository.py
 npm --prefix experiments/financial-workspace run build
+node experiments/financial-workspace/analytics-model.test.mjs
 node experiments/financial-workspace/smoke.mjs
 powerbi-report-author validate power-bi/FinancialManager/FinancialManager.pbip
 ```
