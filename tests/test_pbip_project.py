@@ -62,10 +62,10 @@ class PbipContractTests(unittest.TestCase):
                 position = visual["position"]
                 self.assertLessEqual(position["x"] + position["width"], 1280)
                 self.assertLessEqual(position["y"] + position["height"], 1630)
-                if visual["visual"]["visualType"] != "textbox":
+                if visual["visual"]["visualType"] not in ("textbox", "shape"):
                     self.assertTrue(visual["visual"]["query"]["queryState"])
                 total_visuals += 1
-        self.assertEqual(total_visuals, 158)
+        self.assertEqual(total_visuals, 154)
 
 
 if __name__ == "__main__":

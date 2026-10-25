@@ -56,7 +56,7 @@ def pill(board,key,title,x,y,w,color):
 
 def add_icon(board,key,x,y,symbol,description,tint):
     # Icons are informational: no fabricated quality judgment.
-    label(board,key+"-glyph",symbol,x,y,29,31,17,tint,True)
+    label(board,key+"-glyph",symbol,x,y,52,59,12,tint,True)
     board.items[key+"-glyph"]["position"]["z"]=3500
     # Actual metric titles stay in native Power BI cards.
 
@@ -74,13 +74,13 @@ def consolidate_kpis(board,y,left,width,n):
     for i in range(n):
         move(board,f"kpi-{i}",left+10+step*i,y+17,step-20,92)
         glyph=symbols.get(board.title,["•"]*n)[i]
-        add_icon(board,f"metric-{i}",left+17+step*i,y+53,glyph,"Indicador",SKY)
+        add_icon(board,f"metric-{i}",left+17+step*i,y+42,glyph,"Indicador",SKY)
         obj=board.items[f"kpi-{i}"]["visual"].setdefault("visualContainerObjects",{})
         obj["background"]=base.props(show=base.literal(True),
                                         color=base.color(WHITE),
                                         transparency=base.literal(0))
         obj["border"]=base.props(show=base.literal(False))
-    label(board,"ribbon-note","PAGOS CONTABILIZADOS  ·  PEN",left+13,y+3,width-26,20,9,MUTED,True)
+    # Titles inside native KPI cards provide context; no overlapping ribbon label.
 
 def table_format(v,*,matrix=False):
     obj=v["visual"].setdefault("objects",{})
@@ -306,6 +306,28 @@ def model_updates():
     FACT.write_text(original.replace(anchor,"".join(lines)+anchor),encoding="utf-8")
     return len(added)
 
+def normalize_background_shapes(board):
+    """Prevent decorative textboxes from requesting internal scrollbars.
+
+    Native shape substitution is avoided: on this Desktop build, it covers the
+    entire canvas instead of preserving the intended local panel geometry.
+    """
+    count=0
+    for item in board.items.values():
+        visual=item["visual"]
+        if visual.get("visualType")!="textbox":
+            continue
+        runs=(visual.get("objects",{}).get("general",[{}])[0]
+              .get("properties",{}).get("paragraphs",[{}])[0].get("textRuns",[]))
+        if len(runs)!=1 or runs[0].get("value")!=" ":
+            continue
+        backs=visual.get("visualContainerObjects",{}).get("background",[])
+        if not backs:
+            continue
+        runs[0]["value"]=""
+        count+=1
+    return count
+
 def main():
     existing=list(PAGES.glob("*/visuals/*/visual.json"))
     if not 100<=len(existing)<=170:
@@ -316,6 +338,12 @@ def main():
     boards=[overview(PAGES_CONFIG[0][0]),branches(PAGES_CONFIG[1][0]),
             categories(PAGES_CONFIG[2][0]),trends(PAGES_CONFIG[3][0])]
     for board in boards:
+        board.items.pop("ribbon-note",None)
+        for key,height in (("brand",44),("heading",58),("currency",44)):
+            if key in board.items:
+                board.items[key]["position"]["height"]=height
+        normalized=normalize_background_shapes(board)
+        print("NONSCROLLING_BACKGROUND_PANELS="+str(normalized))
         for key,item in board.items.items():
             q=item["position"]
             if q["x"]<0 or q["y"]<0 or q["width"]<=0 or q["height"]<=0:

@@ -48,3 +48,11 @@ La definición PBIR se verificó con **0 errores y 0 advertencias**, y las prueb
 **Pendiente, no afirmar como terminado:** actualización positiva y renderizado final de las 4 páginas con la copia sintética, inspección de leyendas, overflow real, cambios de filtros, comportamiento de iconos por fila, rendimiento de la matriz y accesibilidad. La aplicación de formatos en JSON y la validación de la estructura no sustituyen a estas pruebas. Tampoco se ha publicado el informe ni se han realizado pruebas RLS de usuarios independientes.
 
 No publicar la demo ni usar cifras sintéticas como hechos operativos. No modificar `main`, no escribir movimientos financieros en Dataverse y no levantar el bloqueo de aprobación presupuestaria (`BGV009`).
+
+## Verificación local de carga y visualización (24 octubre 2026)
+
+Se detectó un error de entrega: la última copia temporal abierta contenía 141 definiciones, mientras que el PBIP v6 publicado contenía 158. Una nueva copia desde `develop` confirmó la carga de **310 registros ficticios**, suma de **S/ 509,565.12** y **9 categorías** mediante DAX en el motor local. Las páginas de Resumen, Categorías y Tendencias mostraron gráficos con valores positivos.
+
+Durante la inspección también se identificaron barras grises internas en cuadros de texto decorativos y una superposición de una leyenda superior. El generador actual conserva paneles como cuadros de texto con contenido vacío (en lugar de formas nativas, cuya prueba alteró el lienzo), agranda las alturas de los rótulos e impide que la leyenda se superponga con las tarjetas. La versión final contiene **154 definiciones PBIR** y requiere abrir una nueva copia para ver los cambios; Power BI Desktop no incorpora automáticamente los archivos modificados mientras una copia antigua está abierta.
+
+Para reproducir: `python scripts/create_power_bi_demo.py`, abrir la ruta `OFFLINE_DEMO_PBIP` impresa, y usar **Inicio → Actualizar** dentro de Desktop. La copia debe seguir siendo temporal y **NO publicarse**. Esta comprobación positiva no sustituye la aceptación final de filtros cruzados, RLS o Power BI Service.

@@ -3,10 +3,10 @@
   "name": "dcd856df7f3000376c3e",
   "position": {
     "x": 967.0,
-    "y": 723,
+    "y": 712,
     "z": 3500,
-    "height": 31,
-    "width": 29,
+    "height": 59,
+    "width": 52,
     "tabOrder": 34
   },
   "visual": {
@@ -22,7 +22,7 @@
                     "value": "⇄",
                     "textStyle": {
                       "fontFamily": "Segoe UI Semibold",
-                      "fontSize": "17pt",
+                      "fontSize": "12pt",
                       "color": "#557E9A",
                       "fontWeight": "bold"
                     }

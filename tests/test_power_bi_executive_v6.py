@@ -57,6 +57,8 @@ class V6Tests(unittest.TestCase):
                     self.assertIn("Y",roles)
                 if kind=="textbox":
                     self.assertNotIn("onClick",value["visual"])
+            self.assertGreaterEqual(counts["textbox"],3)
+            # Source must preserve native Power BI geometry and avoid full-canvas shapes.
             self.assertEqual(counts["slicer"],5)
             self.assertGreaterEqual(counts["card"],4)
             self.assertGreaterEqual(sum(v for k,v in counts.items()
