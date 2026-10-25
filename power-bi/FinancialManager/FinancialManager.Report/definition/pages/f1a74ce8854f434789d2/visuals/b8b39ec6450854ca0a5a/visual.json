@@ -209,7 +209,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Evolución mensual del gasto'"
+                  "Value": "'Evolución del gasto · S/ miles por mes'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -218,16 +225,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

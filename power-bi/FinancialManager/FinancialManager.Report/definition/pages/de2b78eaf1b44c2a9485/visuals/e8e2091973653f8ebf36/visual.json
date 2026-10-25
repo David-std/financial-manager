@@ -3,9 +3,9 @@
   "name": "e8e2091973653f8ebf36",
   "position": {
     "x": 259,
-    "y": 919,
+    "y": 900,
     "z": 2000,
-    "height": 629,
+    "height": 638,
     "width": 1001,
     "tabOrder": 20
   },
@@ -282,7 +282,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Registro detallado · importes en PEN'"
+                  "Value": "'Movimientos por sede, cuenta y categoría · PEN'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -291,16 +298,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

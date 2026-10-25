@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "29235d199fbec4653e90",
   "position": {
-    "x": 545,
-    "y": 796,
+    "x": 488,
+    "y": 795,
     "z": 2000,
-    "height": 270,
-    "width": 475,
+    "height": 273,
+    "width": 451,
     "tabOrder": 18
   },
   "visual": {
@@ -23,11 +23,12 @@
                       "Entity": "DimDate"
                     }
                   },
-                  "Property": "YearMonth"
+                  "Property": "Month"
                 }
               },
-              "queryRef": "DimDate.YearMonth",
-              "nativeQueryRef": "YearMonth"
+              "queryRef": "DimDate.Month",
+              "nativeQueryRef": "Mes (1-12)",
+              "displayName": "Mes (1-12)"
             }
           ]
         },
@@ -77,6 +78,51 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            },
+            "preferredCategoryWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "38D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
                 }
               }
             }
@@ -227,7 +273,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Estructura mensual por clasificación'"
+                  "Value": "'Estructura por tipo · % de cada mes (años filtrados)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -236,16 +289,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "ceeb96259c2f8d3adb27",
   "position": {
-    "x": 347.0,
-    "y": 712,
+    "x": 586.0,
+    "y": 662,
     "z": 3500,
-    "height": 59,
-    "width": 52,
+    "height": 61,
+    "width": 45,
     "tabOrder": 32
   },
   "visual": {
@@ -22,7 +22,7 @@
                     "value": "∑",
                     "textStyle": {
                       "fontFamily": "Segoe UI Semibold",
-                      "fontSize": "12pt",
+                      "fontSize": "20pt",
                       "color": "#557E9A",
                       "fontWeight": "bold"
                     }

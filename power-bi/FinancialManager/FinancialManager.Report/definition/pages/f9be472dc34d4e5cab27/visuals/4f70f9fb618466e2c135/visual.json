@@ -3,10 +3,10 @@
   "name": "4f70f9fb618466e2c135",
   "position": {
     "x": 20,
-    "y": 1069,
+    "y": 1074,
     "z": 2000,
-    "height": 482,
-    "width": 1240,
+    "height": 469,
+    "width": 787,
     "tabOrder": 20
   },
   "visual": {
@@ -57,12 +57,12 @@
                       "Entity": "FactPostedExpense"
                     }
                   },
-                  "Property": "Prior Year Spending"
+                  "Property": "Año previo comparable"
                 }
               },
-              "queryRef": "FactPostedExpense.Prior Year Spending",
-              "nativeQueryRef": "Año anterior",
-              "displayName": "Año anterior"
+              "queryRef": "FactPostedExpense.Año previo comparable",
+              "nativeQueryRef": "Año previo",
+              "displayName": "Año previo"
             },
             {
               "field": {
@@ -241,7 +241,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Detalle comparativo · categoría / monto / variación / peso'"
+                  "Value": "'Categoría · gasto, año anterior y peso'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -250,16 +257,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

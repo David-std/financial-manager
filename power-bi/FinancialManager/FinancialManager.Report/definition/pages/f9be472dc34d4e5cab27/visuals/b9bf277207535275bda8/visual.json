@@ -1,18 +1,37 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
-  "name": "23a7b342eaf799e575db",
+  "name": "b9bf277207535275bda8",
   "position": {
-    "x": 945,
-    "y": 1375,
+    "x": 825,
+    "y": 1094,
     "z": 2000,
-    "height": 191,
-    "width": 315,
-    "tabOrder": 35
+    "height": 469,
+    "width": 435,
+    "tabOrder": 34
   },
   "visual": {
-    "visualType": "gauge",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCategory"
+                    }
+                  },
+                  "Property": "CategoryName"
+                }
+              },
+              "queryRef": "DimCategory.CategoryName",
+              "nativeQueryRef": "Categoría",
+              "displayName": "Categoría"
+            }
+          ]
+        },
         "Y": {
           "projections": [
             {
@@ -23,35 +42,146 @@
                       "Entity": "FactPostedExpense"
                     }
                   },
-                  "Property": "Participación compartida"
+                  "Property": "Payment Count"
                 }
               },
-              "queryRef": "FactPostedExpense.Participación compartida",
-              "nativeQueryRef": "Participación del total",
-              "displayName": "Participación del total"
-            }
-          ]
-        },
-        "MaxValue": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "FactPostedExpense"
-                    }
-                  },
-                  "Property": "Escala porcentual"
-                }
-              },
-              "queryRef": "FactPostedExpense.Escala porcentual",
-              "nativeQueryRef": "100 %",
-              "displayName": "100 %"
+              "queryRef": "FactPostedExpense.Payment Count",
+              "nativeQueryRef": "Pagos",
+              "displayName": "Pagos"
             }
           ]
         }
       }
+    },
+    "objects": {
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
+                }
+              }
+            },
+            "gridlineShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#E3E8EB'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "labelPosition": {
+              "expr": {
+                "Literal": {
+                  "Value": "'OutsideEnd'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#303B45'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -196,7 +326,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Porción del gasto compartido'"
+                  "Value": "'Cantidad de pagos por categoría'"
                 }
               }
             },

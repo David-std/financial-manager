@@ -3,9 +3,9 @@
   "name": "08a2456adf3211144b4d",
   "position": {
     "x": 260,
-    "y": 931,
+    "y": 939,
     "z": 2000,
-    "height": 390,
+    "height": 394,
     "width": 1000,
     "tabOrder": 21
   },
@@ -267,7 +267,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Movimientos recientes · detalle operativo'"
+                  "Value": "'Detalle de movimientos · fechas e importes en PEN'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -276,16 +283,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

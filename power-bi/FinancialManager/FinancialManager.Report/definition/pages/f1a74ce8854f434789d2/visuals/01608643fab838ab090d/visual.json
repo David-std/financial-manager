@@ -3,10 +3,10 @@
   "name": "01608643fab838ab090d",
   "position": {
     "x": 20,
-    "y": 796,
+    "y": 795,
     "z": 2000,
-    "height": 270,
-    "width": 510,
+    "height": 273,
+    "width": 453,
     "tabOrder": 17
   },
   "visual": {
@@ -23,11 +23,12 @@
                       "Entity": "DimDate"
                     }
                   },
-                  "Property": "YearMonth"
+                  "Property": "Month"
                 }
               },
-              "queryRef": "DimDate.YearMonth",
-              "nativeQueryRef": "YearMonth"
+              "queryRef": "DimDate.Month",
+              "nativeQueryRef": "Mes (1-12)",
+              "displayName": "Mes (1-12)"
             }
           ]
         },
@@ -77,6 +78,51 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            },
+            "preferredCategoryWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "38D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
                 }
               }
             }
@@ -227,7 +273,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Pagos por mes · frecuencia e importe'"
+                  "Value": "'Gasto (barras, S/) y número de pagos (línea)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -236,16 +289,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

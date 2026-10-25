@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "a8d0efaf597f48667ab4",
   "position": {
-    "x": 538,
-    "y": 632,
+    "x": 585,
+    "y": 635,
     "z": 2000,
-    "height": 263,
-    "width": 470,
+    "height": 260,
+    "width": 400,
     "tabOrder": 19
   },
   "visual": {
-    "visualType": "stackedAreaChart",
+    "visualType": "hundredPercentStackedColumnChart",
     "query": {
       "queryState": {
         "Category": {
@@ -23,11 +23,12 @@
                       "Entity": "DimDate"
                     }
                   },
-                  "Property": "YearMonth"
+                  "Property": "Month"
                 }
               },
-              "queryRef": "DimDate.YearMonth",
-              "nativeQueryRef": "YearMonth"
+              "queryRef": "DimDate.Month",
+              "nativeQueryRef": "Mes (1-12)",
+              "displayName": "Mes (1-12)"
             }
           ]
         },
@@ -77,6 +78,76 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Bottom'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            },
+            "preferredCategoryWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "38D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
                 }
               }
             }
@@ -227,7 +298,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Composición mensual por tipo'"
+                  "Value": "'Composición por tipo y mes (años filtrados)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -236,16 +314,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },

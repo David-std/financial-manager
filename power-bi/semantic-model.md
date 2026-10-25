@@ -1,6 +1,6 @@
 # Financial Manager — semantic model contract
 
-Status: **Executive v6 PBIP source implemented** with 29 DAX measures and an authenticated earlier Desktop/Dataverse reconciliation (empty Posted/PEN fact). Positive-data visual acceptance and Power BI Service publication remain pending. See [Executive v6 specification](EXECUTIVE-V6.md). The project is versioned under [FinancialManager/](FinancialManager/).
+Status: **Executive v7 PBIP source implemented** with 31 DAX measures and an authenticated earlier Desktop/Dataverse reconciliation (empty Posted/PEN fact). Positive-data visual acceptance and Power BI Service publication remain pending. See [Executive v7 specification](EXECUTIVE-V7.md). The project is versioned under [FinancialManager/](FinancialManager/).
 Source of truth: authenticated Financial Manager Dataverse, not files copied from the operational environment.
 Primary baseline: posted expense payments and budget versions. Subsequent receipt and transfer domains require separate facts and measures; see [ADR 0003](../docs/decisions/0003-expanded-financial-scope.md).
 
@@ -31,7 +31,7 @@ Branch-specific and Shared payments share one consolidated spending fact. Shared
 
 ## Measures: proposed DAX definitions
 
-These definitions assume the model has already mapped `AmountPEN`, `TransactionDate`, and numeric class IDs correctly. The baseline 26-measure executive v2 model was parsed and queried in Desktop against the empty Posted/PEN fact. Executive v6 extends it to 29 measures; positive-payment end-to-end acceptance still needs completion.
+These definitions assume the model has already mapped `AmountPEN`, `TransactionDate`, and numeric class IDs correctly. The baseline 26-measure executive v2 model was parsed and queried in Desktop against the empty Posted/PEN fact. Executive v7 extends it to 31 measures; positive-payment end-to-end acceptance still needs completion.
 
 ```dax
 Paid Spending = SUM ( FactPostedExpense[AmountPEN] )

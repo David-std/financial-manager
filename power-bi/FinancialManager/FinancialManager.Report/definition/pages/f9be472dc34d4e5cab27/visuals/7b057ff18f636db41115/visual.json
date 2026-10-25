@@ -2,36 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "7b057ff18f636db41115",
   "position": {
-    "x": 836,
-    "y": 743,
+    "x": 829,
+    "y": 765,
     "z": 2000,
-    "height": 288,
-    "width": 424,
-    "tabOrder": 26
+    "height": 282,
+    "width": 431,
+    "tabOrder": 33
   },
   "visual": {
-    "visualType": "decompositionTreeVisual",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
-        "Analyze": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "FactPostedExpense"
-                    }
-                  },
-                  "Property": "Paid Spending"
-                }
-              },
-              "queryRef": "FactPostedExpense.Paid Spending",
-              "nativeQueryRef": "Paid Spending"
-            }
-          ]
-        },
-        "ExplainBy": {
+        "Category": {
           "projections": [
             {
               "field": {
@@ -45,53 +27,109 @@
                 }
               },
               "queryRef": "DimCategory.CategoryName",
-              "nativeQueryRef": "CategoryName"
-            },
+              "nativeQueryRef": "Categoría",
+              "displayName": "Categoría"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
             {
               "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimBranch"
-                    }
-                  },
-                  "Property": "BranchName"
-                }
-              },
-              "queryRef": "DimBranch.BranchName",
-              "nativeQueryRef": "BranchName"
-            },
-            {
-              "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
                       "Entity": "FactPostedExpense"
                     }
                   },
-                  "Property": "FlowClassLabel"
+                  "Property": "Average Payment"
                 }
               },
-              "queryRef": "FactPostedExpense.FlowClassLabel",
-              "nativeQueryRef": "FlowClassLabel"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "FactPostedExpense"
-                    }
-                  },
-                  "Property": "ScopeLabel"
-                }
-              },
-              "queryRef": "FactPostedExpense.ScopeLabel",
-              "nativeQueryRef": "ScopeLabel"
+              "queryRef": "FactPostedExpense.Average Payment",
+              "nativeQueryRef": "Ticket medio S/",
+              "displayName": "Ticket medio S/"
             }
           ]
         }
       }
+    },
+    "objects": {
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1000D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#566775'"
+                    }
+                  }
+                }
+              }
+            },
+            "gridlineShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#E3E8EB'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -236,7 +274,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Explorar factores del gasto'"
+                  "Value": "'Ticket promedio por categoría · S/ miles'"
                 }
               }
             },

@@ -82,6 +82,12 @@ table FactPostedExpense
 
 	measure 'Estado por movimiento' = IF ( HASONEVALUE ( FactPostedExpense[ExpenseId] ), "✓ Contabilizado", BLANK () )
 
+	measure 'Participación por ámbito' = DIVIDE ( [Paid Spending], CALCULATE ( [Paid Spending], ALLSELECTED ( FactPostedExpense[ScopeLabel] ) ), 0 )
+		formatString: 0.0%
+
+	measure 'Año previo comparable' = IF ( HASONEVALUE ( DimDate[Year] ), [Prior Year Spending], BLANK () )
+		formatString: #,##0.00
+
 	column FlowClassLabel
 		dataType: string
 		sourceColumn: FlowClassLabel

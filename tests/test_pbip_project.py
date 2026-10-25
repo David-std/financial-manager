@@ -36,7 +36,7 @@ class PbipContractTests(unittest.TestCase):
         )
         self.assertIn("WHERE expense.fmg_status = 797280001", fact)
         self.assertIn("currency.isocurrencycode = 'PEN'", fact)
-        self.assertEqual(fact.count("\n\tmeasure '"), 29)
+        self.assertEqual(fact.count("\n\tmeasure '"), 31)
         self.assertIn("'Pagos confirmados KPI'", fact)
         self.assertIn("'Variación interanual lectura'", fact)
         self.assertIn("column FlowClassLabel", fact)
@@ -65,7 +65,7 @@ class PbipContractTests(unittest.TestCase):
                 if visual["visual"]["visualType"] not in ("textbox", "shape"):
                     self.assertTrue(visual["visual"]["query"]["queryState"])
                 total_visuals += 1
-        self.assertEqual(total_visuals, 154)
+        self.assertEqual(total_visuals, 152)
 
 
 if __name__ == "__main__":

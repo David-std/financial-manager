@@ -245,7 +245,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Gasto mensual · volumen y valor'"
+                  "Value": "'Gasto mensual (barras: S/; línea: cantidad de pagos)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -254,16 +261,9 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#233344'"
+                      "Value": "'#303B45'"
                     }
                   }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
                 }
               }
             },
