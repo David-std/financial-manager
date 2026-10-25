@@ -25,6 +25,10 @@ The authoritative scope and invariants are [screens](screens.md), [security](sec
 | UI-15 | Keyboard, responsive and accessibility | Desktop, tablet and phone navigation; labels, focus, controls, contrast, alerts, no clipped data or page-wide horizontal overflow |
 | UI-16 | Independent role and branch access | Verify non-admin owner/team scope, all denied Post/Void cases, shared-vs-branch isolation and audit access under real second identity |
 
+**UI-02/03 list scope:** Text, status, expense scope and flow-class filters operate only on already-authorized rows returned by the current Dataverse query. Never equate filtered client rows with complete server history. UI filtering is not access control; read permissions and branch isolation require independent server tests.
+
+**UI-09/11 evidence gate:** A successful transpile or client-side readback is only supporting evidence. Before accepting actual Post/Void, verify permissions under nonadmin user identities, denial under unauthorized identities, no duplicate transition under competing requests, immutable Posted/Voided attributes, and native Dataverse audit attribution. If these cannot be performed safely, report them pending rather than simulating approval.
+
 **Budget approval gate:** Do not expose an effective Approve action while [ADR 0004](decisions/0004-safe-budget-approval.md) has not passed independent two-user role testing, separation of duties and competing-request rollback/concurrency acceptance. A hidden button is not permission. A simulated UI approval is not a real approval.
 
 ## Financial Workspace — synthetic preview only

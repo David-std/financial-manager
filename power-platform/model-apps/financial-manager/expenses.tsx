@@ -155,6 +155,8 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
   const [reload, setReload] = useState(0);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+  const [scopeFilter, setScopeFilter] = useState("all");
+  const [flowFilter, setFlowFilter] = useState("all");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -181,6 +183,7 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
             "fmg_amount",
             "fmg_status",
             "fmg_flowclass",
+            "fmg_scope",
             "fmg_description",
             "_fmg_category_value",
             "_fmg_branch_value",
@@ -232,9 +235,11 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
             (v) => typeof v === "string" && v.toLowerCase().includes(text),
           );
         const matchesStatus = status === "all" || record.fmg_status === Number(status);
-        return matchesText && matchesStatus;
+        const matchesScope = scopeFilter === "all" || record.fmg_scope === Number(scopeFilter);
+        const matchesFlow = flowFilter === "all" || record.fmg_flowclass === Number(flowFilter);
+        return matchesText && matchesStatus && matchesScope && matchesFlow;
       }),
-    [data.records, search, status],
+    [data.records, search, status, scopeFilter, flowFilter],
   );
   const confirmed = data.records.filter((item) => item.fmg_status === 797280001);
   const total = confirmed.reduce((sum, item) => sum + (Number(item.fmg_amount) || 0), 0);
@@ -356,6 +361,35 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
             <option value="797280001">Confirmados</option>
             <option value="797280002">Anulados</option>
           </select>
+          <label htmlFor="fmScope">Ámbito </label>
+          <select
+            id="fmScope"
+            aria-label="Filtrar por ámbito"
+            value={scopeFilter}
+            onChange={(event) => setScopeFilter(event.target.value)}
+            style={{ padding: "8px", borderRadius: "6px", borderColor: "#aaa" }}
+          >
+            <option value="all">Todos</option>
+            <option value="797280000">Por sede</option>
+            <option value="797280001">Compartido</option>
+          </select>
+          <label htmlFor="fmFlow">Clase </label>
+          <select
+            id="fmFlow"
+            aria-label="Filtrar por clase"
+            value={flowFilter}
+            onChange={(event) => setFlowFilter(event.target.value)}
+            style={{ padding: "8px", borderRadius: "6px", borderColor: "#aaa" }}
+          >
+            <option value="all">Todas</option>
+            <option value="797280000">Operativo</option>
+            <option value="797280001">Capital</option>
+            <option value="797280002">Tributario</option>
+            <option value="797280003">Otro pago</option>
+          </select>
+          <Text size={200} aria-live="polite" className={styles.notice}>
+            {visible.length} de {data.records.length} registros cargados coinciden.
+          </Text>
         </div>
         {data.loading && (
           <div className={styles.empty}>
@@ -402,7 +436,11 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
                     </td>
                     <td className={styles.cell}>{typeText(record.fmg_flowclass)}</td>
                     <td className={styles.cell}>{lookupLabel(record, "_fmg_category_value")}</td>
-                    <td className={styles.cell}>{lookupLabel(record, "_fmg_branch_value")}</td>
+                    <td className={styles.cell}>
+                      {record.fmg_scope === 797280001
+                        ? "Compartido"
+                        : lookupLabel(record, "_fmg_branch_value")}
+                    </td>
                     <td className={styles.cell}>{formatMoney(record.fmg_amount)}</td>
                     <td className={styles.cell}>
                       <Button
@@ -430,8 +468,9 @@ const ExpensePage = ({ dataApi }: GeneratedComponentProps) => {
       </section>
       {data.hasMore && (
         <Text className={styles.notice}>
-          Existen movimientos adicionales. Consulte la vista nativa de Dataverse para el historial
-          completo.
+          Esta pantalla filtra únicamente los últimos {data.records.length} registros cargados, no
+          todo el historial. Consulta la vista nativa de Dataverse para buscar operaciones
+          anteriores.
         </Text>
       )}
     </main>

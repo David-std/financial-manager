@@ -6,7 +6,7 @@ This is not a Canvas app. Power Platform CLI generative pages use React + TypeSc
 
 | Navigation page | Implementation | Current behavior |
 | --- | --- | --- |
-| Gastos | `expenses.tsx` | Read payment list, search/filter, show Posted totals on loaded rows, create a Draft and open its editor using record-context navigation |
+| Gastos | `expenses.tsx` | Read authorized payment list, filter loaded rows by text/status/scope/class, show Posted totals on loaded rows, create a Draft and open its editor using record-context navigation |
 | Presupuestos | `budgets.tsx` | Create and edit Draft budget headers, add and adjust monthly allocations, inspect versions, and submit Drafts with confirmation. Server-enforced approval remains disabled. |
 | Datos maestros | `master-data.tsx` | Read-only category/branch/cash-account catalogs and native record links |
 | Detalle del gasto | `expense-detail.tsx` | Edit Draft amount/date/scope/category/account and document reference; request privileged Post and Void with reason; read-only after posting |
@@ -52,6 +52,8 @@ Reformatting code in Git does **not** automatically update the running app. Tran
 - **Server is authoritative:** Do not implement financial state changes by bypassing the payment/budget plug-ins. The app does not grant extra Dataverse permissions.
 - `FT_EnforcePaymentIntegrity` permits only System Administrators to Post/Void until roles are configured. `BG_EnforceBudgetIntegrity` deliberately refuses approvals.
 - No test payments, budgets, or master data are embedded in the pages or committed to Git.
+- **Gastos list scope:** visible filters operate on the Dataverse-authorized loaded subset, never all server records; a matching count is displayed and large histories explicitly direct users to native Dataverse search. Shared scope is labeled without pretending it belongs to a branch. This does **not** implement or prove branch-level authorization.
+- **Expense detail safety:** client validation rejects malformed amounts, impossible dates, inactive/group/unclassified categories, or incompatible cash accounts before requesting Post. Both privileged transitions pre-read the current server status and independently read back the resulting state; Void also reads back its reason. A synchronous per-page guard prevents rapid repeated clicks. These checks **do not** provide server-side concurrency control, financial authorization, or acceptance without a permitted second identity. Direct updateRow transitions still depend on the installed synchronous Dataverse plug-in.
 - **Gastos** creates a minimal Draft and opens `expense-detail.tsx`. Interactive record navigation, saving, clearing fields and Branch-to-Shared behavior were verified with a synthetic Draft and authenticated Dataverse readback. The reverse Shared-to-Branch transition, Post/Void permissions and non-admin identity checks still require acceptance.
 - The budget page shows aggregate allocations over loaded rows only. No approved budget exists for reliable budget-vs-actual reporting. Avoid presenting this as a complete analytical report.
 - Generated pages are compiled and published independently of Git. A successful CLI upload does not prove each interaction or access boundary; refer to the acceptance checklist. Each page has a maximum of six linked Dataverse tables (the detail page uses five); `RuntimeTypes.ts` is a unified *source typing* reference containing seven tables, not a seven-table runtime binding.

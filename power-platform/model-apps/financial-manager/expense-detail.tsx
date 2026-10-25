@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -163,6 +163,8 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
   const [pendingPost, setPendingPost] = useState(false);
   const [pendingVoid, setPendingVoid] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Synchronous per-page guard: rapid clicks cannot issue duplicate financial transitions.
+  const transitionInProgress = useRef(false);
   const [feedback, setFeedback] = useState("");
   const ready = !!dataApi;
   useEffect(() => {
@@ -265,14 +267,16 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
         const assigned = guid(c._fmg_branch_value);
         if (inputs.scope === "797280001") return !assigned;
         if (inputs.scope === "797280000")
-          return !assigned || !inputs.branch || assigned === inputs.branch;
-        return true;
+          return !assigned || (!!inputs.branch && assigned === inputs.branch);
+        // Never offer a location-specific account before the spending scope is selected.
+        return !assigned;
       }),
     [data.accounts, inputs.scope, inputs.branch],
   );
   function change(field: keyof Inputs, value: string) {
     setInputs((current) => ({ ...current, [field]: value }));
     setFeedback("");
+    if (field !== "voidReason") setPendingPost(false);
   }
   function reload() {
     setVersion((v) => v + 1);
@@ -283,8 +287,13 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
   const draft = data.record?.fmg_status === 797280000;
   async function saveDraft(): Promise<boolean> {
     if (!recordId || !draft || busy) return false;
-    if (inputs.amount && (!Number.isFinite(Number(inputs.amount)) || Number(inputs.amount) <= 0)) {
-      setFeedback("El importe debe ser positivo.");
+    if (
+      inputs.amount.trim() &&
+      (!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(inputs.amount.trim()) ||
+        !Number.isFinite(Number(inputs.amount)) ||
+        Number(inputs.amount) <= 0)
+    ) {
+      setFeedback("Indica un importe positivo con máximo dos decimales, usando punto decimal.");
       return false;
     }
     const payload: Record<string, unknown> = {
@@ -363,11 +372,78 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
       );
       return;
     }
+    // UX checks never replace the server plug-in, but avoid asking it to post stale
+    // or plainly invalid selections. This read is not an atomic concurrency guard.
+    const selectedCategory = data.categories.find(
+      (c) => c.fmg_categoryid.toLowerCase() === inputs.category,
+    );
+    const selectedAccount = data.accounts.find(
+      (a) => a.fmg_cashaccountid.toLowerCase() === inputs.account,
+    );
+    const assignedBranch = guid(selectedAccount?._fmg_branch_value);
+    const categoryValid =
+      !!selectedCategory &&
+      active(selectedCategory.fmg_isactive) &&
+      !active(selectedCategory.fmg_isgroup) &&
+      selectedCategory.fmg_code !== "999";
+    const accountValid =
+      !!selectedAccount &&
+      active(selectedAccount.fmg_isactive) &&
+      (inputs.scope === "797280001"
+        ? !assignedBranch
+        : inputs.scope === "797280000" &&
+          !!inputs.branch &&
+          (!assignedBranch || assignedBranch === inputs.branch));
+    const parsedDate = new Date(inputs.date + "T12:00:00.000Z");
+    const dateValid =
+      /^\d{4}-\d{2}-\d{2}$/.test(inputs.date) &&
+      Number.isFinite(parsedDate.getTime()) &&
+      parsedDate.toISOString().slice(0, 10) === inputs.date;
+    if (!categoryValid || !accountValid || !dateValid) {
+      setFeedback(
+        "Revisa la categoría de detalle activa, fecha, ámbito, sede y cuenta de origen antes de confirmar.",
+      );
+      setPendingPost(false);
+      return;
+    }
+    if (transitionInProgress.current) return;
+    transitionInProgress.current = true;
+    setBusy(true);
+    setFeedback("");
+    try {
+      const current = await dataApi.retrieveRow("fmg_financialtransaction", {
+        id: recordId,
+        select: ["fmg_status"],
+      });
+      if (current.fmg_status !== 797280000)
+        throw new Error(
+          "El estado del movimiento cambió. Actualiza la pantalla antes de continuar.",
+        );
+    } catch (err) {
+      setFeedback(err instanceof Error ? err.message : "No se pudo comprobar el estado actual.");
+      setBusy(false);
+      setPendingPost(false);
+      transitionInProgress.current = false;
+      return;
+    }
+    setBusy(false);
     const saved = await saveDraft();
-    if (!saved) return;
+    if (!saved) {
+      transitionInProgress.current = false;
+      return;
+    }
     setBusy(true);
     try {
       await dataApi.updateRow("fmg_financialtransaction", recordId, { fmg_status: 797280001 });
+      const confirmed = await dataApi.retrieveRow("fmg_financialtransaction", {
+        id: recordId,
+        select: ["fmg_status"],
+      });
+      if (confirmed.fmg_status !== 797280001) {
+        throw new Error(
+          "Dataverse no confirmó el estado contabilizado. Actualiza antes de reintentar.",
+        );
+      }
       reload();
     } catch (err) {
       setFeedback(
@@ -378,21 +454,44 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
     } finally {
       setBusy(false);
       setPendingPost(false);
+      transitionInProgress.current = false;
     }
   }
   async function voidPayment(): Promise<void> {
-    if (!recordId || busy || data.record?.fmg_status !== 797280001) return;
+    if (!recordId || busy || transitionInProgress.current || data.record?.fmg_status !== 797280001)
+      return;
     if (!inputs.voidReason.trim()) {
       setFeedback("Es obligatorio indicar el motivo de anulación.");
       return;
     }
+    transitionInProgress.current = true;
     setBusy(true);
     setFeedback("");
     try {
+      const current = await dataApi.retrieveRow("fmg_financialtransaction", {
+        id: recordId,
+        select: ["fmg_status"],
+      });
+      if (current.fmg_status !== 797280001)
+        throw new Error(
+          "El movimiento ya no está contabilizado. Actualiza la pantalla antes de continuar.",
+        );
       await dataApi.updateRow("fmg_financialtransaction", recordId, {
         fmg_status: 797280002,
         fmg_voidreason: inputs.voidReason.trim(),
       });
+      const voided = await dataApi.retrieveRow("fmg_financialtransaction", {
+        id: recordId,
+        select: ["fmg_status", "fmg_voidreason"],
+      });
+      if (
+        voided.fmg_status !== 797280002 ||
+        voided.fmg_voidreason?.trim() !== inputs.voidReason.trim()
+      ) {
+        throw new Error(
+          "No se confirmó la anulación o el motivo en Dataverse. Actualiza antes de reintentar.",
+        );
+      }
       reload();
     } catch (err) {
       setFeedback(
@@ -401,6 +500,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
     } finally {
       setBusy(false);
       setPendingVoid(false);
+      transitionInProgress.current = false;
     }
   }
   if (!recordId)
@@ -458,6 +558,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               </Field>
               <Field label="Clasificación del pago">
                 <select
+                  aria-label="Clasificación del pago"
                   className={css.select}
                   disabled={!draft}
                   value={inputs.flow}
@@ -472,6 +573,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               </Field>
               <Field label="Ámbito">
                 <select
+                  aria-label="Ámbito"
                   className={css.select}
                   disabled={!draft}
                   value={inputs.scope}
@@ -489,6 +591,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               {inputs.scope === "797280000" && (
                 <Field label="Sede">
                   <select
+                    aria-label="Sede"
                     className={css.select}
                     disabled={!draft}
                     value={inputs.branch}
@@ -510,6 +613,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               )}
               <Field label="Grupo de categoría">
                 <select
+                  aria-label="Grupo de categoría"
                   className={css.select}
                   disabled={!draft}
                   value={inputs.group}
@@ -528,6 +632,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               </Field>
               <Field label="Categoría de detalle">
                 <select
+                  aria-label="Categoría de detalle"
                   className={css.select}
                   disabled={!draft}
                   value={inputs.category}
@@ -543,6 +648,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               </Field>
               <Field label="Cuenta de origen">
                 <select
+                  aria-label="Cuenta de origen"
                   className={css.select}
                   disabled={!draft}
                   value={inputs.account}

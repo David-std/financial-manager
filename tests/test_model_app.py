@@ -99,6 +99,21 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertRegex(source, r"\.catch\(\s*\(error\)\s*=>\s*setFeedback\(")
         self.assertIn('Borrador creado, pero no se pudo abrir el detalle:', source)
 
+    def test_expense_list_filters_are_limited_to_authorized_loaded_rows(self) -> None:
+        source=(PAGES/"expenses.tsx").read_text(encoding="utf8")
+        compact=compact_ts(source)
+        for name in ("scopeFilter","flowFilter","matchesScope","matchesFlow"):
+            self.assertIn(name,source)
+        for col in ("fmg_scope","fmg_flowclass","fmg_status"):
+            self.assertIn(f'"{col}"',source)
+        self.assertIn('aria-label="Filtrar por ámbito"',source)
+        self.assertIn('aria-label="Filtrar por clase"',source)
+        self.assertIn('record.fmg_scope===797280001?"Compartido"',compact)
+        self.assertIn('data.records.filter',compact)
+        self.assertIn("notodoelhistorial",compact)
+        self.assertNotIn("fetch(",source)
+        self.assertNotIn("fmg_ApproveBudget",source)
+
     def test_detail_accepts_record_context_and_only_updates_transactions(self) -> None:
         source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
         self.assertIn("typeof pageInput", source)
@@ -125,6 +140,38 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertIn('dataApi.retrieveRow("fmg_financialtransaction",{id:recordId,select:[', normalized)
         self.assertIn('No se conservaron las relaciones:', source)
         self.assertNotRegex(source, r'payload\["[^"]+@odata\.bind"\]')
+
+    def test_detail_rejects_invalid_local_post_selections_before_server_write(self) -> None:
+        source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
+        normalized = compact_ts(source)
+        self.assertIn("selectedCategory", source)
+        self.assertIn("selectedAccount", source)
+        self.assertIn('selectedCategory.fmg_code !== "999"', source)
+        self.assertIn("active(selectedCategory.fmg_isactive)", source)
+        self.assertIn("!active(selectedCategory.fmg_isgroup)", source)
+        self.assertIn("active(selectedAccount.fmg_isactive)", source)
+        self.assertIn('inputs.scope==="797280001"?!assignedBranch', normalized)
+        self.assertIn("parsedDate.toISOString().slice(0,10)===inputs.date", normalized)
+        self.assertIn("máximo dos decimales", source)
+        self.assertIn("setPendingPost(false)", source)
+        self.assertIn('aria-label="Cuenta de origen"', source)
+
+    def test_financial_transitions_have_live_state_readback_and_double_click_guard(self) -> None:
+        source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
+        normalized = compact_ts(source)
+        self.assertIn("consttransitionInProgress=useRef(false)", normalized)
+        self.assertIn("if(transitionInProgress.current)return", normalized)
+        self.assertIn("transitionInProgress.current=true", normalized)
+        self.assertIn("transitionInProgress.current=false", normalized)
+        self.assertIn("constconfirmed=awaitdataApi.retrieveRow", normalized)
+        self.assertIn("confirmed.fmg_status!==797280001", normalized)
+        self.assertIn("constvoided=awaitdataApi.retrieveRow", normalized)
+        self.assertIn("voided.fmg_status!==797280002", normalized)
+        self.assertIn("voided.fmg_voidreason?.trim()", normalized)
+        self.assertIn("current.fmg_status!==797280000", normalized)
+        self.assertIn("current.fmg_status!==797280001", normalized)
+        self.assertNotIn("fmg_ApproveBudget", source)
+        self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
 
     def test_budget_editor_creates_drafts_and_allocations_without_approvals(self) -> None:
         source = (PAGES / "budgets.tsx").read_text(encoding="utf-8")
