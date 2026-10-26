@@ -345,3 +345,10 @@
     justify-content: center;
   }
 }
+
+.draft-form-grid label .draft-help {
+  font-size: 10px;
+  font-weight: 450;
+  color: var(--muted);
+  line-height: 1.55;
+}

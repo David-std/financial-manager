@@ -3,8 +3,10 @@ import assert from "node:assert/strict";
 import os from "node:os";
 import path from "node:path";
 const EDGE = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+const executablePath =
+  process.env.WORKSPACE_BROWSER || (process.platform === "win32" ? EDGE : undefined);
 const browser = await chromium.launch({
-  executablePath: EDGE,
+  ...(executablePath ? { executablePath } : {}),
   headless: true,
   args: ["--disable-gpu"],
 });
@@ -55,6 +57,18 @@ try {
   await nav("Movimientos");
   await test("Borradores de movimientos");
   await page.getByRole("button", { name: "Nuevo movimiento" }).click();
+  // Switching a financial scope or branch must invalidate the prior cash account.
+  await page.getByLabel("Cuenta de origen").selectOption({ index: 1 });
+  await page.getByRole("combobox", { name: "Sede", exact: true }).selectOption({ index: 1 });
+  assert.equal(await page.getByLabel("Cuenta de origen").inputValue(), "");
+  await page.getByLabel("Cuenta de origen").selectOption({ index: 1 });
+  await page.getByRole("combobox", { name: "Ámbito", exact: true }).selectOption("Compartido");
+  assert.equal(await page.getByLabel("Cuenta de origen").inputValue(), "");
+  assert.equal(await page.getByRole("combobox", { name: "Sede", exact: true }).count(), 0);
+  await page.getByLabel("Cuenta de origen").selectOption({ index: 1 });
+  await page.getByRole("combobox", { name: "Ámbito", exact: true }).selectOption("Por sede");
+  assert.equal(await page.getByLabel("Cuenta de origen").inputValue(), "");
+  assert.equal(await page.getByRole("combobox", { name: "Sede", exact: true }).inputValue(), "");
   await page.getByLabel("Importe (PEN)").fill("-10");
   await page.getByRole("button", { name: "Guardar borrador" }).click();
   await test("Introduce un importe positivo");

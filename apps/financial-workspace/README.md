@@ -75,3 +75,11 @@ Fabric Apps is **optional** for the future analytics surface and may require Fab
 ## Delegated Dataverse transport boundary
 
 The dormant infrastructure/data/dataverse-transport.ts adapter validates the Dataverse HTTPS origin, caller-verified user and organization using WhoAmI, and requires a token acquired by an actual Entra delegated flow; it never persists a token or permits caller-provided Authorization headers. It is not connected to this synthetic workspace. Run npm run test:transport for its mocked network security tests. Connecting it requires tenant-authorized SPA registration, actual entity metadata and fully accepted roles. Never claim successful live access based on a mocked test.
+
+### Financial draft scope and version safety
+
+Changing a synthetic Draft from branch to shared or back clears both branch and cash-account selections. Changing a branch also clears the account. The example dataset does not define authoritative account ownership, so the frontend cannot claim account eligibility; Dataverse must validate any real selection.
+
+For a future delegated integration, use loadDraftForEdit to retrieve the opaque ETag before editing and conditionalDraftSave to PATCH with If-Match. test:concurrency simulates two separate sessions reading the same ETag and proves the later stale PATCH receives 412 and leaves the first edit intact. This is a deterministic simulation, **not** evidence that two real Dataverse users have completed UAT.
+
+The repository CI now builds the offline React app, runs the simulated two-session ETag contract and launches a headless Chromium acceptance flow (navigation, local Draft Shared/Branch changes, analysis, mobile widths). This browser acceptance is synthetic; it does not certify live Dataverse permissions, audit trails or independent licensed identities.

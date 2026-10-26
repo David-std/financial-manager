@@ -43,4 +43,12 @@ jobs:
         run: |
           npm run test:contracts --prefix apps/financial-workspace
           npm run test:transport --prefix apps/financial-workspace
+          npm run test:concurrency --prefix apps/financial-workspace
           npm run test:analytics --prefix apps/financial-workspace
+      - name: Install headless Chromium for workspace acceptance
+        run: node apps/financial-workspace/node_modules/playwright-core/cli.js install --with-deps chromium
+      - name: Verify workspace navigation and responsive layout
+        run: |
+          npm run preview --prefix apps/financial-workspace -- --host 127.0.0.1 --port 5178 --strictPort &
+          sleep 4
+          WORKSPACE_URL=http://127.0.0.1:5178/ node apps/financial-workspace/smoke.mjs

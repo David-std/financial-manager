@@ -32,8 +32,17 @@ export default function LocalDraftWorkbench({
   const [errors, setErrors] = useState<FormError>({});
   const [notice, setNotice] = useState("");
   const update = <K extends keyof DraftFields>(field: K, value: DraftFields[K]) => {
-    setFields((old) => ({ ...old, [field]: value, ...(field === "scope" ? { branch: "" } : {}) }));
-    setErrors((old) => ({ ...old, [field]: undefined }));
+    setFields((old) => ({
+      ...old,
+      [field]: value,
+      ...(field === "scope" ? { branch: "", account: "" } : {}),
+      ...(field === "branch" ? { account: "" } : {}),
+    }));
+    setErrors((old) => ({
+      ...old,
+      [field]: undefined,
+      ...(field === "scope" || field === "branch" ? { branch: undefined, account: undefined } : {}),
+    }));
     setNotice("");
   };
   const open = (id?: string) => {
@@ -198,6 +207,10 @@ export default function LocalDraftWorkbench({
                 ))}
               </select>
               {errors.account && <small role="alert">{errors.account}</small>}
+              <small className="draft-help">
+                Al cambiar de ámbito o sede, vuelve a elegir la cuenta. La compatibilidad definitiva
+                se valida en Dataverse.
+              </small>
             </label>
             <label className="draft-description">
               Descripción

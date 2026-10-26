@@ -79,3 +79,10 @@ For release, validate source exports, installed solution compatibility, explicit
 - Shared → Branch and Branch → Shared → Branch require the rollback-only live verify --apply check, followed by actual form reopening and lookups acceptance using disposable authorized dev data only.
 - ETag/If-Match: run read-only expense-readiness, verify genuine returned row ETag, and perform two independently authorized concurrent edits; expect HTTP 412 on stale write with unchanged financial fields.
 - The role and audit acceptance cannot be signed off from a single system administrator. Posting/voiding remain restricted by server rules until the approved dedicated finance privileges and second identity are tested.
+
+
+### Acceptance classification at develop CI
+
+- Shared/Branch frontend simulation: on scope change **both** branch and account reset; on branch change account resets. Verified by browser smoke test (no Dataverse lookup persistence is implied).
+- Draft concurrency: two distinct simulated principals load the same ETag, the first writes, and the stale second receives 412. The refreshed second can succeed. This is a contract-level CI scenario, not actual role, RLS or data-service acceptance.
+- Actual role isolation, live audit attribution, native scope lookups and interleaving writes remain pending until the authorized Dataverse environment can execute read-only readiness and rolled-back integration checks. Green CI cannot close these conditions.

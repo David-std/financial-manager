@@ -82,6 +82,41 @@ function persistedEquals(
   return actual === expected;
 }
 
+/**
+ * Reads the authoritative Draft ETag immediately before opening a connected
+ * editor. Caller must preserve this exact opaque value for the later PATCH.
+ */
+export async function loadDraftForEdit(
+  transport: AuthenticatedDataverseTransport,
+  context: DelegatedContext | null,
+  id: string,
+): Promise<{ version: DraftVersion; record: DataverseDraftResult }> {
+  requireDelegatedContext(context);
+  if (!validGuid(id) || !/^fmg_[a-z0-9_]+$/.test(transport.expenseEntitySet)) {
+    throw new Error("No se pudo verificar la identidad del borrador.");
+  }
+  const response = await transport.request<DataverseDraftResult>({
+    method: "GET",
+    relativeUrl: transport.expenseEntitySet + "(" + id + ")",
+    headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+    context,
+  });
+  assertPermission(response.status);
+  if (
+    response.status !== 200 ||
+    !response.data ||
+    response.data.fmg_financialtransactionid.toLowerCase() !== id.toLowerCase() ||
+    response.data.fmg_status !== 797280000 ||
+    !validEtag(response.data["@odata.etag"] ?? "")
+  ) {
+    throw new Error("El registro no existe, no es un borrador editable o no tiene ETag.");
+  }
+  return {
+    version: { id, etag: response.data["@odata.etag"]!, status: "Draft" },
+    record: response.data,
+  };
+}
+
 export async function conditionalDraftSave(
   transport: AuthenticatedDataverseTransport,
   context: DelegatedContext | null,

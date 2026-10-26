@@ -40,3 +40,8 @@ The frontend conditionalDraftSave now reconciles the modified scalar fields afte
 ### Delegated HTTP transport (prepared, not enabled)
 
 The optional dataverse-transport.ts module accepts a caller-provided Entra **delegated** in-memory token supplier, validates the HTTPS Dynamics organization URL, denies caller-supplied Authorization headers and unsafe relative paths, calls WhoAmI to bind each request to the expected user and organization, and never follows redirects. It is intentionally not mounted in the offline app because this tenant's SPA registration, security roles and independent identity have not been accepted. Mock-network tests cannot certify live Dataverse privileges.
+
+
+### Two-session contract simulation
+
+loadDraftForEdit now retrieves and validates a Draft ETag from the authenticated transport before editing. The companion concurrent-draft.test.mjs uses two distinct **simulated** principals with the same initial ETag. First write advances its row version; the second write receives 412 and leaves the first unchanged, then succeeds only after refreshing. This verifies the adapter contract, not Dataverse user provisioning or independent role acceptance.
