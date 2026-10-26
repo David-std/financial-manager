@@ -30,6 +30,30 @@ namespace FinancialManager.CashOperations
             currencyId = verifiedPenCurrencyId;
         }
 
+        private void RequireCurrentlyActiveAccount(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new CashPlanningException("F5E002", "Cash account reference required.");
+            var account = service.Retrieve("fmg_cashaccount", id,
+                new ColumnSet("fmg_isactive", "fmg_branch"));
+            if (account == null || account.Id != id ||
+                !account.Contains("fmg_isactive") ||
+                !account.GetAttributeValue<bool>("fmg_isactive"))
+                throw new CashPlanningException("F5E002", "Cash account is no longer active.");
+            var branch = account.GetAttributeValue<EntityReference>("fmg_branch");
+            if (branch != null)
+            {
+                if (branch.Id == Guid.Empty || branch.LogicalName != "fmg_branch")
+                    throw new CashPlanningException("F5E002", "Invalid cash account branch relation.");
+                var liveBranch = service.Retrieve("fmg_branch", branch.Id,
+                    new ColumnSet("fmg_isactive"));
+                if (liveBranch == null || liveBranch.Id != branch.Id ||
+                    !liveBranch.Contains("fmg_isactive") ||
+                    !liveBranch.GetAttributeValue<bool>("fmg_isactive"))
+                    throw new CashPlanningException("F5E002", "Cash account branch is no longer active.");
+            }
+        }
+
         private static string Table(CashOperationKind kind)
         {
             if (kind == CashOperationKind.SettleReceipt) return "fmg_cashreceipt";
@@ -111,6 +135,11 @@ namespace FinancialManager.CashOperations
             }
             else
             {
+                // Authorizations were verified before planning. Re-check the
+                // current server state for BOTH accounts immediately before
+                // constructing the two-leg transfer, never trusting UI scope.
+                RequireCurrentlyActiveAccount(plan.Legs[0].AccountId);
+                RequireCurrentlyActiveAccount(plan.Legs[1].AccountId);
                 header["fmg_sourceaccount"] =
                     new EntityReference("fmg_cashaccount", plan.Legs[0].AccountId);
                 header["fmg_destinationaccount"] =
@@ -152,16 +181,37 @@ namespace FinancialManager.CashOperations
                 postingIds.Any(id => id == Guid.Empty) ||
                 postingIds.Distinct().Count() != postingIds.Count)
                 throw new CashPlanningException("F5E003", "Invalid cash completion evidence.");
-            var posted = service.Retrieve("fmg_cashposting", postingIds[0],
-                new ColumnSet("fmg_operationid", "fmg_kind"));
-            if (posted == null || posted.Id != postingIds[0] ||
-                posted.GetAttributeValue<string>("fmg_operationid") != operationId.ToString("D"))
-                throw new CashPlanningException("F5E003", "First posted leg not linked to header.");
-            var kind = posted.GetAttributeValue<OptionSetValue>("fmg_kind")?.Value;
+            // Every supplied leg must be linked to the same header, carry the
+            // same server-defined kind, and be self-consistent BEFORE final
+            // status is written. A count and the first leg alone are unsafe.
+            var persisted = new List<(Guid Account, decimal Amount)>();
+            int? kind = null;
+            foreach (var id in postingIds)
+            {
+                var posting = service.Retrieve("fmg_cashposting", id,
+                    new ColumnSet("fmg_operationid", "fmg_kind", "fmg_cashaccount",
+                        "fmg_signedamount"));
+                var account = posting?.GetAttributeValue<EntityReference>("fmg_cashaccount");
+                var amount = posting?.GetAttributeValue<Money>("fmg_signedamount");
+                var thisKind = posting?.GetAttributeValue<OptionSetValue>("fmg_kind")?.Value;
+                if (posting == null || posting.Id != id ||
+                    posting.GetAttributeValue<string>("fmg_operationid") != operationId.ToString("D") ||
+                    account == null || account.LogicalName != "fmg_cashaccount" ||
+                    account.Id == Guid.Empty || amount == null || !thisKind.HasValue ||
+                    (kind.HasValue && kind.Value != thisKind.Value))
+                    throw new CashPlanningException("F5E003", "Unrelated or malformed cash posting.");
+                kind = thisKind.Value;
+                persisted.Add((account.Id, amount.Value));
+            }
             var table = kind == 797281200 ? "fmg_cashreceipt" :
                         kind == 797281202 ? "fmg_cashtransfer" : null;
-            if (table == null || (table == "fmg_cashreceipt" ? 1 : 2) != postingIds.Count)
-                throw new CashPlanningException("F5E003", "Wrong posting kind or incomplete transfer.");
+            if (table == null || (table == "fmg_cashreceipt" ? 1 : 2) != postingIds.Count ||
+                (kind == 797281200 && persisted[0].Amount <= 0m) ||
+                (kind == 797281202 &&
+                    (persisted[0].Account == persisted[1].Account ||
+                     persisted[0].Amount >= 0m || persisted[1].Amount <= 0m ||
+                     persisted.Sum(x => x.Amount) != 0m)))
+                throw new CashPlanningException("F5E003", "Unbalanced or incomplete cash posting.");
             var row = service.Retrieve(table, operationId,
                 new ColumnSet("fmg_status", "fmg_requestfingerprint", "fmg_initiatinguserid"));
             if (row == null || row.Id != operationId || string.IsNullOrWhiteSpace(row.RowVersion) ||

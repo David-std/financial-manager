@@ -282,3 +282,10 @@ Order of operations for first installation:
 The dev grant guard was installed and independently tested with `F5A009` on direct Create; 3/3 `F5_DenyGrant_*` steps remain active alongside all 18 `F5G001` cash guards. The empty grant table has two lookups, scoped operation Choice values `797282000..797282002` and a composite alternate key. Its index may report `Pending`; run `cash-grant-inspect` to check status until it becomes `Active`. Do not create any grant row before an independent audited approval API has been deployed.
 
 `plugins/FinancialManager.CashOperations/DataverseCashLedgerTransaction.cs` is **source only**. It translates already-authorized domain plans to real Dataverse field types and uses row-version-aware completion. Calling it without a reviewed trusted Custom API context will fail at `F5G001` (as intended). Its unit-test FakeDataverse implements the SDK surface but does not prove Dataverse transactions, roles, or rollback. Existing `fmg_CashTransactionReadiness` remains read-only and should not be overwritten by this new source.
+
+
+## Validated read-only F5 contract checks (2026-10-26)
+
+`cash-runtime-probe` is a **read-only** invocation of the existing `fmg_CashTransactionReadiness` Custom API. It does not need `--apply`, does not create cash rows, and emits observed stage, IsInTransaction, identity parity and `CashWritesEnabled=False`. Dev evidence observed stage 30, in-transaction True and matching identities. This evidence does not relax F5G001.
+
+`cash-ledger-contract-inspect` is read-only. It checks that receipt/transfer/posting tables have exactly the expected SDK field types, PEN money precision 2, cash status/operation choices, lookup targets, active idempotency keys, audit/concurrency, and no stored money rows. Run before any new API test; if drift is reported, repair schema separately, do not try a cash write. `F5_CashOperationEndpoint` remains **unregistered source**, no operational API should be deployed by this command.

@@ -206,6 +206,41 @@ public sealed class DataverseCashLedgerTransactionTests
     }
 
     [Fact]
+    public void TransferCannotCreateHeaderWithInactiveAccountsOrBranches()
+    {
+        var fake = new FakeDataverse { Inactive = true };
+        var adapter = new DataverseCashLedgerTransaction(fake, User, Currency);
+        Assert.Equal("F5E002", Assert.Throws<CashPlanningException>(() =>
+            adapter.CreateHeader(Prepare(CashOperationKind.InternalTransfer))).Code);
+        Assert.Empty(fake.Store);
+    }
+
+    [Theory]
+    [InlineData("foreign")]
+    [InlineData("unbalanced")]
+    [InlineData("kind")]
+    [InlineData("same-account")]
+    public void TransferCannotFinishWithTamperedSecondLeg(string tampering)
+    {
+        var fake = new FakeDataverse();
+        var adapter = new DataverseCashLedgerTransaction(fake, User, Currency);
+        var plan = Prepare(CashOperationKind.InternalTransfer);
+        var header = adapter.CreateHeader(plan);
+        var legIds = plan.Legs.Select((leg, index) =>
+            adapter.CreatePosting(header, plan, leg, index)).ToArray();
+        var second = fake.Store[legIds[1]];
+        if (tampering == "foreign") second["fmg_operationid"] = Guid.NewGuid().ToString("D");
+        if (tampering == "unbalanced") second["fmg_signedamount"] = new Money(18.00m);
+        if (tampering == "kind") second["fmg_kind"] = new OptionSetValue(797281200);
+        if (tampering == "same-account") second["fmg_cashaccount"] =
+            new EntityReference("fmg_cashaccount", AccountA);
+        Assert.Equal("F5E003", Assert.Throws<CashPlanningException>(() =>
+            adapter.CompleteHeader(header, plan.Fingerprint, legIds)).Code);
+        Assert.Equal(0, fake.ConcurrencyUpdates);
+        Assert.Equal(797281100, fake.Store[header].GetAttributeValue<OptionSetValue>("fmg_status").Value);
+    }
+
+    [Fact]
     public void UnexpectedPostingNeverSucceedsWithDifferentAmount()
     {
         var fake = new FakeDataverse();
