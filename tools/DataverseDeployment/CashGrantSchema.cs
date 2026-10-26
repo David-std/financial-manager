@@ -142,6 +142,30 @@ internal static class CashGrantSchema
                 throw new InvalidOperationException("Unexpected cash grant key columns.");
             Console.WriteLine("F5_GRANT_KEY_STATUS=" +
                 (keys.Length == 0 ? "Missing" : keys[0].EntityKeyIndexStatus.ToString()));
+            // Dataverse creates alternate-key indexes through a system job.
+            // Expose its status without leaking job IDs or requiring mutation.
+            if (keys.Length == 1 &&
+                Guid.TryParse(keys[0].AsyncJob.ToString(), out var asyncId) &&
+                asyncId != Guid.Empty)
+            {
+                try
+                {
+                    var job = svc.Retrieve("asyncoperation", asyncId,
+                        new ColumnSet("statecode", "statuscode", "errorcode"));
+                    Console.WriteLine("F5_GRANT_KEY_JOB_STATE=" +
+                        (job.GetAttributeValue<OptionSetValue>("statecode")?.Value.ToString() ?? "Unavailable"));
+                    Console.WriteLine("F5_GRANT_KEY_JOB_STATUS=" +
+                        (job.GetAttributeValue<OptionSetValue>("statuscode")?.Value.ToString() ?? "Unavailable"));
+                    var error = job.GetAttributeValue<int?>("errorcode");
+                    Console.WriteLine("F5_GRANT_KEY_JOB_HAS_ERROR=" + (error.HasValue && error.Value != 0));
+                }
+                catch (System.ServiceModel.FaultException<OrganizationServiceFault>)
+                {
+                    Console.WriteLine("F5_GRANT_KEY_JOB_NOT_READABLE");
+                }
+            }
+            else if (keys.Length == 1)
+                Console.WriteLine("F5_GRANT_KEY_JOB_NOT_ASSIGNED");
             foreach (var name in new[] { "fmg_principal", "fmg_cashaccount",
                 "fmg_operation", "fmg_isactive", "fmg_allowshared" })
                 Console.WriteLine((meta.Attributes.Any(a => a.LogicalName == name)
