@@ -7,9 +7,11 @@ on:
       - "plugins/FinancialManager.Validation/**"
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
+      - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
       - "tests/FinancialManager.CashIntegrity.Tests/**"
+      - "tests/FinancialManager.CashDomain.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -18,9 +20,11 @@ on:
       - "plugins/FinancialManager.Validation/**"
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
+      - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
       - "tests/FinancialManager.CashIntegrity.Tests/**"
+      - "tests/FinancialManager.CashDomain.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -50,3 +54,5 @@ jobs:
         run: dotnet test tests/FinancialManager.BudgetIntegrity.Tests/FinancialManager.BudgetIntegrity.Tests.csproj --configuration Release --verbosity normal
       - name: Test F5 cash-domain fail-closed guards
         run: dotnet test tests/FinancialManager.CashIntegrity.Tests/FinancialManager.CashIntegrity.Tests.csproj --configuration Release --verbosity normal
+      - name: Test source-only F5 cash operation policies
+        run: dotnet test tests/FinancialManager.CashDomain.Tests/FinancialManager.CashDomain.Tests.csproj --configuration Release --verbosity normal
