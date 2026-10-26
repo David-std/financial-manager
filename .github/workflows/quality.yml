@@ -45,8 +45,16 @@ jobs:
           npm run test:transport --prefix apps/financial-workspace
           npm run test:concurrency --prefix apps/financial-workspace
           npm run test:analytics --prefix apps/financial-workspace
-      - name: Install headless Chromium for workspace acceptance
-        run: node apps/financial-workspace/node_modules/playwright-core/cli.js install --with-deps chromium
+      - name: Resolve headless browser for workspace acceptance
+        run: |
+          browser="$(command -v google-chrome || command -v google-chrome-stable || true)"
+          if [[ -n "$browser" ]]; then
+            echo "WORKSPACE_BROWSER=$browser" >> "$GITHUB_ENV"
+            echo "Using runner browser: $browser"
+          else
+            echo "No runner Chromium-compatible browser detected; installing fallback."
+            node apps/financial-workspace/node_modules/playwright-core/cli.js install --with-deps chromium
+          fi
       - name: Verify workspace navigation and responsive layout
         run: |
           npm run preview --prefix apps/financial-workspace -- --host 127.0.0.1 --port 5178 --strictPort &
