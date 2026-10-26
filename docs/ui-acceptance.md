@@ -72,3 +72,10 @@ powerbi-report-author validate power-bi/FinancialManager/FinancialManager.pbip
 The browser smoke assumes an existing local preview at `http://127.0.0.1:5178/` and Microsoft Edge installed on the Windows device. Run it only with the local demo. Pass/fail of these tests does **not** replace actual acceptance of Dataverse write operations and permissions.
 
 For release, validate source exports, installed solution compatibility, explicit signed-in role identities, debit/credit interpretation where applicable, server plug-in denial paths, budget versioning, recovery procedures, and Power BI publishing/RLS. Do not declare a real role or transaction accepted without corresponding server readback and denial tests.
+
+
+### Remaining live gates for expense operation
+
+- Shared → Branch and Branch → Shared → Branch require the rollback-only live verify --apply check, followed by actual form reopening and lookups acceptance using disposable authorized dev data only.
+- ETag/If-Match: run read-only expense-readiness, verify genuine returned row ETag, and perform two independently authorized concurrent edits; expect HTTP 412 on stale write with unchanged financial fields.
+- The role and audit acceptance cannot be signed off from a single system administrator. Posting/voiding remain restricted by server rules until the approved dedicated finance privileges and second identity are tested.

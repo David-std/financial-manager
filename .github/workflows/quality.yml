@@ -42,4 +42,5 @@ jobs:
       - name: Verify finance access contracts and analytics
         run: |
           npm run test:contracts --prefix apps/financial-workspace
+          npm run test:transport --prefix apps/financial-workspace
           npm run test:analytics --prefix apps/financial-workspace

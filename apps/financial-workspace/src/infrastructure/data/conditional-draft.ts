@@ -26,6 +26,7 @@ export type DataverseDraftResult = {
   fmg_financialtransactionid: string;
   fmg_status: number;
   "@odata.etag"?: string;
+  [field: string]: string | number | null | undefined;
 };
 
 export interface AuthenticatedDataverseTransport {
@@ -58,6 +59,27 @@ function validEtag(value: string): boolean {
 
 function assertPermission(status: number): void {
   if (status === 401 || status === 403) throw new FinanceAuthorizationUnavailable();
+}
+function persistedEquals(
+  field: string,
+  expected: string | number | null,
+  actual: unknown,
+): boolean {
+  if (expected === null) return actual === null;
+  if (field === "fmg_transactiondate") {
+    return typeof actual === "string" && actual.slice(0, 10) === String(expected).slice(0, 10);
+  }
+  if (field === "fmg_amount") {
+    const value =
+      typeof actual === "object" && actual !== null && "Value" in actual
+        ? (actual as { Value: unknown }).Value
+        : actual;
+    return value !== null && value !== undefined && Number(value) === Number(expected);
+  }
+  if (field === "fmg_flowclass" || field === "fmg_scope") {
+    return Number(actual) === Number(expected);
+  }
+  return actual === expected;
 }
 
 export async function conditionalDraftSave(
@@ -126,6 +148,16 @@ export async function conditionalDraftSave(
     read.data["@odata.etag"] === expected.etag
   ) {
     throw new Error("No se confirmó el estado Draft después de guardar.");
+  }
+  const mismatched = fields
+    .filter(([field, expected]) => !persistedEquals(field, expected, read.data?.[field]))
+    .map(([field]) => field);
+  if (mismatched.length) {
+    throw new Error(
+      "Dataverse no conservó los valores enviados: " +
+        mismatched.join(", ") +
+        ". La operación requiere revisión antes de continuar.",
+    );
   }
   return read.data;
 }

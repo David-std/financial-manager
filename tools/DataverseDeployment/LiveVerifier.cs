@@ -89,6 +89,67 @@ internal static class LiveVerifier
             checks++;
         }
 
+        // Scope transitions use only fresh, synthetic Draft rows inside an
+        // ExecuteTransaction that ALWAYS aborts. No live financial row is edited.
+        var sharedQuery = new QueryExpression("fmg_cashaccount")
+        {
+            ColumnSet = new ColumnSet("fmg_cashaccountid", "fmg_branch"),
+            TopCount = 25
+        };
+        sharedQuery.Criteria.AddCondition("fmg_isactive", ConditionOperator.Equal, true);
+        sharedQuery.Criteria.AddCondition("fmg_branch", ConditionOperator.Null);
+        var sharedAccounts = client.RetrieveMultiple(sharedQuery).Entities;
+        if (sharedAccounts.Count == 0)
+            throw new InvalidOperationException("Shared/Branch rollback checks need an existing active shared account fixture.");
+        else
+        {
+            var sharedAccount = sharedAccounts[0];
+            Entity SetScope(Guid id, int scope, EntityReference? branch, Guid accountId)
+            {
+                var change = new Entity(Table) { Id = id };
+                change["fmg_scope"] = new OptionSetValue(scope);
+                change["fmg_branch"] = branch;
+                change["fmg_cashaccount"] = new EntityReference("fmg_cashaccount", accountId);
+                return change;
+            }
+
+            // A Shared record has no branch; a Branch record must have an active branch.
+            // The final Post proves that the plugin reads the last intended scope and account.
+            var idRoundtrip = Guid.NewGuid();
+            Check("Branch -> Shared -> Branch -> Posted", "SENTINEL",
+                new CreateRequest { Target=NewDraft(idRoundtrip) },
+                new UpdateRequest { Target=SetScope(idRoundtrip, 797280001, null, sharedAccount.Id) },
+                new UpdateRequest { Target=SetScope(idRoundtrip, Branch, branchRef, account.Id) },
+                new UpdateRequest { Target=Update(idRoundtrip, Posted) });
+
+            var idSharedPosted = Guid.NewGuid();
+            Check("Branch -> Shared -> Posted -> Voided", "SENTINEL",
+                new CreateRequest { Target=NewDraft(idSharedPosted) },
+                new UpdateRequest { Target=SetScope(idSharedPosted, 797280001, null, sharedAccount.Id) },
+                new UpdateRequest { Target=Update(idSharedPosted, Posted) },
+                new UpdateRequest { Target=Update(idSharedPosted, Voided, "Rollback-only test") });
+
+            var idInvalidAccount = Guid.NewGuid();
+            Check("Shared rejects a branch-only cash account", "FTV004",
+                new CreateRequest { Target=NewDraft(idInvalidAccount) },
+                new UpdateRequest { Target=SetScope(idInvalidAccount, 797280001, null, account.Id) },
+                new UpdateRequest { Target=Update(idInvalidAccount, Posted) });
+
+            var idInvalidBranch = Guid.NewGuid();
+            Check("Branch requires a branch reference", "FTV003",
+                new CreateRequest { Target=NewDraft(idInvalidBranch) },
+                new UpdateRequest { Target=SetScope(idInvalidBranch, Branch, null, account.Id) },
+                new UpdateRequest { Target=Update(idInvalidBranch, Posted) });
+
+            var idInvalidSharedBranch = Guid.NewGuid();
+            Check("Shared rejects leftover branch lookup", "FTV003",
+                new CreateRequest { Target=NewDraft(idInvalidSharedBranch) },
+                new UpdateRequest {
+                    Target=SetScope(idInvalidSharedBranch, 797280001, branchRef, sharedAccount.Id)
+                },
+                new UpdateRequest { Target=Update(idInvalidSharedBranch, Posted) });
+        }
+
         var direct = NewDraft(Guid.NewGuid());
         direct["fmg_status"] = new OptionSetValue(Posted);
         Check("Direct Posted create rejected", "FTV005", new CreateRequest { Target=direct });

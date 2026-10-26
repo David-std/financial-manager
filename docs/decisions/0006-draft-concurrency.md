@@ -29,3 +29,14 @@ El método documentado `dataApi.updateRow(tableName, rowId, row)` de páginas ge
 - Microsoft Learn — [Operaciones condicionales en Dataverse](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/perform-conditional-operations-using-web-api)
 - Microsoft Learn — [API dataApi para páginas generativas](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/generative-page/data-api/)
 - [ADR 0004](0004-safe-budget-approval.md) y [Seguridad](../security.md)
+
+
+## Inspectable deployment checks
+
+The read-only deployment CLI mode expense-readiness queries live table metadata, verifying that IsOptimisticConcurrencyEnabled supports Dataverse If-Match; a disabled capability stops readiness. The rollback-only verify --apply contains Branch → Shared → Branch → Posted and Branch → Shared → Posted → Voided, plus negative cases, all on synthetic rows. These are test definitions, not evidence of a live run.
+
+The frontend conditionalDraftSave now reconciles the modified scalar fields after its conditional PATCH and does not silently assume persisted values from HTTP 204 alone. Lookups are not allowed in this contract until OData navigation names and @odata.bind/null semantics are verified. The actual delegated token transport, table metadata readout, API tests and UAT with independent non-admin identity remain blocked.
+
+### Delegated HTTP transport (prepared, not enabled)
+
+The optional dataverse-transport.ts module accepts a caller-provided Entra **delegated** in-memory token supplier, validates the HTTPS Dynamics organization URL, denies caller-supplied Authorization headers and unsafe relative paths, calls WhoAmI to bind each request to the expected user and organization, and never follows redirects. It is intentionally not mounted in the offline app because this tenant's SPA registration, security roles and independent identity have not been accepted. Mock-network tests cannot certify live Dataverse privileges.

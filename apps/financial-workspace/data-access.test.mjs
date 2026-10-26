@@ -28,6 +28,7 @@ const transport = {
       data: {
         fmg_financialtransactionid: id,
         fmg_status: 797280000,
+        fmg_description: "Revised detail",
         "@odata.etag": 'W/"28"',
       },
     };
@@ -54,6 +55,26 @@ assert.equal(attempted[0].headers["If-Match"], version.etag);
 assert.equal(attempted[0].method, "PATCH");
 assert.equal(attempted[1].method, "GET");
 
+const noReadback = {
+  expenseEntitySet: "fmg_financialtransactions",
+  async request(request) {
+    return request.method === "PATCH"
+      ? { status: 204 }
+      : {
+          status: 200,
+          data: {
+            fmg_financialtransactionid: id,
+            fmg_status: 797280000,
+            fmg_description: "Original detail",
+            "@odata.etag": 'W/"28"',
+          },
+        };
+  },
+};
+await assert.rejects(
+  conditionalDraftSave(noReadback, auth, version, update),
+  /no conservó los valores enviados/,
+);
 const stale = {
   expenseEntitySet: "fmg_financialtransactions",
   async request(request) {

@@ -71,3 +71,7 @@ Fabric Apps is **optional** for the future analytics surface and may require Fab
 - Keep data fixtures reproducible and version only deterministic synthetic data.
 - Keep architectural contracts and tests in Git, but put temporary acceptance screenshots, execution logs, handoffs and progress plans outside the repository.
 - Security and scope: [Product scope](../../docs/scope.md), [Server security](../../docs/security.md), [UI acceptance](../../docs/ui-acceptance.md), [ADR 0005](../../docs/decisions/0005-exploratory-financial-workspace.md).
+
+## Delegated Dataverse transport boundary
+
+The dormant infrastructure/data/dataverse-transport.ts adapter validates the Dataverse HTTPS origin, caller-verified user and organization using WhoAmI, and requires a token acquired by an actual Entra delegated flow; it never persists a token or permits caller-provided Authorization headers. It is not connected to this synthetic workspace. Run npm run test:transport for its mocked network security tests. Connecting it requires tenant-authorized SPA registration, actual entity metadata and fully accepted roles. Never claim successful live access based on a mocked test.

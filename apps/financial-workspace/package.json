@@ -9,7 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "check": "tsc --noEmit",
     "test:analytics": "node analytics-model.test.mjs",
-    "test:contracts": "node data-access.test.mjs"
+    "test:contracts": "node data-access.test.mjs",
+    "test:transport": "node dataverse-transport.test.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

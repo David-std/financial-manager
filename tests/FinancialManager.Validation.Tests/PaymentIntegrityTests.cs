@@ -91,6 +91,77 @@ namespace FinancialManager.Validation.Tests
             var x=Draft();x["fmg_scope"]=new OptionSetValue(FmgOptions.Shared);x["fmg_branch"]=null;
             Pass(f,"Update",Update(FmgOptions.Posted),x);
         }
+        // A Draft can be reclassified in either direction, but may only Post
+        // with a branch/account combination consistent with its latest scope.
+        [Fact] public void BranchToSharedToBranchCanPostWithMatchingAccount()
+        {
+            var f = Good();
+            var sharedAccount = Guid.NewGuid();
+            var shared = R("fmg_cashaccount",sharedAccount);
+            shared["fmg_isactive"] = true;
+            f.Add(shared);
+            var original = Draft();
+            var toShared = new Entity("fmg_financialtransaction");
+            toShared["fmg_scope"] = new OptionSetValue(FmgOptions.Shared);
+            toShared["fmg_branch"] = null;
+            toShared["fmg_cashaccount"] = Ref("fmg_cashaccount",sharedAccount);
+            Pass(f,"Update",toShared,original);
+            var nowShared = Draft();
+            nowShared["fmg_scope"] = new OptionSetValue(FmgOptions.Shared);
+            nowShared["fmg_branch"] = null;
+            nowShared["fmg_cashaccount"] = Ref("fmg_cashaccount",sharedAccount);
+            var toBranch = new Entity("fmg_financialtransaction");
+            toBranch["fmg_scope"] = new OptionSetValue(FmgOptions.Branch);
+            toBranch["fmg_branch"] = Ref("fmg_branch",Branch);
+            toBranch["fmg_cashaccount"] = Ref("fmg_cashaccount",Account);
+            Pass(f,"Update",toBranch,nowShared);
+            Pass(f,"Update",Update(FmgOptions.Posted),Draft());
+        }
+
+        [Fact] public void SharedToPostedWorksOnlyWhenBranchAndAccountAreCleared()
+        {
+            var f = Good();
+            var sharedAccount = Guid.NewGuid();
+            var shared = R("fmg_cashaccount",sharedAccount);
+            shared["fmg_isactive"] = true;
+            f.Add(shared);
+            var record = Draft();
+            record["fmg_scope"] = new OptionSetValue(FmgOptions.Shared);
+            record["fmg_branch"] = null;
+            record["fmg_cashaccount"] = Ref("fmg_cashaccount",sharedAccount);
+            Pass(f,"Update",Update(FmgOptions.Posted),record);
+            record["fmg_branch"] = Ref("fmg_branch",Branch);
+            Reject("FTV003",f,"Update",Update(FmgOptions.Posted),record);
+            record["fmg_branch"] = null;
+            record["fmg_cashaccount"] = Ref("fmg_cashaccount",Account);
+            Reject("FTV004",f,"Update",Update(FmgOptions.Posted),record);
+        }
+
+        [Fact] public void SharedToBranchRequiresActiveBranchAndCompatibleAccount()
+        {
+            var f = Good();
+            var otherBranch = R("fmg_branch",Other);
+            otherBranch["fmg_isactive"] = true;
+            f.Add(otherBranch);
+            var sharedAccount = Guid.NewGuid();
+            var shared = R("fmg_cashaccount",sharedAccount);
+            shared["fmg_isactive"] = true;
+            f.Add(shared);
+            var previous = Draft();
+            previous["fmg_scope"] = new OptionSetValue(FmgOptions.Shared);
+            previous["fmg_branch"] = null;
+            previous["fmg_cashaccount"] = Ref("fmg_cashaccount",sharedAccount);
+            var toBranch = new Entity("fmg_financialtransaction");
+            toBranch["fmg_scope"] = new OptionSetValue(FmgOptions.Branch);
+            toBranch["fmg_cashaccount"] = Ref("fmg_cashaccount",Account);
+            Pass(f,"Update",toBranch,previous); // Draft may remain partial.
+            var invalidPost = Draft();
+            invalidPost["fmg_branch"] = null;
+            Reject("FTV003",f,"Update",Update(FmgOptions.Posted),invalidPost);
+            invalidPost["fmg_branch"] = Ref("fmg_branch",Other);
+            Reject("FTV004",f,"Update",Update(FmgOptions.Posted),invalidPost);
+        }
+
         [Theory] [InlineData(0)] [InlineData(-1)] [InlineData(12.345)]
         public void PositiveTwoDecimalAmount(double number)
         {
