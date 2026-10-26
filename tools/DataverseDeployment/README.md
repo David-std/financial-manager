@@ -275,3 +275,10 @@ Order of operations for first installation:
 5. Stop without assigning any business grant, creating a transfer or unlocking a UI. Any partial deployment must be recovered idempotently and with the grant table access still restricted.
 
 **Security warning:** Dataverse grants-table CRUD is sensitive authorization configuration, not a substitute for API authorizations. During initial schema customization the table is not yet guarded, so restrict the installer to the already authorized development organization and immediately register the three steps. This is not a production migration procedure; the future production rollout must be packaged/tested with no open mutation window and a reviewed dual-approval grant creation workflow.
+
+
+## F5 live grant rollout and ledger adapter checkpoint
+
+The dev grant guard was installed and independently tested with `F5A009` on direct Create; 3/3 `F5_DenyGrant_*` steps remain active alongside all 18 `F5G001` cash guards. The empty grant table has two lookups, scoped operation Choice values `797282000..797282002` and a composite alternate key. Its index may report `Pending`; run `cash-grant-inspect` to check status until it becomes `Active`. Do not create any grant row before an independent audited approval API has been deployed.
+
+`plugins/FinancialManager.CashOperations/DataverseCashLedgerTransaction.cs` is **source only**. It translates already-authorized domain plans to real Dataverse field types and uses row-version-aware completion. Calling it without a reviewed trusted Custom API context will fail at `F5G001` (as intended). Its unit-test FakeDataverse implements the SDK surface but does not prove Dataverse transactions, roles, or rollback. Existing `fmg_CashTransactionReadiness` remains read-only and should not be overwritten by this new source.

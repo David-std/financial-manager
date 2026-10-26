@@ -130,12 +130,44 @@ internal static class CashGrantSchema
             throw new InvalidOperationException("Cash grant table must be audited, user-owned and versioned.");
         if (!apply)
         {
+            var keys = meta.Keys?.Where(k => String.Equals(k.SchemaName, UniqueKey,
+                StringComparison.OrdinalIgnoreCase)).ToArray() ?? Array.Empty<EntityKeyMetadata>();
+            if (keys.Length > 1)
+                throw new InvalidOperationException("Duplicate cash grant unique key.");
+            if (keys.Length == 1 &&
+                !new[] { "fmg_principal", "fmg_cashaccount", "fmg_operation" }
+                    .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                    .SequenceEqual(keys[0].KeyAttributes.OrderBy(x => x, StringComparer.OrdinalIgnoreCase),
+                        StringComparer.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Unexpected cash grant key columns.");
+            Console.WriteLine("F5_GRANT_KEY_STATUS=" +
+                (keys.Length == 0 ? "Missing" : keys[0].EntityKeyIndexStatus.ToString()));
             foreach (var name in new[] { "fmg_principal", "fmg_cashaccount",
                 "fmg_operation", "fmg_isactive", "fmg_allowshared" })
                 Console.WriteLine((meta.Attributes.Any(a => a.LogicalName == name)
                     ? "F5_GRANT_PRESENT " : "F5_GRANT_MISSING ") + name);
-            Console.WriteLine("F5_GRANT_ROWS_EXIST=" + (svc.RetrieveMultiple(new QueryExpression(Table)
-                { ColumnSet = new ColumnSet(false), TopCount = 1 }).Entities.Count != 0));
+            var operation = meta.Attributes.OfType<PicklistAttributeMetadata>()
+                .SingleOrDefault(x => x.LogicalName == "fmg_operation");
+            if (operation != null)
+            {
+                var values = operation.OptionSet?.Options
+                    .Select(o => o.Value).OrderBy(v => v).ToArray();
+                if (values == null || !new int?[] { 797282000, 797282001, 797282002 }
+                    .SequenceEqual(values))
+                    throw new InvalidOperationException("Unexpected grant operation choice values.");
+                Console.WriteLine("F5_GRANT_OPERATION_CHOICES_VERIFIED");
+            }
+            foreach (var name in new[] { "fmg_isactive", "fmg_allowshared" })
+            {
+                var flag = meta.Attributes.SingleOrDefault(x => x.LogicalName == name);
+                if (flag != null && !(flag is BooleanAttributeMetadata))
+                    throw new InvalidOperationException("Grant flag type drift: " + name);
+            }
+            var any = svc.RetrieveMultiple(new QueryExpression(Table)
+            {
+                ColumnSet = new ColumnSet(false), TopCount = 1
+            }).Entities.Count != 0;
+            Console.WriteLine("F5_GRANT_ROWS_EXIST=" + any);
             return 0;
         }
         EnsureColumn(svc, Flag("fmg_IsActive", "Approved and active"));
@@ -171,7 +203,9 @@ internal static class CashGrantSchema
             Console.WriteLine("F5_GRANT_UNIQUE_KEY_REQUESTED");
         }
         else if (!new[] { "fmg_principal", "fmg_cashaccount", "fmg_operation" }
-            .SequenceEqual(key.KeyAttributes, StringComparer.OrdinalIgnoreCase) ||
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .SequenceEqual(key.KeyAttributes.OrderBy(x => x, StringComparer.OrdinalIgnoreCase),
+                StringComparer.OrdinalIgnoreCase) ||
             key.EntityKeyIndexStatus == EntityKeyIndexStatus.Failed)
             throw new InvalidOperationException("Cash grant alternate key differs or failed.");
         Console.WriteLine("F5_GRANT_SCHEMA_CREATED_NO_GRANTS");
