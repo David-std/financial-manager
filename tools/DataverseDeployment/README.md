@@ -246,3 +246,17 @@ dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Rel
 ```
 
 The runtime probe performs **zero row writes**. `--apply` gates API/package customization and diagnostic invocation, not financial payments. Even if `IsInTransaction=true`, production transaction safety remains unaccepted until negative second-leg rollback, concurrency/idempotency, identity/scope permissions and audit evidence are proven with separate licensed principals. The existing 18 cash guards must remain in place with no bypass. If `IsInTransaction=false`, a proposed sequential plug-in ledger write must fail closed and use a different reviewed atomicity design.
+
+
+## F5 P1 immutable operation header metadata
+
+The `cash-operation-contract-inspect` mode retrieves metadata only. `cash-operation-contract --apply` is a **schema-only** change that adds audited `fmg_requestfingerprint` (64 characters) and `fmg_initiatinguserid` (36 characters) to each of `fmg_cashreceipt` and `fmg_cashtransfer` if absent. It validates the expected solution and organization in `Program.cs`, requires all 18 cash guard steps, verifies six-table F5 schema and requires Active request/leg keys and empty receipt/transfer/posting tables before applying. The optional attributes do not give users rights to create ledger rows.
+
+```powershell
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-operation-contract-inspect
+# Only after verified dev environment, review and a passing CI:
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-operation-contract --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-operation-contract-inspect
+```
+
+`CashExecutionCoordinator` is source-only. Its fake transaction simulator does not prove connected Dataverse rollback; do not register any operational payment/transfer Custom API or relax F5G001 until the server actor/branch adapter, uniqueness, concurrency and rollback acceptance are proven.
