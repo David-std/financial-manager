@@ -48,6 +48,7 @@ class CashDataverseProvisioningContractTests(unittest.TestCase):
             self.assertIn(token, self.keys)
         self.assertIn('new[]{"fmg_cashaccount", "fmg_effectiveon"}', self.keys)
         self.assertIn("CreateEntityKeyRequest", self.keys)
+        self.assertIn("DisplayName = new Label(", self.keys)
         self.assertIn("EntityKeyIndexStatus.Failed", self.keys)
 
     def test_explicit_apply_and_organization_identity_gates(self):
@@ -79,7 +80,7 @@ class CashDataverseProvisioningContractTests(unittest.TestCase):
         self.assertNotIn("cashreceipt", (ROOT / "power-platform/model-apps/financial-manager/expenses.tsx").read_text(encoding="utf-8"))
         adr = (ROOT / "docs/decisions/0007-cash-ledger-foundations.md").read_text(encoding="utf-8")
         self.assertIn("synchronous server plug-in", adr)
-        self.assertIn("NOT deployed", adr)
+        self.assertIn("NOT enabled", adr)
 
 
 if __name__ == "__main__":

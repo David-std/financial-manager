@@ -39,7 +39,12 @@ internal static class CashUniqueKeys
             svc.Execute(new CreateEntityKeyRequest
             {
                 EntityName = plan.Table,
-                EntityKey = new EntityKeyMetadata { SchemaName = plan.Schema, KeyAttributes = plan.Fields }
+                EntityKey = new EntityKeyMetadata
+                {
+                    SchemaName = plan.Schema,
+                    DisplayName = new Label(plan.Schema.Replace("_", " "), 3082),
+                    KeyAttributes = plan.Fields
+                }
             });
             Console.WriteLine("F5_CREATED_KEY " + plan.Schema);
         }

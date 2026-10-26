@@ -1,7 +1,7 @@
 # ADR 0007 — Cash receipts, internal transfers and bank reconciliation
 
 Date: 2026-10-25
-Status: **Specified with a Python reference model; Dataverse tables and operational flows NOT deployed**
+Status: **Development metadata and six idempotency keys deployed; operational cash flows NOT enabled**
 
 ## Motivation
 
@@ -39,7 +39,7 @@ The reference deliberately has no HTTP endpoint, Dataverse authorization, workfl
 ## Next acceptance gates
 
 - Confirm requirement ownership and actual chart of accounts, branch/team policies, currencies and permissions.
-- Deploy versioned schema/relationships and server-side plugins in the development solution only after validation.
+- Keep the deployed development schema under ALM and register synchronous server plug-ins, private transaction APIs and least-privilege roles only after independent validation.
 - Test successful and failed transfer/post/reversal with synthetic authorized records and guaranteed rollback, then independent principals.
 - Reconcile a fixed test fixture against an external synthetic bank statement across period cutoffs; assert debit/credit conservation and no duplicated consolidated cash totals.
 - Implement specialized React/Power Apps forms and Power BI measures only after server contract and permissions are accepted.
@@ -54,3 +54,11 @@ CashSchemaDeployment defines six user-owned, audited F5 entity types: fmg_cashre
 These tools are not a dedicated financial operation API. A separate synchronous server plug-in must block direct cashposting mutations, implement authorized state transitions, and post/reverse both cash legs atomically. New roles and audit attribution require acceptance before any live posting. Real bank balances must never derive from metadata creation alone.
 
 A Dataverse 0x80071151 customization lock during an unrelated solution Import prevents schema installation. It is a deployment blocker, not evidence of successful creation. Rerun inspection when the import completes normally.
+
+## Development schema deployment and remaining safety boundary
+
+The six F5 Dataverse tables were created and published inside the verified `FinancialManager` development solution. A connected metadata read verified user ownership, native auditing, optimistic concurrency and expected columns, with **zero rows** in each new table. All nine account/branch/statement lookups were provisioned. Six alternate keys, including the account/date opening key, were read back with **Active** index status. The key provisioner must supply `EntityKeyMetadata.DisplayName`; Dataverse rejects keys missing that label.
+
+The rollback-only `CashTransactionProbe` was executed against the same development organization. It created a synthetic draft transfer and two balanced signed cash legs inside `ExecuteTransaction`; the mandatory failing sentinel produced the expected fault and subsequent queries confirmed **zero persisted transfer or posting rows**. This is evidence of atomic rollback, **not** evidence of a permitted business transfer or an approved cashposting Custom API.
+
+F5 operational security gates remain: synchronous plug-in guards for direct Create/Update/Delete and immutable cash postings; service-side validated posting/reversal APIs with idempotency; scope/team privileges and audit attribution; accepted opening balances, bank reconciliation, independent identities and end-to-end UAT. Do not grant users new F5 roles, expose operational screens or calculate real cash balances from schema alone.

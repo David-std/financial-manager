@@ -195,3 +195,8 @@ After the environment has no running solution import:
 **Not production-ready:** these tools do not register the synchronous cashposting guard, final state transitions, server custom APIs or approved roles. Do not enable F5 screens, real transfers/receipts, or balances before those controls have been deployed and accepted. Schema alone cannot prove permission and transaction integrity.
 
 CustomizationLockException 0x80071151 means another solution Import is blocking EntityCustomization. Do not cancel/bypass the import; inspect Solution History, then rerun idempotent inspect/apply/verify once the lock clears.
+
+
+**Key provisioning compatibility:** Dataverse rejects `CreateEntityKeyRequest` without an `EntityKeyMetadata.DisplayName` (0x80040203). The current idempotent provisioning supplies a locale-specific label; a previous rejected request did not create a key. Always inspect all six key index states and require **Active** before executing rollback probes or enabling financial operations.
+
+**F5 development acceptance boundary:** On the verified development organization, the six tables were published and inspected with zero rows, all six key indexes reached Active, and the rollback sentinel test confirmed zero persisted cash transfer/posting rows. No operational cash plug-in, authorization policy or Custom API has been registered; these are mandatory before any live receipts, posting, reversal or balance UI.

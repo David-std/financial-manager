@@ -199,4 +199,4 @@ See [Category catalog](category-catalog.md), [Scope](scope.md), [Reporting](repo
 
 ## Future receipts and cash-ledger contracts
 
-Receipts, internal transfers, opening balances and bank reconciliation are specified but **not deployed**. See [ADR 0007](decisions/0007-cash-ledger-foundations.md) and the [executable reference model](../financial_domain/README.md). The current transaction table alone cannot produce verified cash balances or received revenue.
+The six F5 cash-domain **metadata tables are deployed in the development environment**, with native auditing, optimistic concurrency and active idempotency indexes. Operational settlement, transfers, reversal, approved opening and reconciliation **are not enabled**. See [ADR 0007](decisions/0007-cash-ledger-foundations.md) and the [executable reference model](../financial_domain/README.md). The current transaction table alone cannot produce verified cash balances or received revenue.
