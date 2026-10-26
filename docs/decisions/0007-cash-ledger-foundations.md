@@ -62,3 +62,9 @@ The six F5 Dataverse tables were created and published inside the verified `Fina
 The rollback-only `CashTransactionProbe` was executed against the same development organization. It created a synthetic draft transfer and two balanced signed cash legs inside `ExecuteTransaction`; the mandatory failing sentinel produced the expected fault and subsequent queries confirmed **zero persisted transfer or posting rows**. This is evidence of atomic rollback, **not** evidence of a permitted business transfer or an approved cashposting Custom API.
 
 F5 operational security gates remain: synchronous plug-in guards for direct Create/Update/Delete and immutable cash postings; service-side validated posting/reversal APIs with idempotency; scope/team privileges and audit attribution; accepted opening balances, bank reconciliation, independent identities and end-to-end UAT. Do not grant users new F5 roles, expose operational screens or calculate real cash balances from schema alone.
+
+## Direct-write protection gate
+
+The new `FinancialManager.CashIntegrity` package implements a fail-closed guard for all six F5 tables. Each table requires three active synchronous PreValidation steps: Create, Update and Delete. There is no administrator bypass, no unsecure configuration bypass, and no client-triggered operation marker. This guard must remain active while production transaction APIs have not been reviewed and accepted.
+
+Validation levels are separate: a passing C# suite and NuGet inspection verify the source and artifact; active 18/18 server steps and a connected six-table denial probe verify the actual Dataverse deployment. The guard cannot post cash; future authorized server operations must be introduced through a controlled, auditable replacement without temporarily exposing unprotected direct writes.

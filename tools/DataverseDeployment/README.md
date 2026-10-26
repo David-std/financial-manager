@@ -200,3 +200,15 @@ CustomizationLockException 0x80071151 means another solution Import is blocking 
 **Key provisioning compatibility:** Dataverse rejects `CreateEntityKeyRequest` without an `EntityKeyMetadata.DisplayName` (0x80040203). The current idempotent provisioning supplies a locale-specific label; a previous rejected request did not create a key. Always inspect all six key index states and require **Active** before executing rollback probes or enabling financial operations.
 
 **F5 development acceptance boundary:** On the verified development organization, the six tables were published and inspected with zero rows, all six key indexes reached Active, and the rollback sentinel test confirmed zero persisted cash transfer/posting rows. No operational cash plug-in, authorization policy or Custom API has been registered; these are mandatory before any live receipts, posting, reversal or balance UI.
+
+## F5 fail-closed server write protection
+
+The independent `fmg_CashIntegrity` package contains `FinancialManager.CashIntegrity.F5_BlockDirectCashWrites`. It denies direct Create, Update and Delete on all six F5 cash tables, including administrators, until separately reviewed authorized transaction APIs are available.
+
+To prepare it, build and pack `plugins/FinancialManager.CashIntegrity/FinancialManager.CashIntegrity.csproj` to a **new empty temporary directory**, then run `python scripts/check_cash_plugin_package.py <fresh-nupkg>`. The validated package must be supplied via `FM_CASH_PACKAGE_PATH`, in addition to the existing organization-bound environment variables. First registration only: `cash-guard-register --apply`, which refuses to overwrite any existing CashIntegrity package.
+
+Next run `cash-guard-inspect` (read-only), then `cash-guard-steps --apply`. The idempotent step provisioner registers 18 synchronous PreValidation steps, three operations for each F5 table, without any client-controlled bypass. Reinspect to require **18/18 active steps**, then run `cash-guard-probe --apply` to verify six direct Creates fail with `F5G001`. This test does not create successful cash records.
+
+The historical `cash-transaction-probe --apply` ran successfully **before** these deny-all steps. Once the lock is deployed, it is expected to fail at its first Create instead of reaching the final rollback sentinel; do not remove or disable the cash guard to repeat that earlier test. New approved APIs will need their own isolated atomic rollback and negative authorization probes.
+
+**No F5 operational APIs, roles, receipt settlement, bank balances or production transfers have been enabled by these controls.**
