@@ -7,6 +7,7 @@ on:
       - "plugins/FinancialManager.Validation/**"
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
+      - "plugins/FinancialManager.CashOperations/**"
       - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
@@ -20,6 +21,7 @@ on:
       - "plugins/FinancialManager.Validation/**"
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
+      - "plugins/FinancialManager.CashOperations/**"
       - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
@@ -56,3 +58,5 @@ jobs:
         run: dotnet test tests/FinancialManager.CashIntegrity.Tests/FinancialManager.CashIntegrity.Tests.csproj --configuration Release --verbosity normal
       - name: Test source-only F5 cash operation policies
         run: dotnet test tests/FinancialManager.CashDomain.Tests/FinancialManager.CashDomain.Tests.csproj --configuration Release --verbosity normal
+      - name: Test F5 read-only runtime probe package
+        run: dotnet test tests/FinancialManager.CashOperations.Tests/FinancialManager.CashOperations.Tests.csproj --configuration Release --verbosity normal

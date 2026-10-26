@@ -225,3 +225,24 @@ dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Rel
 The connected 2026-10-26 inspection found `fmg_cashaccount` and `fmg_branch` are **OrganizationOwned**, not user/team-owned, and both have native auditing disabled. The account has `fmg_isactive`, optional `fmg_branch` lookup and a separate account-type choice; the branch has `fmg_isactive`. This means account owner cannot be used as proof of branch entitlements. A missing branch cannot be treated as a shared account without explicit, server-approved account grants. The six F5 tables remain user-owned and audited; none of the five proposed Custom APIs exists yet.
 
 The source-only `src/FinancialManager.CashDomain/CashAccountScopePolicy.cs` rejects inactive/foreign accounts, missing branch evidence, implied shared accounts and unpermitted operations. The **future** Dataverse adapter must securely load all entitlement inputs from validated server context and authorized reference data, never from client claims. In addition to accepting independent roles and transaction rollback, review reference-table auditing and changes to account/branch membership before operational money is enabled. See [ADR 0008](../../docs/decisions/0008-secure-cash-operation-api.md).
+
+
+## F5 server transaction runtime verification (read-only diagnostic)
+
+Before implementing server-side cash settlement or two-leg transfers, inspect the Dataverse Custom API MainOperation transaction flag instead of assuming it. `plugins/FinancialManager.CashOperations` provides an isolated **read-only** `F5_RuntimeProbe`. It has no financial service calls and always returns `CashWritesEnabled=false`. It is NOT an operational cash API.
+
+Safeguards: the usual validated `FM_ENV_URL` and `FM_ORGANIZATION_ID` values, one `FinancialManager` solution, all 18 active `fmg_CashIntegrity` deny-all guard steps, and an exact existing `prvReadfmg_CashTransfer` privilege. The private, global action `fmg_CashTransactionReadiness` allows no custom processing extensions, uses only the read privilege, and reports `InTransaction`, `ObservedStage`, `SameIdentity`, and `CashWritesEnabled`. Privacy does not replace privilege authorization.
+
+```powershell
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-runtime-inspect
+# Build to a fresh TEMP directory; verify the newly generated .nupkg:
+dotnet publish plugins/FinancialManager.CashOperations/FinancialManager.CashOperations.csproj -c Release -p:PublishOnBuild=false
+dotnet pack plugins/FinancialManager.CashOperations/FinancialManager.CashOperations.csproj -c Release -p:PublishOnBuild=false -p:PackageOutputPath=<fresh-temp-directory>
+python scripts/check_cash_runtime_package.py <fresh-temp-directory>/fmg_CashOperations.1.0.0.nupkg
+# Requires validated FM_CASH_RUNTIME_PACKAGE_PATH and explicit change authorization:
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-runtime-register --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-runtime-api --apply
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-runtime-probe --apply
+```
+
+The runtime probe performs **zero row writes**. `--apply` gates API/package customization and diagnostic invocation, not financial payments. Even if `IsInTransaction=true`, production transaction safety remains unaccepted until negative second-leg rollback, concurrency/idempotency, identity/scope permissions and audit evidence are proven with separate licensed principals. The existing 18 cash guards must remain in place with no bypass. If `IsInTransaction=false`, a proposed sequential plug-in ledger write must fail closed and use a different reviewed atomicity design.
