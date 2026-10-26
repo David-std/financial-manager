@@ -15,6 +15,7 @@ The authoritative scope and invariants are [screens](screens.md), [security](sec
 | UI-05 | Detail navigation | Selected record ID is passed and the correct record is shown after opening, refreshing and returning |
 | UI-06 | Edit Draft | Date, amount, class, scope, branch, active leaf category, cash account, description, optional reference and PEN currency round-trip correctly |
 | UI-06a | Detect stale Draft and avoid silent data loss | Refresh warns if form is modified; another session's saved Draft change detected on pre-read and blocks the client write; after Save, an independent row readback matches edited scalar fields and lookups; deliberate refresh must clear dirty state. Pre-read is not server-enforced If-Match; the interleaving-write race remains a separate authorization/concurrency acceptance gate. |
+| UI-06b | Atomic competing Draft writes (gate) | Two independently authenticated users read the same ETag. First update succeeds, second receives 412/precondition failure with no overwritten fields. Reload and explicit retry are required. Generated-page pre-read alone does not meet this gate; do not mark complete without a live conditional server path. |
 | UI-07 | Clear nullable Draft fields | Clearing optional text/lookups actually persists a null; stale data is not silently retained |
 | UI-08 | Branch ↔ Shared | Branch→Shared clears prior branch association and accepts only permitted shared account; reverse path requires valid active branch/account |
 | UI-09 | Post authorized Draft | Server validates all required values and privilege, transitions once to Posted, rejects stale retry and prevents subsequent arbitrary updates |
@@ -62,9 +63,9 @@ The current React Workspace is **not** an authorized Dataverse client. A product
 ```powershell
 python -m unittest discover -s tests -q
 python scripts/check_repository.py
-npm --prefix experiments/financial-workspace run build
-node experiments/financial-workspace/analytics-model.test.mjs
-node experiments/financial-workspace/smoke.mjs
+npm --prefix apps/financial-workspace run build
+node apps/financial-workspace/analytics-model.test.mjs
+node apps/financial-workspace/smoke.mjs
 powerbi-report-author validate power-bi/FinancialManager/FinancialManager.pbip
 ```
 

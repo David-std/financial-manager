@@ -51,7 +51,7 @@ for r in rows:
         "flow": r["FlowClassLabel"],
         "status": "Contabilizado",
     })
-dest = ROOT / "experiments" / "financial-workspace" / "src" / "data" / "demo.json"
+dest = ROOT / "apps" / "financial-workspace" / "src" / "data" / "demo.json"
 dest.parent.mkdir(parents=True, exist_ok=True)
 dest.write_text(json.dumps({"demo": True, "currency": "PEN", "count":len(records),
                             "totalPEN": round(sum(r["amount"] for r in records),2),

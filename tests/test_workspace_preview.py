@@ -7,7 +7,7 @@ import unittest
 from collections import Counter
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-WEB = ROOT / "experiments" / "financial-workspace"
+WEB = ROOT / "apps" / "financial-workspace"
 
 
 class WorkspacePreviewTests(unittest.TestCase):
@@ -53,12 +53,13 @@ class WorkspacePreviewTests(unittest.TestCase):
     def test_session_state_tracks_real_local_edits_only(self):
         self.assertIn("WorkspaceProvider", self.app)
         self.assertIn("createContext", self.store)
-        self.assertIn("useReducer(reduce,initial)", self.store)
-        self.assertIn("events:[newEvent,...state.events]", self.store)
-        self.assertIn('type:"saveExpense"', self.drafts)
-        self.assertIn('type:"deleteExpense"', self.drafts)
-        self.assertIn('type:"saveBudget"', self.planner)
-        self.assertIn('type:"deleteBudget"', self.planner)
+        normalized = lambda text: "".join(text.split())
+        self.assertIn("useReducer(reduce,initial)", normalized(self.store))
+        self.assertIn("events:[newEvent,...state.events]", normalized(self.store))
+        self.assertIn('type:"saveExpense"', normalized(self.drafts))
+        self.assertIn('type:"deleteExpense"', normalized(self.drafts))
+        self.assertIn('type:"saveBudget"', normalized(self.planner))
+        self.assertIn('type:"deleteBudget"', normalized(self.planner))
 
     def test_expense_drafts_validate_and_cannot_post(self):
         self.assertIn("cleanAmount(fields.amount)", self.drafts)
@@ -76,8 +77,9 @@ class WorkspacePreviewTests(unittest.TestCase):
         self.assertIn("identidad autorizada", self.planner)
 
     def test_category_explorer_uses_fixture_payments(self):
-        self.assertIn("categoryGroups(records", self.explorer)
-        self.assertIn("categoryTreemap(groups)", self.explorer)
+        normalized = "".join(self.explorer.split())
+        self.assertIn("categoryGroups(records", normalized)
+        self.assertIn("categoryTreemap(groups)", normalized)
         self.assertIn("categoryRecords", self.explorer)
         self.assertIn("onOpenTransactions", self.explorer)
         self.assertIn('role="listitem"', self.explorer)
@@ -88,6 +90,18 @@ class WorkspacePreviewTests(unittest.TestCase):
         self.assertIn("state.events", self.activity)
         self.assertIn("Historial de actividad", self.activity)
         self.assertIn("auditoría oficial", self.activity.lower())
+
+    def test_read_only_financial_repository_has_no_authenticated_fallback(self):
+        contract = (WEB / "src/infrastructure/data/financial-repository.ts").read_text(encoding="utf8")
+        connector = (WEB / "src/infrastructure/data/conditional-draft.ts").read_text(encoding="utf8")
+        self.assertIn('mode: "offline-preview"', contract)
+        self.assertIn("immutablePosted", contract)
+        self.assertIn("requireDelegatedContext", connector)
+        self.assertIn('"If-Match": expected.etag', connector)
+        self.assertIn("DraftWriteConflict", connector)
+        self.assertIn("FinanceAuthorizationUnavailable", connector)
+        self.assertIn("demoExpenses.listPosted()", self.app)
+        self.assertNotIn("fmg_ApproveBudget", connector)
 
     def test_accessibility_and_environment_explained_once(self):
         self.assertIn("aria-label={label}", self.app)

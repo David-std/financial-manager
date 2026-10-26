@@ -1,7 +1,7 @@
 # ADR 0005 — Read-only Financial Workspace prototype and Fabric Apps assessment
 
 Date: 2026-10-25
-Status: Experimental — decision to prototype; no production migration
+Status: Offline UX app under apps/; production authorization and Fabric integration not approved
 
 ## Context
 
@@ -11,7 +11,7 @@ Microsoft Fabric Apps (preview) can produce code-driven data apps with authentic
 
 ## Decision
 
-- Build an isolated Vite + React prototype under `experiments/financial-workspace/`, read-only and local. Use the *same deterministic synthetic* expense dataset as Power BI.
+- Maintain an isolated Vite + React application under `apps/financial-workspace/`, read-only and local. Use the *same deterministic synthetic* expense dataset as Power BI.
 - Provide a session-only work queue, budget Draft allocation editor, category explorer and activity feed. Local events are real user interactions within the session, **not** authoritative audit records. The top bar is the single visible environment marker, avoiding repeated prototype labels on finance controls.
 - Analysis is a distinct explanatory workspace, not a duplicate of the home dashboard. Sources are synthetic Posted payments only. A comparison uses matching months in both years and discloses missing baseline, partial years, currencies and eligibility. Delta breakdowns and categorical group totals must reconcile to the same filtered records.
 - Treemap rectangles represent actual proportions; label length adapts to **measured pixel size**. Narrow rectangles use numeric keys supported by a full external legend, with a sortable exact-figure matrix option. Never hide financial values behind hover alone.

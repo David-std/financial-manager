@@ -5,7 +5,9 @@
   "description": "Source-formatting checks for the Financial Manager Power Apps pages",
   "scripts": {
     "format:app": "prettier --write \"power-platform/model-apps/financial-manager/{expenses,expense-detail,budgets,master-data}.tsx\"",
-    "check:format": "prettier --check \"power-platform/model-apps/financial-manager/{expenses,expense-detail,budgets,master-data}.tsx\""
+    "check:format": "prettier --check \"power-platform/model-apps/financial-manager/{expenses,expense-detail,budgets,master-data}.tsx\"",
+    "format:workspace": "prettier --write \"apps/financial-workspace/src/**/*.{ts,tsx,css}\" \"apps/financial-workspace/*.{ts,mjs,html,md,json}\"",
+    "check:workspace": "prettier --check \"apps/financial-workspace/src/**/*.{ts,tsx,css}\" \"apps/financial-workspace/*.{ts,mjs,html,md,json}\""
   },
   "devDependencies": {
     "prettier": "3.6.2"

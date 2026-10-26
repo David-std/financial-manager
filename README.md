@@ -7,7 +7,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 - Power Apps: financial movement and budget workflows
 - Microsoft Dataverse: operational records, authorization, and auditing
 - Power BI: financial analysis, comparisons, and budget reporting
-- Experimental financial workspace: [Financial Workspace](experiments/financial-workspace/README.md), synthetic reporting plus temporary expense/budget Drafts, task queue, category explorer and session activity; no Dataverse writes
+- Financial workspace (offline preview): [Financial Workspace](apps/financial-workspace/README.md), synthetic reporting plus temporary expense/budget Drafts, task queue, category explorer and session activity; no Dataverse writes
 - Power Automate: approved workflow actions and optional future integrations
 
 
@@ -37,7 +37,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 | `integrations/` | Optional iOS and conversational reporting specifications |
 | `scripts/` | Repository checks |
 | `tests/` | Automated repository validation |
-| `experiments/financial-workspace/` | Offline React UX exploration with synthetic data and in-memory Draft interactions; **not** a live Fabric or financial service |
+| `apps/financial-workspace/` | Responsive offline React finance app with synthetic data and session-only Draft interactions; not a live Fabric app |
 
 ## Working principles
 
