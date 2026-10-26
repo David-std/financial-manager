@@ -139,6 +139,47 @@ function buildInputs(row: Payment, categories: fmg_category[]): Inputs {
 function statusText(status: number): string {
   return status === 797280001 ? "Confirmado" : status === 797280002 ? "Anulado" : "Borrador";
 }
+// Only business fields editable in a Draft enter this comparison.
+// It is a best-effort stale-editor check, NOT transactional optimistic locking.
+function draftFingerprint(row: Payment): string {
+  return JSON.stringify([
+    row.fmg_status,
+    dateInput(row.fmg_transactiondate),
+    row.fmg_amount == null ? "" : String(Number(row.fmg_amount)),
+    row.fmg_flowclass == null ? "" : String(row.fmg_flowclass),
+    row.fmg_scope == null ? "" : String(row.fmg_scope),
+    guid(row._fmg_category_value),
+    guid(row._fmg_branch_value),
+    guid(row._fmg_cashaccount_value),
+    row.fmg_description || "",
+    row.fmg_documentreference || "",
+  ]);
+}
+function editorFingerprint(values: Inputs): string {
+  return JSON.stringify([
+    values.date,
+    values.amount === "" ? "" : String(Number(values.amount)),
+    values.flow,
+    values.scope,
+    values.category,
+    values.branch,
+    values.account,
+    values.description,
+    values.reference,
+  ]);
+}
+const draftReadColumns = [
+  "fmg_status",
+  "fmg_transactiondate",
+  "fmg_amount",
+  "fmg_flowclass",
+  "fmg_scope",
+  "_fmg_category_value",
+  "_fmg_branch_value",
+  "_fmg_cashaccount_value",
+  "fmg_description",
+  "fmg_documentreference",
+] as const;
 const ExpenseDetail = (props: GeneratedComponentProps) => {
   const css = useStyles();
   const { dataApi } = props;
@@ -162,6 +203,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
   const [version, setVersion] = useState(0);
   const [pendingPost, setPendingPost] = useState(false);
   const [pendingVoid, setPendingVoid] = useState(false);
+  const [pendingRefresh, setPendingRefresh] = useState(false);
   const [busy, setBusy] = useState(false);
   // Synchronous per-page guard: rapid clicks cannot issue duplicate financial transitions.
   const transitionInProgress = useRef(false);
@@ -276,15 +318,73 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
   function change(field: keyof Inputs, value: string) {
     setInputs((current) => ({ ...current, [field]: value }));
     setFeedback("");
-    if (field !== "voidReason") setPendingPost(false);
+    if (field !== "voidReason") {
+      setPendingPost(false);
+      setPendingRefresh(false);
+    }
   }
   function reload() {
     setVersion((v) => v + 1);
     setPendingPost(false);
     setPendingVoid(false);
+    setPendingRefresh(false);
     setFeedback("");
   }
   const draft = data.record?.fmg_status === 797280000;
+  const dirty = !!(
+    draft &&
+    data.record &&
+    editorFingerprint(inputs) !== editorFingerprint(buildInputs(data.record, data.categories))
+  );
+  function requestRefresh(): void {
+    if (dirty) setPendingRefresh(true);
+    else reload();
+  }
+  function validOptionalSelections(): string {
+    if (inputs.date) {
+      const date = new Date(inputs.date + "T12:00:00.000Z");
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(inputs.date) ||
+        !Number.isFinite(date.getTime()) ||
+        date.toISOString().slice(0, 10) !== inputs.date
+      )
+        return "Indica una fecha válida.";
+    }
+    if (inputs.flow && !["797280000", "797280001", "797280002", "797280003"].includes(inputs.flow))
+      return "La clasificación no es válida.";
+    if (inputs.scope && !["797280000", "797280001"].includes(inputs.scope))
+      return "El ámbito no es válido.";
+    if (inputs.branch) {
+      const branch = data.branches.find((b) => guid(b.fmg_branchid) === inputs.branch);
+      if (inputs.scope !== "797280000" || !branch || !active(branch.fmg_isactive))
+        return "Selecciona una sede activa compatible con el ámbito.";
+    }
+    if (inputs.category) {
+      const category = data.categories.find((c) => guid(c.fmg_categoryid) === inputs.category);
+      if (
+        !category ||
+        !active(category.fmg_isactive) ||
+        active(category.fmg_isgroup) ||
+        category.fmg_code === "999" ||
+        guid(category._fmg_parentcategory_value) !== inputs.group
+      )
+        return "Selecciona una categoría de detalle activa del grupo indicado.";
+    }
+    if (inputs.account) {
+      const account = data.accounts.find((a) => guid(a.fmg_cashaccountid) === inputs.account);
+      const assigned = guid(account?._fmg_branch_value);
+      if (
+        !account ||
+        !active(account.fmg_isactive) ||
+        !(inputs.scope === "797280001"
+          ? !assigned
+          : inputs.scope === "797280000" &&
+            (!assigned || (!!inputs.branch && assigned === inputs.branch)))
+      )
+        return "La cuenta seleccionada no corresponde al ámbito o a la sede.";
+    }
+    return "";
+  }
   async function saveDraft(): Promise<boolean> {
     if (!recordId || !draft || busy) return false;
     if (
@@ -294,6 +394,11 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
         Number(inputs.amount) <= 0)
     ) {
       setFeedback("Indica un importe positivo con máximo dos decimales, usando punto decimal.");
+      return false;
+    }
+    const invalidSelection = validOptionalSelections();
+    if (invalidSelection) {
+      setFeedback(invalidSelection);
       return false;
     }
     const payload: Record<string, unknown> = {
@@ -320,14 +425,30 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
     setBusy(true);
     setFeedback("");
     try {
+      // This read detects an editor left open after another session changed a Draft.
+      // Server-side concurrency is still authoritative: dataApi.updateRow has no If-Match here.
+      const latest = await dataApi.retrieveRow("fmg_financialtransaction", {
+        id: recordId,
+        select: [...draftReadColumns],
+      });
+      if (
+        !data.record ||
+        latest.fmg_status !== 797280000 ||
+        draftFingerprint(latest) !== draftFingerprint(data.record)
+      )
+        throw new Error(
+          "Este borrador cambió en Dataverse desde que se abrió. Conserva tus datos, " +
+            "revisa los cambios y actualiza antes de guardar. No se ha enviado ninguna modificación.",
+        );
       await dataApi.updateRow("fmg_financialtransaction", recordId, payload as any);
       const saved = await dataApi.retrieveRow("fmg_financialtransaction", {
         id: recordId,
         select: [
-          "_fmg_category_value",
-          "_fmg_cashaccount_value",
-          "_fmg_branch_value",
+          "fmg_financialtransactionid",
+          "fmg_name",
+          ...draftReadColumns,
           "_transactioncurrencyid_value",
+          "fmg_voidreason",
         ],
       });
       const mismatches: string[] = [];
@@ -346,6 +467,19 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
         );
         return false;
       }
+      if (
+        saved.fmg_status !== 797280000 ||
+        editorFingerprint(buildInputs(saved, data.categories)) !== editorFingerprint(inputs)
+      ) {
+        setFeedback(
+          "Dataverse devolvió valores distintos de los enviados. " +
+            "No se confirmará el pago: revisa la versión actual y los campos antes de continuar.",
+        );
+        return false;
+      }
+      // Refresh the baseline after each save so later edits can detect external changes.
+      setData((previous) => ({ ...previous, record: saved }));
+      setInputs(buildInputs(saved, data.categories));
       setFeedback("Borrador guardado correctamente.");
       return true;
     } catch (err) {
@@ -520,10 +654,36 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
             Detalle de gasto
           </Text>
         </div>
-        <Button icon={<ArrowClockwiseRegular />} onClick={reload} disabled={busy || data.loading}>
+        <Button
+          icon={<ArrowClockwiseRegular />}
+          onClick={requestRefresh}
+          disabled={busy || data.loading}
+        >
           Actualizar
         </Button>
       </header>
+      {pendingRefresh && (
+        <Card className={css.panel} aria-label="Confirmar actualización de borrador">
+          <Text weight="semibold">Hay cambios sin guardar</Text>
+          <Text>
+            Actualizar descartará las modificaciones realizadas en este formulario. No se ha
+            modificado el registro en Dataverse.
+          </Text>
+          <div className={css.toolbar}>
+            <Button appearance="primary" disabled={busy} onClick={reload}>
+              Descartar cambios y actualizar
+            </Button>
+            <Button disabled={busy} onClick={() => setPendingRefresh(false)}>
+              Seguir editando
+            </Button>
+          </div>
+        </Card>
+      )}
+      {dirty && !pendingRefresh && (
+        <Text role="status">
+          Tienes cambios sin guardar. Guárdalos antes de abandonar esta página.
+        </Text>
+      )}
       {data.loading && <Spinner label="Cargando movimiento y catálogos..." />}
       {data.error && (
         <Text role="alert" className={css.error}>
@@ -541,7 +701,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               <Field label="Fecha del pago">
                 <Input
                   type="date"
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.date}
                   onChange={(_, v) => change("date", v.value)}
                 />
@@ -551,7 +711,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.amount}
                   onChange={(_, v) => change("amount", v.value)}
                 />
@@ -560,7 +720,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                 <select
                   aria-label="Clasificación del pago"
                   className={css.select}
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.flow}
                   onChange={(e) => change("flow", e.target.value)}
                 >
@@ -575,7 +735,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                 <select
                   aria-label="Ámbito"
                   className={css.select}
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.scope}
                   onChange={(e) => {
                     change("scope", e.target.value);
@@ -593,7 +753,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                   <select
                     aria-label="Sede"
                     className={css.select}
-                    disabled={!draft}
+                    disabled={!draft || busy}
                     value={inputs.branch}
                     onChange={(e) => {
                       change("branch", e.target.value);
@@ -615,7 +775,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                 <select
                   aria-label="Grupo de categoría"
                   className={css.select}
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.group}
                   onChange={(e) => {
                     change("group", e.target.value);
@@ -634,7 +794,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                 <select
                   aria-label="Categoría de detalle"
                   className={css.select}
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.category}
                   onChange={(e) => change("category", e.target.value)}
                 >
@@ -650,7 +810,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
                 <select
                   aria-label="Cuenta de origen"
                   className={css.select}
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.account}
                   onChange={(e) => change("account", e.target.value)}
                 >
@@ -664,7 +824,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               </Field>
               <Field label="Referencia de documento">
                 <Input
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   maxLength={100}
                   value={inputs.reference}
                   onChange={(_, v) => change("reference", v.value)}
@@ -672,7 +832,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
               </Field>
               <Field label="Descripción" className={css.wide}>
                 <Textarea
-                  disabled={!draft}
+                  disabled={!draft || busy}
                   value={inputs.description}
                   onChange={(_, v) => change("description", v.value)}
                   rows={3}
@@ -742,6 +902,7 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
             <Card className={css.panel}>
               <Field label="Motivo obligatorio de anulación">
                 <Textarea
+                  disabled={busy}
                   value={inputs.voidReason}
                   onChange={(_, v) => change("voidReason", v.value)}
                   rows={3}

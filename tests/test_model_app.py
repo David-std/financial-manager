@@ -173,6 +173,41 @@ class ModelAppContractTests(unittest.TestCase):
         self.assertNotIn("fmg_ApproveBudget", source)
         self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
 
+    def test_draft_edits_guard_against_stale_open_tabs(self) -> None:
+        source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
+        compact = compact_ts(source)
+        self.assertIn("functiondraftFingerprint(row:Payment):string", compact)
+        self.assertIn("functioneditorFingerprint(values:Inputs):string", compact)
+        self.assertIn("draftFingerprint(latest)!==draftFingerprint(data.record)", compact)
+        self.assertIn("latest.fmg_status!==797280000", compact)
+        self.assertLess(
+            compact.index("constlatest=awaitdataApi.retrieveRow"),
+            compact.index('awaitdataApi.updateRow("fmg_financialtransaction",recordId,payload'),
+        )
+        self.assertIn("constsaved=awaitdataApi.retrieveRow", compact)
+        self.assertIn("saved.fmg_status!==797280000", compact)
+        self.assertIn("editorFingerprint(buildInputs(saved,data.categories))!==editorFingerprint(inputs)", compact)
+        self.assertIn("setData((previous)=>({...previous,record:saved}))", compact)
+        self.assertIn("setInputs(buildInputs(saved,data.categories))", compact)
+        self.assertIn("setPendingRefresh(true)", compact)
+        self.assertIn("dirty&&", compact)
+        self.assertIn("Descartar cambios y actualizar", source)
+        self.assertIn("Seguir editando", source)
+        self.assertIn("No se ha enviado ninguna modificación", source)
+        # Client pre-read does not replace server-side If-Match.
+        self.assertIn("NOT transactional optimistic locking", source)
+        self.assertNotIn("fmg_ApproveBudget", source)
+
+    def test_draft_validation_covers_optional_lookups_and_dates(self) -> None:
+        source = (PAGES / "expense-detail.tsx").read_text(encoding="utf-8")
+        compact = compact_ts(source)
+        self.assertIn("constinvalidSelection=validOptionalSelections()", compact)
+        for phrase in ("Selecciona una sede activa", "categoría de detalle activa",
+                       "La cuenta seleccionada", "fecha válida"):
+            self.assertIn(phrase, source)
+        self.assertIn("validOptionalSelections():string", compact)
+        self.assertNotIn('dataApi.createRow("fmg_activityevent"', source)
+
     def test_budget_editor_creates_drafts_and_allocations_without_approvals(self) -> None:
         source = (PAGES / "budgets.tsx").read_text(encoding="utf-8")
         normalized = compact_ts(source)
