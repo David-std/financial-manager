@@ -178,3 +178,20 @@ Run dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c
 The existing rollback-only verify --apply now additionally covers the real business rule for both directions of Branch/Shared transition and negative cases. It uses a fresh synthetic row inside each aborted ExecuteTransaction and requires an active shared account fixture. No verified run is claimed until the command actually completes against the intended dev organization.
 
 An HTTP If-Match optimistic-concurrency check in an authenticated session is still required before enabling the React adapter. The generated Power Apps page still has a best-effort stale form pre-read; it does not itself perform a conditional write. Neither test changes the separate approver role or enables budget approvals.
+
+
+## F5 Dataverse schema and transactional rollback (cash domains)
+
+The idempotent deployer requires the usual organization-bound environment variables and the existing FinancialManager solution.
+
+After the environment has no running solution import:
+1. cash-schema-inspect (read-only): report which six cash tables are missing.
+2. cash-schema --apply: create receipt, transfer, posting, opening, statement, reconciliation, their fields and nine restrictive lookup relationships, user-owned and audited.
+3. cash-schema-publish --apply: publish the six F5 tables.
+4. cash-schema-verify (read-only): verify published entity metadata, auditing, ownership, concurrency and whether there are records.
+5. cash-keys --apply: create unique idempotency keys and one opening per account/date. cash-keys-inspect must show Active before use.
+6. cash-transaction-probe --apply (TEST ONLY): attempt a synthetic draft transfer and two balanced postings within ExecuteTransaction ending in a failing rollback sentinel. It MUST leave no persisted record.
+
+**Not production-ready:** these tools do not register the synchronous cashposting guard, final state transitions, server custom APIs or approved roles. Do not enable F5 screens, real transfers/receipts, or balances before those controls have been deployed and accepted. Schema alone cannot prove permission and transaction integrity.
+
+CustomizationLockException 0x80071151 means another solution Import is blocking EntityCustomization. Do not cancel/bypass the import; inspect Solution History, then rerun idempotent inspect/apply/verify once the lock clears.

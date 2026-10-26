@@ -11,13 +11,13 @@ const string PluginClass = "FinancialManager.Validation.FT_EnforcePaymentIntegri
 const string Table = "fmg_financialtransaction";
 
 string mode = args.Length > 0 ? args[0] : "inspect";
-if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && mode != "app-nav-inspect" && mode != "app-nav-fix" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && !mode.StartsWith("budget-", StringComparison.Ordinal))
+if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && mode != "app-nav-inspect" && mode != "app-nav-fix" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "cash-keys-inspect" && mode != "cash-keys" && mode != "cash-transaction-probe" && mode != "cash-schema-publish" && mode != "cash-schema-verify" && mode != "cash-schema-inspect" && mode != "cash-schema" && !mode.StartsWith("budget-", StringComparison.Ordinal))
 {
-    Console.Error.WriteLine("Usage: inspect | app-nav-inspect | app-nav-fix --apply | inspect-schema | verify-schema | budget-inspect | budget-key-status | budget-key --apply | budget-register --apply | budget-steps --apply | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
+    Console.Error.WriteLine("Usage: cash-schema-inspect | cash-schema --apply | cash-schema-publish --apply | cash-schema-verify | cash-keys-inspect | cash-keys --apply | cash-transaction-probe --apply | inspect | app-nav-inspect | app-nav-fix --apply | inspect-schema | verify-schema | budget-inspect | budget-key-status | budget-key --apply | budget-register --apply | budget-steps --apply | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
     return 2;
 }
 bool apply = args.Length > 1 && args[1] == "--apply";
-if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "app-nav-inspect" && !apply)
+if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "cash-keys-inspect" && mode != "cash-schema-verify" && mode != "cash-schema-inspect" && mode != "app-nav-inspect" && !apply)
 {
     Console.Error.WriteLine("Mutation requires explicit --apply.");
     return 2;
@@ -63,6 +63,19 @@ if (mode=="app-nav-inspect" || mode=="app-nav-fix") return AppNavigation.Run(cli
 if (mode == "budget-approval-inspect") return BudgetApprovalReadiness.Inspect(client);
 if (mode == "reporting-inspect") return ReportingReadiness.Run(client);
 if (mode == "expense-readiness") return ExpenseReadiness.Inspect(client);
+if (mode == "cash-schema-verify") return CashSchemaReadiness.Verify(client);
+if (mode == "cash-transaction-probe") return CashTransactionProbe.Run(client);
+if (mode == "cash-keys" || mode == "cash-keys-inspect")
+    return CashUniqueKeys.Run(client, mode == "cash-keys");
+if (mode == "cash-schema-publish")
+{
+    client.Execute(new PublishXmlRequest { ParameterXml =
+        "<importexportxml><entities><entity>fmg_cashreceipt</entity><entity>fmg_cashtransfer</entity><entity>fmg_cashposting</entity><entity>fmg_accountopening</entity><entity>fmg_bankstatement</entity><entity>fmg_bankreconciliation</entity></entities></importexportxml>" });
+    Console.WriteLine("F5_SCHEMA_PUBLISHED");
+    return 0;
+}
+if (mode == "cash-schema-inspect" || mode == "cash-schema")
+    return CashSchemaDeployment.Run(client, mode == "cash-schema");
 if (mode == "budget-approval-probe") return BudgetApprovalReadiness.ProbeUnauthorized(client);
 if (mode == "budget-approval-role-cleanup") return ApprovalRoleCleanup.Run(client);
 if (mode == "budget-approval-schema" || mode == "budget-approval-role" ||

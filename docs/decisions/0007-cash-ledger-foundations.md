@@ -45,3 +45,12 @@ The reference deliberately has no HTTP endpoint, Dataverse authorization, workfl
 - Implement specialized React/Power Apps forms and Power BI measures only after server contract and permissions are accepted.
 
 See [Security](../security.md), [Verification](../verification.md) and [Draft concurrency ADR](0006-draft-concurrency.md).
+
+
+## Proposed live Dataverse mapping and rollout
+
+CashSchemaDeployment defines six user-owned, audited F5 entity types: fmg_cashreceipt, fmg_cashtransfer, fmg_cashposting, fmg_accountopening, fmg_bankstatement and fmg_bankreconciliation. Cash amounts use 2-decimal Money types and nine restrict-delete lookups to the existing accounts, branches and statement. CashUniqueKeys plans idempotency indexes and one approved opening per account/date. CashTransactionProbe uses ExecuteTransaction with a guaranteed-invalid final sentinel so both transfer legs are rolled back together.
+
+These tools are not a dedicated financial operation API. A separate synchronous server plug-in must block direct cashposting mutations, implement authorized state transitions, and post/reverse both cash legs atomically. New roles and audit attribution require acceptance before any live posting. Real bank balances must never derive from metadata creation alone.
+
+A Dataverse 0x80071151 customization lock during an unrelated solution Import prevents schema installation. It is a deployment blocker, not evidence of successful creation. Rerun inspection when the import completes normally.
