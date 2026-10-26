@@ -86,3 +86,12 @@ A metadata-only SDK read in `financial-manager-dev` established the following co
 Auditing of account and branch reference changes is a separate go-live control: do not change these environments or roles merely to make a read-only inspector pass. Review environment/table auditing and verify with non-admin accounts before users may post money. The identity-to-branch entitlement data source and Shared account designation are **unresolved** business decisions and cannot be inferred from the inspected schema.
 
 Command: `cash-contract-inspect` (read-only). The full connected metadata report is stored locally outside Git under `FinancialManager-Work/F5-P1-CONTRACT-METADATA-20261026.log`.
+
+
+## Reversal planner implemented in source, not deployed
+
+The `FinancialManager.CashDomain` library now contains `CashReversalPolicy`, a non-IPlugin, non-transport planner that emits compensating immutable legs referencing every original posting. For a receipt it requires exactly one original positive posting; for a transfer it requires exactly two distinct, balanced postings on the same date. In all cases it rejects duplicate posting IDs, partial original operations, an already-reversed/draft original, missing actor/account reversal privileges, backdating, invalid money precision and a missing reason. Each accepted request has a canonical fingerprint bound to the original operation and initiating actor.
+
+This **does not** establish a safe server-side reversal. The Dataverse adapter must authenticate and authorize the initiating actor; retrieve the original operation and all its immutable postings; atomically check and update original reversal state using row-version; enforce uniqueness for a full reversal operation under concurrent requests; create all compensating postings in one platform transaction; and prove rollback on a forced mid-operation failure. Existing `fmg_cashposting.fmg_reversespostingid` is a text field, not a database-enforced foreign key or proof of no double reversal. Do not allow the proposed Custom API to run until those controls are present.
+
+All tests are synthetic and read-only with respect to Dataverse; the deployed `fmg_CashIntegrity` 18-step deny-all guard remains active.

@@ -28,6 +28,7 @@ namespace FinancialManager.CashDomain
             if (actor.SubjectId == Guid.Empty)
                 throw new CashPlanningException("F5P002", "An authenticated business actor is required.");
             if (!Enum.IsDefined(typeof(CashOperationKind), request.Kind) ||
+                request.Kind == CashOperationKind.Reversal ||
                 string.IsNullOrEmpty(request.RequestKey) ||
                 !RequestKeyPattern.IsMatch(request.RequestKey))
                 throw new CashPlanningException("F5P001", "Invalid cash operation type or request key.");
@@ -116,7 +117,7 @@ namespace FinancialManager.CashDomain
         }
     }
 
-    public enum CashOperationKind { SettleReceipt = 1, InternalTransfer = 2 }
+    public enum CashOperationKind { SettleReceipt = 1, InternalTransfer = 2, Reversal = 3 }
 
     public sealed class CashOperationRequest
     {
