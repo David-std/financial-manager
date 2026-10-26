@@ -70,3 +70,19 @@ The proposed Custom API main-operation plug-in must assert `IPluginExecutionCont
 - [Synchronous plug-in errors and rollback](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/handle-exceptions)
 
 **Acceptance state:** specification only. No operational Custom API, data write permission, approval or cash screen was deployed by this decision.
+
+
+## Connected account and scope metadata (2026-10-26)
+
+A metadata-only SDK read in `financial-manager-dev` established the following contract without reading any account values or money:
+
+- `fmg_cashaccount` and `fmg_branch` are **OrganizationOwned**, currently with `IsAuditEnabled=false` and optimistic concurrency enabled. Neither is a user/team-owned account-scoping object.
+- `fmg_cashaccount.fmg_branch` targets `fmg_branch` and uses `Restrict` deletion. Both tables have `fmg_isactive`. The account-type option is independent of explicit authorization scope. Do not assume an account with a null branch is shared.
+- The existing expense `fmg_financialtransaction` and all six F5 tables are user-owned and audited. The F5 receipt, transfer, posting, opening, statement and reconciliation lookups and PEN Money fields matched the expected mapping.
+- The proposed `fmg_SettleCashReceipt`, `fmg_PostCashTransfer`, `fmg_ReverseCashOperation`, `fmg_ApproveAccountOpening` and `fmg_ReconcileBankStatement` Custom APIs were all absent.
+
+**Security consequence:** no organization-owned cash account may be authorized through Dataverse `ownerid` or a client-submitted branch selector. The server must derive identity and its branch entitlements from verified, independent memberships; confirm both account and branch are active; and require a separately approved shared-account grant when a branch is absent. The source-only `CashAccountScopePolicy` implements these fail-closed predicates and is unit tested; it is **not** a live Dataverse permission adapter.
+
+Auditing of account and branch reference changes is a separate go-live control: do not change these environments or roles merely to make a read-only inspector pass. Review environment/table auditing and verify with non-admin accounts before users may post money. The identity-to-branch entitlement data source and Shared account designation are **unresolved** business decisions and cannot be inferred from the inspected schema.
+
+Command: `cash-contract-inspect` (read-only). The full connected metadata report is stored locally outside Git under `FinancialManager-Work/F5-P1-CONTRACT-METADATA-20261026.log`.

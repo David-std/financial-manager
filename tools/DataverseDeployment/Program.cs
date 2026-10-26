@@ -11,13 +11,13 @@ const string PluginClass = "FinancialManager.Validation.FT_EnforcePaymentIntegri
 const string Table = "fmg_financialtransaction";
 
 string mode = args.Length > 0 ? args[0] : "inspect";
-if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && mode != "app-nav-inspect" && mode != "app-nav-fix" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "cash-keys-inspect" && mode != "cash-keys" && mode != "cash-transaction-probe" && mode != "cash-schema-publish" && mode != "cash-schema-verify" && mode != "cash-schema-inspect" && mode != "cash-schema" && mode != "cash-guard-inspect" && mode != "cash-guard-register" && mode != "cash-guard-steps" && mode != "cash-guard-probe" && !mode.StartsWith("budget-", StringComparison.Ordinal))
+if (mode != "inspect" && mode != "register" && mode != "steps" && mode != "verify" && mode != "inspect-schema" && mode != "schema" && mode != "publish-schema" && mode != "verify-schema" && mode != "app-nav-inspect" && mode != "app-nav-fix" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "cash-keys-inspect" && mode != "cash-keys" && mode != "cash-transaction-probe" && mode != "cash-schema-publish" && mode != "cash-schema-verify" && mode != "cash-schema-inspect" && mode != "cash-schema" && mode != "cash-contract-inspect" && mode != "cash-guard-inspect" && mode != "cash-guard-register" && mode != "cash-guard-steps" && mode != "cash-guard-probe" && !mode.StartsWith("budget-", StringComparison.Ordinal))
 {
     Console.Error.WriteLine("Usage: cash-schema-inspect | cash-schema --apply | cash-schema-publish --apply | cash-schema-verify | cash-keys-inspect | cash-keys --apply | cash-transaction-probe --apply | inspect | app-nav-inspect | app-nav-fix --apply | inspect-schema | verify-schema | budget-inspect | budget-key-status | budget-key --apply | budget-register --apply | budget-steps --apply | schema --apply | publish-schema --apply | register --apply | steps --apply | verify --apply");
     return 2;
 }
 bool apply = args.Length > 1 && args[1] == "--apply";
-if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "cash-keys-inspect" && mode != "cash-schema-verify" && mode != "cash-schema-inspect" && mode != "cash-guard-inspect" && mode != "app-nav-inspect" && !apply)
+if (mode != "inspect" && mode != "inspect-schema" && mode != "verify-schema" && mode != "budget-inspect" && mode != "budget-key-status" && mode != "budget-approval-inspect" && mode != "budget-backup" && mode != "reporting-inspect" && mode != "expense-readiness" && mode != "cash-keys-inspect" && mode != "cash-schema-verify" && mode != "cash-schema-inspect" && mode != "cash-contract-inspect" && mode != "cash-guard-inspect" && mode != "app-nav-inspect" && !apply)
 {
     Console.Error.WriteLine("Mutation requires explicit --apply.");
     return 2;
@@ -63,6 +63,7 @@ if (mode=="app-nav-inspect" || mode=="app-nav-fix") return AppNavigation.Run(cli
 if (mode == "budget-approval-inspect") return BudgetApprovalReadiness.Inspect(client);
 if (mode == "reporting-inspect") return ReportingReadiness.Run(client);
 if (mode == "expense-readiness") return ExpenseReadiness.Inspect(client);
+if (mode == "cash-contract-inspect") return CashContractReadiness.Inspect(client);
 if (mode == "cash-guard-inspect" || mode == "cash-guard-steps")
     return CashGuardDeployment.Run(client, mode == "cash-guard-steps");
 if (mode == "cash-guard-register") return CashGuardRegistration.Run(client);

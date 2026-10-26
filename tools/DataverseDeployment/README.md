@@ -192,14 +192,14 @@ After the environment has no running solution import:
 5. cash-keys --apply: create unique idempotency keys and one opening per account/date. cash-keys-inspect must show Active before use.
 6. cash-transaction-probe --apply (TEST ONLY): attempt a synthetic draft transfer and two balanced postings within ExecuteTransaction ending in a failing rollback sentinel. It MUST leave no persisted record.
 
-**Not production-ready:** these tools do not register the synchronous cashposting guard, final state transitions, server custom APIs or approved roles. Do not enable F5 screens, real transfers/receipts, or balances before those controls have been deployed and accepted. Schema alone cannot prove permission and transaction integrity.
+**Not production-ready:** schema provisioning itself does not register the cash guard. The separate `fmg_CashIntegrity` deny-all guard is now deployed; however, final state transitions, server Custom APIs and approved roles are still absent. Do not enable F5 screens, real transfers/receipts, or balances before those controls have been deployed and accepted. Schema alone cannot prove permission and transaction integrity.
 
 CustomizationLockException 0x80071151 means another solution Import is blocking EntityCustomization. Do not cancel/bypass the import; inspect Solution History, then rerun idempotent inspect/apply/verify once the lock clears.
 
 
 **Key provisioning compatibility:** Dataverse rejects `CreateEntityKeyRequest` without an `EntityKeyMetadata.DisplayName` (0x80040203). The current idempotent provisioning supplies a locale-specific label; a previous rejected request did not create a key. Always inspect all six key index states and require **Active** before executing rollback probes or enabling financial operations.
 
-**F5 development acceptance boundary:** On the verified development organization, the six tables were published and inspected with zero rows, all six key indexes reached Active, and the rollback sentinel test confirmed zero persisted cash transfer/posting rows. No operational cash plug-in, authorization policy or Custom API has been registered; these are mandatory before any live receipts, posting, reversal or balance UI.
+**F5 development acceptance boundary:** On the verified development organization, the six tables were published and inspected with zero rows, all six key indexes reached Active, and the rollback sentinel test confirmed zero persisted cash transfer/posting rows. The isolated deny-all cash guard plug-in has since been registered with 18 active steps and six connected `F5G001` Create denials. No authorized cash operation API, least-privilege business role or complete production approval has been registered.
 
 ## F5 fail-closed server write protection
 
@@ -212,3 +212,16 @@ Next run `cash-guard-inspect` (read-only), then `cash-guard-steps --apply`. The 
 The historical `cash-transaction-probe --apply` ran successfully **before** these deny-all steps. Once the lock is deployed, it is expected to fail at its first Create instead of reaching the final rollback sentinel; do not remove or disable the cash guard to repeat that earlier test. New approved APIs will need their own isolated atomic rollback and negative authorization probes.
 
 **No F5 operational APIs, roles, receipt settlement, bank balances or production transfers have been enabled by these controls.**
+
+
+## F5 P1 read-only contract inspection
+
+Run `cash-contract-inspect` **without** `--apply` after verifying `FM_ENV_URL` and `FM_ORGANIZATION_ID`. The command inventories actual column types, supported option numeric values, metadata relationships, owner/audit/concurrency flags and the presence or absence of the five proposed Custom APIs. It reads **no account rows or financial data**, and records no tenant IDs or credentials.
+
+```powershell
+dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Release -- cash-contract-inspect
+```
+
+The connected 2026-10-26 inspection found `fmg_cashaccount` and `fmg_branch` are **OrganizationOwned**, not user/team-owned, and both have native auditing disabled. The account has `fmg_isactive`, optional `fmg_branch` lookup and a separate account-type choice; the branch has `fmg_isactive`. This means account owner cannot be used as proof of branch entitlements. A missing branch cannot be treated as a shared account without explicit, server-approved account grants. The six F5 tables remain user-owned and audited; none of the five proposed Custom APIs exists yet.
+
+The source-only `src/FinancialManager.CashDomain/CashAccountScopePolicy.cs` rejects inactive/foreign accounts, missing branch evidence, implied shared accounts and unpermitted operations. The **future** Dataverse adapter must securely load all entitlement inputs from validated server context and authorized reference data, never from client claims. In addition to accepting independent roles and transaction rollback, review reference-table auditing and changes to account/branch membership before operational money is enabled. See [ADR 0008](../../docs/decisions/0008-secure-cash-operation-api.md).
