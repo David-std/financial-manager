@@ -64,7 +64,7 @@ namespace FinancialManager.CashDomain
                  legs[0].SignedAmountPen + legs[1].SignedAmountPen != 0 ||
                  legs[0].SignedAmountPen * legs[1].SignedAmountPen >= 0))
                 throw new CashPlanningException("F5R001", "The original transfer must have two balanced opposite legs.");
-            if (legs.Any(x => !actor.CanAccessAccount(x.AccountId)))
+            if (legs.Any(x => !actor.CanPerformOnAccount(CashOperationKind.Reversal, x.AccountId)))
                 throw new CashPlanningException("F5R002", "Reversal permission is missing for a source account.");
 
             var reversed = Array.AsReadOnly(legs.Select(leg => new ReversalCashLeg(

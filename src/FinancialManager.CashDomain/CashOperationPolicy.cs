@@ -44,7 +44,7 @@ namespace FinancialManager.CashDomain
 
             // This is a defensive second check, not a substitute for live
             // record/team/branch authorization by the server adapter.
-            if (!actor.CanPerform(request.Kind) || !actor.CanAccessAccount(request.SourceAccountId))
+            if (!actor.CanPerformOnAccount(request.Kind, request.SourceAccountId))
                 throw new CashPlanningException("F5P002", "The actor cannot perform this cash operation.");
             IReadOnlyList<CashLeg> legs;
             if (request.Kind == CashOperationKind.SettleReceipt)
@@ -63,7 +63,7 @@ namespace FinancialManager.CashDomain
                     request.DestinationAccountId.Value == Guid.Empty ||
                     request.DestinationAccountId.Value == request.SourceAccountId)
                     throw new CashPlanningException("F5P001", "A transfer requires two different cash accounts.");
-                if (!actor.CanAccessAccount(request.DestinationAccountId.Value))
+                if (!actor.CanPerformOnAccount(request.Kind, request.DestinationAccountId.Value))
                     throw new CashPlanningException("F5P002", "The destination account is outside the actor's permissions.");
                 legs = Array.AsReadOnly(new[]
                 {
@@ -148,6 +148,7 @@ namespace FinancialManager.CashDomain
     {
         private readonly HashSet<Guid> allowedAccounts;
         private readonly HashSet<CashOperationKind> allowedOperations;
+        private readonly HashSet<(Guid, CashOperationKind)>? scopedPermissions;
 
         /// <summary>
         /// These collections MUST come from verified Dataverse rights, team,
@@ -155,14 +156,25 @@ namespace FinancialManager.CashDomain
         /// </summary>
         public TrustedCashActor(Guid subjectId, IEnumerable<Guid> allowedAccountIds,
             IEnumerable<CashOperationKind> permittedOperations)
+            : this(subjectId, allowedAccountIds, permittedOperations, null) { }
+
+        public TrustedCashActor(Guid subjectId, IEnumerable<Guid> allowedAccountIds,
+            IEnumerable<CashOperationKind> permittedOperations,
+            IEnumerable<CashAccountPermission>? exactAccountPermissions)
         {
             SubjectId = subjectId;
             allowedAccounts = new HashSet<Guid>(allowedAccountIds ?? Array.Empty<Guid>());
             allowedOperations = new HashSet<CashOperationKind>(permittedOperations ?? Array.Empty<CashOperationKind>());
+            if (exactAccountPermissions != null)
+                scopedPermissions = new HashSet<(Guid, CashOperationKind)>(
+                    exactAccountPermissions.Select(g => (g.AccountId, g.Operation)));
         }
         public Guid SubjectId { get; }
         public bool CanAccessAccount(Guid accountId) => allowedAccounts.Contains(accountId);
         public bool CanPerform(CashOperationKind kind) => allowedOperations.Contains(kind);
+        public bool CanPerformOnAccount(CashOperationKind kind, Guid accountId) =>
+            CanPerform(kind) && CanAccessAccount(accountId) &&
+            (scopedPermissions == null || scopedPermissions.Contains((accountId, kind)));
     }
 
     public sealed class CashLeg

@@ -8,11 +8,14 @@ on:
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
+      - "plugins/FinancialManager.CashAccessIntegrity/**"
       - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
       - "tests/FinancialManager.CashIntegrity.Tests/**"
       - "tests/FinancialManager.CashDomain.Tests/**"
+      - "tests/FinancialManager.CashOperations.Tests/**"
+      - "tests/FinancialManager.CashAccessIntegrity.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -22,11 +25,14 @@ on:
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
+      - "plugins/FinancialManager.CashAccessIntegrity/**"
       - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
       - "tests/FinancialManager.CashIntegrity.Tests/**"
       - "tests/FinancialManager.CashDomain.Tests/**"
+      - "tests/FinancialManager.CashOperations.Tests/**"
+      - "tests/FinancialManager.CashAccessIntegrity.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -60,3 +66,5 @@ jobs:
         run: dotnet test tests/FinancialManager.CashDomain.Tests/FinancialManager.CashDomain.Tests.csproj --configuration Release --verbosity normal
       - name: Test F5 read-only runtime probe package
         run: dotnet test tests/FinancialManager.CashOperations.Tests/FinancialManager.CashOperations.Tests.csproj --configuration Release --verbosity normal
+      - name: Test F5 cash access grant hard-deny guard
+        run: dotnet test tests/FinancialManager.CashAccessIntegrity.Tests/FinancialManager.CashAccessIntegrity.Tests.csproj --configuration Release --verbosity normal

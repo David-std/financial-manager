@@ -260,3 +260,18 @@ dotnet run --project tools/DataverseDeployment/DataverseDeployment.csproj -c Rel
 ```
 
 `CashExecutionCoordinator` is source-only. Its fake transaction simulator does not prove connected Dataverse rollback; do not register any operational payment/transfer Custom API or relax F5G001 until the server actor/branch adapter, uniqueness, concurrency and rollback acceptance are proven.
+
+
+## F5 cash access entitlement boundary (deny-all until approved grant service)
+
+The initial grants schema and package are **not permission assignments**. The table must be created only on the verified developer solution; all direct Create/Update/Delete must be guarded. Inspect the state first using `cash-grant-inspect` and `cash-grant-guard-inspect`.
+
+Order of operations for first installation:
+
+1. Build a fresh `fmg_CashAccessIntegrity.1.0.0.nupkg` using `dotnet publish/pack plugins/FinancialManager.CashAccessIntegrity`, verify with `python scripts/check_cash_access_guard_package.py <path>` and record its SHA-256. Keep it outside Git.
+2. After checking `FM_ENV_URL`, `FM_ORGANIZATION_ID`, `cash-guard-inspect` (18/18) and F5 empty tables, set `FM_CASH_ACCESS_PACKAGE_PATH` to the verified NuGet. Run `cash-grant-guard-register --apply` **once** to pre-register the fail-closed plugin.
+3. Run `cash-grant-schema --apply` to idempotently create the empty audited user-owned entitlement table, two lookups, three explicit-permission fields and an alternate key. The newly created index may be Pending: inspect until **Active** before go-live.
+4. Immediately run `cash-grant-guard-steps --apply` and verify `cash-grant-guard-inspect` is exactly 3/3 active. Run `cash-grant-guard-probe --apply` and demand `F5_GRANT_CREATE_DENIED_F5A009`. Re-verify F5 18/18, all six existing keys Active, six F5 tables empty, and zero grant rows.
+5. Stop without assigning any business grant, creating a transfer or unlocking a UI. Any partial deployment must be recovered idempotently and with the grant table access still restricted.
+
+**Security warning:** Dataverse grants-table CRUD is sensitive authorization configuration, not a substitute for API authorizations. During initial schema customization the table is not yet guarded, so restrict the installer to the already authorized development organization and immediately register the three steps. This is not a production migration procedure; the future production rollout must be packaged/tested with no open mutation window and a reviewed dual-approval grant creation workflow.
