@@ -196,3 +196,7 @@ Use restrictive deletion behavior where available and enforce deactivation/revis
 Receipts/income, customer billing, account balances and transfers, supplier payables, payroll, inventory/fixed assets, tax declarations, purchase requests/commitments, multi-currency, and attachment storage require separate models and decisions; they are not silently supplied by these tables.
 
 See [Category catalog](category-catalog.md), [Scope](scope.md), [Reporting](reporting.md), [Screens](screens.md), [Security](security.md), and [Verification](verification.md).
+
+## Future receipts and cash-ledger contracts
+
+Receipts, internal transfers, opening balances and bank reconciliation are specified but **not deployed**. See [ADR 0007](decisions/0007-cash-ledger-foundations.md) and the [executable reference model](../financial_domain/README.md). The current transaction table alone cannot produce verified cash balances or received revenue.
