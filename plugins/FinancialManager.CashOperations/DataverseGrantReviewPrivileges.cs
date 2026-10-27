@@ -15,8 +15,8 @@ namespace FinancialManager.CashOperations
     public sealed class DataverseGrantReviewPrivileges
     {
         private readonly IOrganizationService service;
-        public const string ProposePrivilege = "prvCreatefmg_cashgrantrequest";
-        public const string DecidePrivilege = "prvWritefmg_cashgrantrequest";
+        public const string ProposePrivilege = "prvCreatefmg_CashGrantRequest";
+        public const string DecidePrivilege = "prvWritefmg_CashGrantRequest";
 
         public DataverseGrantReviewPrivileges(IOrganizationService service)
         {

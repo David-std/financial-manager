@@ -8,11 +8,11 @@ internal static class CashGrantPrivilegeReadiness
 {
     private static readonly string[] Expected =
     {
-        "prvCreatefmg_cashgrantrequest",
-        "prvWritefmg_cashgrantrequest",
-        "prvReadfmg_cashgrantrequest",
-        "prvCreatefmg_cashaccessgrant",
-        "prvWritefmg_cashaccessgrant"
+        "prvCreatefmg_CashGrantRequest",
+        "prvWritefmg_CashGrantRequest",
+        "prvReadfmg_CashGrantRequest",
+        "prvCreatefmg_CashAccessGrant",
+        "prvWritefmg_CashAccessGrant"
     };
 
     /// <summary>Inspect generated Dataverse privileges without role
@@ -38,7 +38,8 @@ internal static class CashGrantPrivilegeReadiness
         {
             if (names.Count(v => string.Equals(v, name, StringComparison.OrdinalIgnoreCase)) != 1)
                 throw new InvalidOperationException("Missing/ambiguous generated privilege " + name);
-            Console.WriteLine("F5_REVIEW_PRIVILEGE_PRESENT " + name);
+            var actual = names.Single(v => string.Equals(v, name, StringComparison.OrdinalIgnoreCase));
+            Console.WriteLine("F5_REVIEW_PRIVILEGE_PRESENT " + actual + " exact_case_match=" + string.Equals(actual, name, StringComparison.Ordinal));
         }
         Console.WriteLine("F5_REVIEW_PRIVILEGE_METADATA_VERIFIED_NO_ROLE_ASSIGNMENTS");
         return 0;

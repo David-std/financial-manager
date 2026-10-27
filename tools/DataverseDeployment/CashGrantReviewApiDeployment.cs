@@ -16,7 +16,7 @@ internal static class CashGrantReviewApiDeployment
     private sealed record Field(string Name, int Type, string? Table = null);
     private sealed record Api(string Name, string Privilege, Field[] Inputs, Field[] Outputs);
     private static readonly Api[] Definitions = {
-        new Api("fmg_SubmitCashGrantRequest", "prvCreatefmg_cashgrantrequest",
+        new Api("fmg_SubmitCashGrantRequest", "prvCreatefmg_CashGrantRequest",
             new[] {
                 new Field("RequestId",12),
                 new Field("Beneficiary",5,"systemuser"),
@@ -27,7 +27,7 @@ internal static class CashGrantReviewApiDeployment
                 new Field("Reason",10),
                 new Field("ExpiresAtUtc",1)
             },new[] {new Field("RequestId",12)}),
-        new Api("fmg_DecideCashGrantRequest","prvWritefmg_cashgrantrequest",
+        new Api("fmg_DecideCashGrantRequest","prvWritefmg_CashGrantRequest",
             new[] {new Field("RequestId",12),new Field("Approved",0)},
             new[] {new Field("Recorded",0)})
     };
@@ -71,7 +71,11 @@ internal static class CashGrantReviewApiDeployment
         if(!apply)
         {
             Console.WriteLine("F5_GRANT_REVIEW_PACKAGE_EXISTS="+(existing.Length==1));
-            if(existing.Length==1) TypeId(service);
+            if(existing.Length==1)
+            {
+                TypeId(service);
+                Console.WriteLine("F5_GRANT_REVIEW_PACKAGE_ID="+existing[0].Id.ToString("D"));
+            }
             return 0;
         }
         if(existing.Length!=0) throw new InvalidOperationException("Grant review package already installed; no replacement permitted.");
@@ -164,8 +168,10 @@ internal static class CashGrantReviewApiDeployment
         foreach(var spec in Definitions)
         {
             var p=Find(service,"privilege","name",spec.Privilege,"privilegeid","name");
-            if(p.Length!=1 || p[0].Id==Guid.Empty)
-                throw new InvalidOperationException("Exact review execution privilege unavailable.");
+            if(p.Length!=1 || p[0].Id==Guid.Empty ||
+               !string.Equals(p[0].GetAttributeValue<string>("name"),
+                    spec.Privilege,StringComparison.Ordinal))
+                throw new InvalidOperationException("Exact case-sensitive review execution privilege unavailable.");
             var apis=Find(service,"customapi","uniquename",spec.Name,
                 "customapiid","uniquename","plugintypeid","executeprivilegename",
                 "isprivate","isfunction","workflowsdkstepenabled","bindingtype",

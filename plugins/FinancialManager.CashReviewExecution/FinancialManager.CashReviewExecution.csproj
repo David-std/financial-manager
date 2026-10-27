@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../FinancialManager.CashOperations/F5_GrantReviewEndpoint.cs" Link="F5_GrantReviewEndpoint.cs" />
+    <Compile Include="../FinancialManager.CashOperations/F5_ValidatedNestedReviewGuard.cs" Link="F5_ValidatedNestedReviewGuard.cs" />
     <Compile Include="../FinancialManager.CashOperations/DataverseGrantReviewWorkflow.cs" Link="DataverseGrantReviewWorkflow.cs" />
     <Compile Include="../FinancialManager.CashOperations/DataverseGrantReviewPrivileges.cs" Link="DataverseGrantReviewPrivileges.cs" />
     <Compile Include="../FinancialManager.CashOperations/DataverseCashGrantRequestReader.cs" Link="DataverseCashGrantRequestReader.cs" />
