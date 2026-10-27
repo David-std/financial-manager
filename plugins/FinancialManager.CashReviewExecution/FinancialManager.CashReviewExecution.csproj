@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AssemblyName>FinancialManager.CashReviewExecution</AssemblyName>
+    <PackageId>fmg_CashReviewExecution</PackageId>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Authors>Financial Manager contributors</Authors>
+    <Description>Independent, transaction-required F5 cash grant proposal and review Custom APIs.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.60" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.PowerApps.MSBuild.Plugin" Version="1.*" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+    <ProjectReference Include="../../src/FinancialManager.CashDomain/FinancialManager.CashDomain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../FinancialManager.CashOperations/F5_GrantReviewEndpoint.cs" Link="F5_GrantReviewEndpoint.cs" />
+    <Compile Include="../FinancialManager.CashOperations/DataverseGrantReviewWorkflow.cs" Link="DataverseGrantReviewWorkflow.cs" />
+    <Compile Include="../FinancialManager.CashOperations/DataverseGrantReviewPrivileges.cs" Link="DataverseGrantReviewPrivileges.cs" />
+    <Compile Include="../FinancialManager.CashOperations/DataverseCashGrantRequestReader.cs" Link="DataverseCashGrantRequestReader.cs" />
+    <Compile Include="../FinancialManager.CashOperations/F5_ServerWriteScope.cs" Link="F5_ServerWriteScope.cs" />
+  </ItemGroup>
+</Project>

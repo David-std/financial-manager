@@ -9,6 +9,7 @@ on:
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
       - "plugins/FinancialManager.CashExecution/**"
+      - "plugins/FinancialManager.CashReviewExecution/**"
       - "plugins/FinancialManager.CashTrustProbe/**"
       - "tests/FinancialManager.CashTrustProbe.Tests/**"
       - "plugins/FinancialManager.CashAccessIntegrity/**"
@@ -31,6 +32,7 @@ on:
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
       - "plugins/FinancialManager.CashExecution/**"
+      - "plugins/FinancialManager.CashReviewExecution/**"
       - "plugins/FinancialManager.CashTrustProbe/**"
       - "tests/FinancialManager.CashTrustProbe.Tests/**"
       - "plugins/FinancialManager.CashAccessIntegrity/**"
@@ -70,6 +72,8 @@ jobs:
         run: dotnet build plugins/FinancialManager.CashTrustProbe/FinancialManager.CashTrustProbe.csproj --configuration Release --nologo
       - name: Build independent F5 cash execution package (no deploy)
         run: dotnet build plugins/FinancialManager.CashExecution/FinancialManager.CashExecution.csproj --configuration Release --nologo
+      - name: Build isolated F5 cash review execution package (no deploy)
+        run: dotnet build plugins/FinancialManager.CashReviewExecution/FinancialManager.CashReviewExecution.csproj --configuration Release --nologo
       - name: Test isolated F5 synthetic MainOperation origin policy
         run: dotnet test tests/FinancialManager.CashTrustProbe.Tests/FinancialManager.CashTrustProbe.Tests.csproj --configuration Release --verbosity normal
       - name: Test payments
