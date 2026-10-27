@@ -37,6 +37,8 @@ public sealed class DataverseCashAuthorizationTests
     {
         public List<Entity> Grants = new List<Entity>();
         public bool Disabled;
+        public bool NonInteractive;
+        public bool ApplicationUser;
         public bool BadBranch;
         public bool SharedAccount;
         public bool MoreRecords;
@@ -50,7 +52,12 @@ public sealed class DataverseCashAuthorizationTests
             if (table == "systemuser")
             {
                 var u = new Entity("systemuser", id);
-                if (!UserMissingState) u["isdisabled"] = Disabled;
+                if (!UserMissingState)
+                {
+                    u["isdisabled"] = Disabled;
+                    u["accessmode"] = new OptionSetValue(NonInteractive ? 4 : 0);
+                    if (ApplicationUser) u["applicationid"] = Guid.NewGuid();
+                }
                 return u;
             }
             if (table == "fmg_cashaccount")
@@ -126,6 +133,23 @@ public sealed class DataverseCashAuthorizationTests
         var svc = new ReadOnlyFake { Disabled = disabled, MoreRecords = moreRecords };
         Assert.Equal("F5A001", Assert.Throws<CashPlanningException>(() =>
             new DataverseCashAuthorization(svc).Authorize(User, Receipt())).Code);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void ApplicationAndNonInteractiveUsersCannotObtainCashGrants(
+        bool nonInteractive, bool appUser)
+    {
+        var svc = new ReadOnlyFake
+        {
+            NonInteractive = nonInteractive,
+            ApplicationUser = appUser
+        };
+        svc.Grants.Add(NewGrant(A, 797282000));
+        Assert.Equal("F5A001", Assert.Throws<CashPlanningException>(() =>
+            new DataverseCashAuthorization(svc).Authorize(User, Receipt())).Code);
+        Assert.Equal(0, svc.Writes);
     }
 
     [Fact]

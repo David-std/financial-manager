@@ -46,11 +46,14 @@ namespace FinancialManager.CashOperations
             // Dataverse owns this identity. Never use a userId or branch ID
             // provided by the calling Canvas app, Fabric, or React transport.
             var user = service.Retrieve("systemuser", platformInitiatingUserId,
-                new ColumnSet("isdisabled"));
+                new ColumnSet("isdisabled", "accessmode", "applicationid"));
             if (user == null || user.Id != platformInitiatingUserId ||
-                !user.Contains("isdisabled") ||
-                user.GetAttributeValue<bool>("isdisabled"))
-                throw new CashPlanningException("F5A001", "User not active or unverifiable.");
+                !user.Contains("isdisabled") || !user.Contains("accessmode") ||
+                user.GetAttributeValue<bool>("isdisabled") ||
+                user.GetAttributeValue<OptionSetValue>("accessmode")?.Value != 0 ||
+                user.GetAttributeValue<Guid>("applicationid") != Guid.Empty)
+                throw new CashPlanningException("F5A001",
+                    "An active interactive human cash operator is required.");
 
             var query = new QueryExpression(Grants)
             {
