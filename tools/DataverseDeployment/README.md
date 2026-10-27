@@ -294,3 +294,8 @@ The dev grant guard was installed and independently tested with `F5A009` on dire
 ## F5 cash-grant expiry safety migration
 
 `cash-grant-expiry-inspect` is read-only. `cash-grant-expiry --apply` is a guarded, idempotent **metadata-only** migration that adds `fmg_cashaccessgrant.fmg_expiresatutc` (audited, TimeZoneIndependent DateAndTime) and publishes only this table. It requires the grant unique key to be `Active`, 18/18 F5G001 cash and 3/3 F5A009 grant guards, all six F5 cash tables empty, and no grant rows. It assigns no roles and creates no authorizations. The SDK reader requires expiry when any grant eventually exists and denies expired grants. No grant creation API is registered or used as part of this migration.
+
+
+## F5 locked grant request review records
+
+Read-only: `cash-review-inspect`, `cash-review-guard-inspect`. Developer deployment only: first build/verify the isolated `fmg_CashGrantRequestIntegrity.1.0.0.nupkg`, set `FM_CASH_GRANT_REQUEST_PACKAGE_PATH`, run `cash-review-guard-register --apply` to preregister the deny-all plugin, then `cash-review-schema --apply` to create an empty audited request table and `fmg_CGR_ExternalRequest` key, then immediately `cash-review-guard-steps --apply`. Verify all three request guards Active and `cash-review-guard-probe --apply` rejects a direct Create with `F5Q009`. Read back the new key until Active, no grant rows, all 18 cash and 3 existing cash-grant guards intact, six cash tables empty. Never treat a pending proposal as a financial grant. There are no user-role assignments or functional approval APIs in this deployment.

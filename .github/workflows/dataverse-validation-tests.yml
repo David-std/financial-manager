@@ -9,6 +9,7 @@ on:
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
       - "plugins/FinancialManager.CashAccessIntegrity/**"
+      - "plugins/FinancialManager.CashGrantRequestIntegrity/**"
       - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
@@ -16,6 +17,7 @@ on:
       - "tests/FinancialManager.CashDomain.Tests/**"
       - "tests/FinancialManager.CashOperations.Tests/**"
       - "tests/FinancialManager.CashAccessIntegrity.Tests/**"
+      - "tests/FinancialManager.CashGrantRequestIntegrity.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -26,6 +28,7 @@ on:
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
       - "plugins/FinancialManager.CashAccessIntegrity/**"
+      - "plugins/FinancialManager.CashGrantRequestIntegrity/**"
       - "src/FinancialManager.CashDomain/**"
       - "tests/FinancialManager.Validation.Tests/**"
       - "tests/FinancialManager.BudgetIntegrity.Tests/**"
@@ -33,6 +36,7 @@ on:
       - "tests/FinancialManager.CashDomain.Tests/**"
       - "tests/FinancialManager.CashOperations.Tests/**"
       - "tests/FinancialManager.CashAccessIntegrity.Tests/**"
+      - "tests/FinancialManager.CashGrantRequestIntegrity.Tests/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -68,3 +72,5 @@ jobs:
         run: dotnet test tests/FinancialManager.CashOperations.Tests/FinancialManager.CashOperations.Tests.csproj --configuration Release --verbosity normal
       - name: Test F5 cash access grant hard-deny guard
         run: dotnet test tests/FinancialManager.CashAccessIntegrity.Tests/FinancialManager.CashAccessIntegrity.Tests.csproj --configuration Release --verbosity normal
+      - name: Test F5 dual-control request table hard-deny guard
+        run: dotnet test tests/FinancialManager.CashGrantRequestIntegrity.Tests/FinancialManager.CashGrantRequestIntegrity.Tests.csproj --configuration Release --verbosity normal
