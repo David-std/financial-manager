@@ -37,7 +37,7 @@ namespace FinancialManager.CashOperations
                 var service = factory.CreateOrganizationService(ctx.UserId);
                 if (service == null)
                     throw new CashPlanningException("F5Q030", "Unable to obtain scoped service.");
-                var workflow = new DataverseGrantReviewWorkflow(service);
+                var workflow = new DataverseGrantReviewWorkflow(service, ctx);
                 if (ctx.MessageName == SubmitMessage)
                 {
                     var proposal = ParseSubmission(ctx.InputParameters);

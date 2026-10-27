@@ -19,15 +19,24 @@ namespace FinancialManager.CashOperations
         private readonly IOrganizationService service;
         private readonly Guid principal;
         private readonly Guid currencyId;
+        private readonly IPluginExecutionContext? scopeContext;
 
         public DataverseCashLedgerTransaction(IOrganizationService service,
-            Guid verifiedInitiatingUser, Guid verifiedPenCurrencyId)
+            Guid verifiedInitiatingUser, Guid verifiedPenCurrencyId,
+            IPluginExecutionContext? verifiedServerContext = null)
         {
             this.service = service ?? throw new ArgumentNullException(nameof(service));
             if (verifiedInitiatingUser == Guid.Empty || verifiedPenCurrencyId == Guid.Empty)
                 throw new CashPlanningException("F5E001", "Verified actor and PEN currency required.");
             principal = verifiedInitiatingUser;
             currencyId = verifiedPenCurrencyId;
+            scopeContext = verifiedServerContext;
+        }
+
+        private void IssueIfServer(string table, string verb, Guid id)
+        {
+            if (scopeContext != null)
+                F5_ServerWriteScope.Issue(scopeContext, table, verb, id);
         }
 
         private void RequireCurrentlyActiveAccount(Guid id)
@@ -98,7 +107,7 @@ namespace FinancialManager.CashOperations
                 plan.Fingerprint.Length != 64)
                 throw new CashPlanningException("F5E001", "Verified immutable cash plan required.");
             var table = Table(plan.Kind);
-            var header = new Entity(table);
+            var header = new Entity(table, Guid.NewGuid());
             header["fmg_name"] = "F5 " + plan.Kind + " " + plan.RequestKey;
             header["fmg_externalrequestid"] = plan.RequestKey;
             header["fmg_requestfingerprint"] = plan.Fingerprint;
@@ -147,7 +156,12 @@ namespace FinancialManager.CashOperations
                 header["fmg_transferredon"] = plan.Legs[0].ValueDate;
                 header["fmg_status"] = new OptionSetValue(797281100); // Draft
             }
-            return service.Create(header);
+            IssueIfServer(table, "Create", header.Id);
+            var persisted = service.Create(header);
+            if (persisted != header.Id)
+                throw new CashPlanningException("F5E003",
+                    "Cash header identity changed during server write.");
+            return persisted;
         }
 
         public Guid CreatePosting(Guid operationId, PreparedCashOperation plan,
@@ -159,7 +173,7 @@ namespace FinancialManager.CashOperations
                 leg.SignedAmountPen != plan.Legs[index].SignedAmountPen ||
                 leg.ValueDate != plan.Legs[index].ValueDate)
                 throw new CashPlanningException("F5E001", "Untrusted or mismatched posting.");
-            var posting = new Entity("fmg_cashposting");
+            var posting = new Entity("fmg_cashposting", Guid.NewGuid());
             posting["fmg_name"] = "F5-" + plan.Fingerprint.Substring(0, 48) + "-" + index;
             posting["fmg_externalrequestid"] = "F5-" + plan.Fingerprint + "-" + index;
             posting["fmg_operationid"] = operationId.ToString("D");
@@ -169,7 +183,12 @@ namespace FinancialManager.CashOperations
             posting["fmg_kind"] = new OptionSetValue(
                 plan.Kind == CashOperationKind.SettleReceipt ? 797281200 : 797281202);
             posting["transactioncurrencyid"] = new EntityReference("transactioncurrency", currencyId);
-            return service.Create(posting);
+            IssueIfServer("fmg_cashposting", "Create", posting.Id);
+            var persisted = service.Create(posting);
+            if (persisted != posting.Id)
+                throw new CashPlanningException("F5E003",
+                    "Posting identity changed during server write.");
+            return persisted;
         }
 
         public void CompleteHeader(Guid operationId, string fingerprint,
@@ -223,6 +242,7 @@ namespace FinancialManager.CashOperations
             var update = new Entity(table, operationId) { RowVersion = row.RowVersion };
             update["fmg_status"] = new OptionSetValue(
                 kind == 797281200 ? 797281001 : 797281101);
+            IssueIfServer(table, "Update", operationId);
             service.Execute(new UpdateRequest
             {
                 Target = update,

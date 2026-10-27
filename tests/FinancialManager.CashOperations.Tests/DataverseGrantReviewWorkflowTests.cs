@@ -42,6 +42,25 @@ public sealed class DataverseGrantReviewWorkflowTests
         public bool InactiveBranch;
         public bool RejectVersionedUpdate;
         public string? LastPrivilege;
+        public RemoteExecutionContext? TrustedParent;
+        public int ScopedWrites;
+        private void RequireIssuedTicket(string verb, Entity target)
+        {
+            if (TrustedParent == null) return;
+            var child = new RemoteExecutionContext
+            {
+                ParentContext = TrustedParent, Depth = TrustedParent.Depth + 1,
+                Stage = 10, Mode = 0, IsInTransaction = true,
+                UserId = TrustedParent.UserId,
+                InitiatingUserId = TrustedParent.InitiatingUserId,
+                CorrelationId = TrustedParent.CorrelationId,
+                OperationId = TrustedParent.OperationId,
+                MessageName = verb, PrimaryEntityName = target.LogicalName
+            };
+            child.InputParameters["Target"] = target;
+            F5_ServerWriteScope.Require(child);
+            ScopedWrites++;
+        }
         public Entity Retrieve(string name, Guid id, ColumnSet columns)
         {
             if (name == "systemuser")
@@ -95,6 +114,7 @@ public sealed class DataverseGrantReviewWorkflowTests
         }
         public Guid Create(Entity row)
         {
+            RequireIssuedTicket("Create", row);
             Writes.Add("Create:" + row.LogicalName);
             var id = row.Id != Guid.Empty ? row.Id : Guid.NewGuid();
             row.Id = id;
@@ -134,6 +154,7 @@ public sealed class DataverseGrantReviewWorkflowTests
                 Assert.Equal("39", update.Target.RowVersion);
                 if (RejectVersionedUpdate)
                     throw new InvalidOperationException("Simulated optimistic concurrency collision.");
+                RequireIssuedTicket("Update", update.Target);
                 Writes.Add("ETagUpdate:" + update.Target.LogicalName);
                 foreach (var pair in update.Target.Attributes)
                     Rows[update.Target.Id][pair.Key] = pair.Value;
@@ -155,6 +176,38 @@ public sealed class DataverseGrantReviewWorkflowTests
 
     private static Guid Submit(Fake db, CashGrantChangeRequest request)
         => new DataverseGrantReviewWorkflow(db).Submit(Runtime(Maker), request, Now);
+
+    [Fact]
+    public void TwoDifferentPlatformCallersMintOnlyTheirOwnScopedReviewWrites()
+    {
+        var db = new Fake();
+        var submission = new RemoteExecutionContext
+        {
+            MessageName = F5_GrantReviewEndpoint.SubmitMessage,
+            Stage = 30, Mode = 0, Depth = 1, IsInTransaction = true,
+            UserId = Maker, InitiatingUserId = Maker,
+            CorrelationId = Guid.NewGuid(), OperationId = Guid.Empty
+        };
+        db.TrustedParent = submission;
+        var planned = Change();
+        var id = new DataverseGrantReviewWorkflow(db, submission)
+            .Submit(Runtime(Maker), planned, Now);
+        Assert.Equal(1, db.ScopedWrites);
+        var decision = new RemoteExecutionContext
+        {
+            MessageName = F5_GrantReviewEndpoint.DecideMessage,
+            Stage = 30, Mode = 0, Depth = 1, IsInTransaction = true,
+            UserId = Reviewer, InitiatingUserId = Reviewer,
+            CorrelationId = Guid.NewGuid(), OperationId = Guid.Empty
+        };
+        db.TrustedParent = decision;
+        new DataverseGrantReviewWorkflow(db, decision)
+            .Decide(Runtime(Reviewer), id, true, Now.AddMinutes(5));
+        Assert.Equal(3, db.ScopedWrites); // grant create + conditional request update
+        Assert.Equal(797283001,
+            db.Rows[id].GetAttributeValue<OptionSetValue>("fmg_reviewstatus").Value);
+        Assert.Single(db.Rows.Values, x => x.LogicalName == "fmg_cashaccessgrant");
+    }
 
     [Fact]
     public void ProposalWritesAuditablePendingHeaderUnderInitiatingUser()

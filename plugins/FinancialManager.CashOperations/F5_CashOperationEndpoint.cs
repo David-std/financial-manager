@@ -42,7 +42,8 @@ namespace FinancialManager.CashOperations
                 var currencyId = FindExactlyOnePenCurrency(service);
                 var coordinator = new CashExecutionCoordinator(
                     new DataverseCashAuthorization(service),
-                    new DataverseCashLedgerTransaction(service, runtime.InitiatingUserId, currencyId));
+                    new DataverseCashLedgerTransaction(service, runtime.InitiatingUserId,
+                        currencyId, context));
                 var outcome = coordinator.Execute(runtime, request);
                 context.OutputParameters["OperationId"] = outcome.OperationId;
                 context.OutputParameters["WasReplay"] = outcome.WasReplay;

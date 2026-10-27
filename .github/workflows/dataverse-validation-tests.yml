@@ -8,6 +8,8 @@ on:
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
+      - "plugins/FinancialManager.CashTrustProbe/**"
+      - "tests/FinancialManager.CashTrustProbe.Tests/**"
       - "plugins/FinancialManager.CashAccessIntegrity/**"
       - "plugins/FinancialManager.CashGrantRequestIntegrity/**"
       - "src/FinancialManager.CashDomain/**"
@@ -27,6 +29,8 @@ on:
       - "plugins/FinancialManager.BudgetIntegrity/**"
       - "plugins/FinancialManager.CashIntegrity/**"
       - "plugins/FinancialManager.CashOperations/**"
+      - "plugins/FinancialManager.CashTrustProbe/**"
+      - "tests/FinancialManager.CashTrustProbe.Tests/**"
       - "plugins/FinancialManager.CashAccessIntegrity/**"
       - "plugins/FinancialManager.CashGrantRequestIntegrity/**"
       - "src/FinancialManager.CashDomain/**"
@@ -60,6 +64,10 @@ jobs:
           }
       - name: Build Dataverse deployment and integration verifier
         run: dotnet build tools/DataverseDeployment/DataverseDeployment.csproj --configuration Release --nologo
+      - name: Build isolated F5 synthetic rollback diagnostic (dev only)
+        run: dotnet build plugins/FinancialManager.CashTrustProbe/FinancialManager.CashTrustProbe.csproj --configuration Release --nologo
+      - name: Test isolated F5 synthetic MainOperation origin policy
+        run: dotnet test tests/FinancialManager.CashTrustProbe.Tests/FinancialManager.CashTrustProbe.Tests.csproj --configuration Release --verbosity normal
       - name: Test payments
         run: dotnet test tests/FinancialManager.Validation.Tests/FinancialManager.Validation.Tests.csproj --configuration Release --verbosity normal
       - name: Test budgets and activity events

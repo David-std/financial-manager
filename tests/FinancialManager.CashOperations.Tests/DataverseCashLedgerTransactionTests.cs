@@ -35,6 +35,27 @@ public sealed class DataverseCashLedgerTransactionTests
         public bool Inactive;
         public bool MissingRowVersion;
         public int ConcurrencyUpdates;
+        public RemoteExecutionContext? TrustedParent;
+        public int ScopeVerified;
+
+        private void RequireIssuedTicket(string verb, Entity target)
+        {
+            if (TrustedParent == null) return;
+            var nested = new RemoteExecutionContext
+            {
+                ParentContext = TrustedParent, Stage = 10, Mode = 0,
+                IsInTransaction = true, Depth = TrustedParent.Depth + 1,
+                MessageName = verb, PrimaryEntityName = target.LogicalName,
+                UserId = TrustedParent.UserId,
+                InitiatingUserId = TrustedParent.InitiatingUserId,
+                OperationId = TrustedParent.OperationId,
+                CorrelationId = TrustedParent.CorrelationId
+            };
+            nested.InputParameters["Target"] = target;
+            F5_ServerWriteScope.Require(nested);
+            ScopeVerified++;
+        }
+
         public Entity Retrieve(string table, Guid id, ColumnSet cols)
         {
             if (table == "fmg_cashaccount")
@@ -71,8 +92,9 @@ public sealed class DataverseCashLedgerTransactionTests
         }
         public Guid Create(Entity entity)
         {
+            RequireIssuedTicket("Create", entity);
             Calls.Add("Create:" + entity.LogicalName);
-            var id = Guid.NewGuid();
+            var id = entity.Id != Guid.Empty ? entity.Id : Guid.NewGuid();
             entity.Id = id;
             Store[id] = entity;
             return id;
@@ -83,6 +105,7 @@ public sealed class DataverseCashLedgerTransactionTests
             var update = Assert.IsType<UpdateRequest>(req);
             Assert.Equal(ConcurrencyBehavior.IfRowVersionMatches, update.ConcurrencyBehavior);
             Assert.NotNull(update.Target.RowVersion);
+            RequireIssuedTicket("Update", update.Target);
             ConcurrencyUpdates++;
             Store[update.Target.Id]["fmg_status"] = update.Target["fmg_status"];
             Calls.Add("VersionedUpdate");
@@ -119,6 +142,28 @@ public sealed class DataverseCashLedgerTransactionTests
         var posted = adapter.ReadCompleteLedger(headerId);
         CashExecutionIntegrity.Verify(plan, headerId, new[] { posting }, posted);
         Assert.Equal(3, fake.Calls.Count);
+    }
+
+    [Fact]
+    public void TransferOperationMintsExactTicketsForAllThreeCreatesAndFinalization()
+    {
+        var parent = new RemoteExecutionContext
+        {
+            MessageName = "fmg_PostCashTransfer",
+            Stage = 30, Mode = 0, IsInTransaction = true, Depth = 1,
+            UserId = User, InitiatingUserId = User,
+            OperationId = Guid.Empty, CorrelationId = Guid.NewGuid()
+        };
+        var db = new FakeDataverse { TrustedParent = parent };
+        var adapter = new DataverseCashLedgerTransaction(db, User, Currency, parent);
+        var plan = Prepare(CashOperationKind.InternalTransfer);
+        var id = adapter.CreateHeader(plan);
+        var postings = plan.Legs.Select((leg, i) =>
+            adapter.CreatePosting(id, plan, leg, i)).ToArray();
+        adapter.CompleteHeader(id, plan.Fingerprint, postings);
+        Assert.Equal(4, db.ScopeVerified);
+        Assert.Equal(797281101,
+            db.Store[id].GetAttributeValue<OptionSetValue>("fmg_status").Value);
     }
 
     [Fact]

@@ -19,12 +19,21 @@ namespace FinancialManager.CashOperations
         private readonly IOrganizationService service;
         private readonly DataverseGrantReviewPrivileges privileges;
         private readonly DataverseCashGrantRequestReader requestReader;
+        private readonly IPluginExecutionContext? scopeContext;
 
-        public DataverseGrantReviewWorkflow(IOrganizationService service)
+        public DataverseGrantReviewWorkflow(IOrganizationService service,
+            IPluginExecutionContext? verifiedServerContext = null)
         {
             this.service = service ?? throw new ArgumentNullException(nameof(service));
             privileges = new DataverseGrantReviewPrivileges(service);
             requestReader = new DataverseCashGrantRequestReader(service);
+            scopeContext = verifiedServerContext;
+        }
+
+        private void IssueIfServer(string table, string verb, Guid id)
+        {
+            if (scopeContext != null)
+                F5_ServerWriteScope.Issue(scopeContext, table, verb, id);
         }
 
         private static void RequireRuntime(CashRuntimeEvidence runtime)
@@ -105,6 +114,7 @@ namespace FinancialManager.CashOperations
             entity["fmg_reason"] = proposed.Reason;
             entity["fmg_expiresatutc"] = proposed.ExpiresUtc;
             entity["fmg_reviewstatus"] = new OptionSetValue(797283000);
+            IssueIfServer("fmg_cashgrantrequest", "Create", entity.Id);
             var created = service.Create(entity);
             if (created != proposed.RequestId)
                 throw new CashPlanningException("F5Q020", "Unexpected immutable request identity.");
@@ -140,6 +150,7 @@ namespace FinancialManager.CashOperations
             update["fmg_approver"] =
                 new EntityReference("systemuser", runtime.InitiatingUserId);
             update["fmg_decidedatutc"] = serverUtcNow;
+            IssueIfServer("fmg_cashgrantrequest", "Update", requestId);
             service.Execute(new UpdateRequest
             {
                 Target = update,
@@ -179,7 +190,7 @@ namespace FinancialManager.CashOperations
             }
             if (row == null)
             {
-                var created = new Entity("fmg_cashaccessgrant");
+                var created = new Entity("fmg_cashaccessgrant", Guid.NewGuid());
                 created["fmg_name"] = "Approved F5 " + plan.RequestId.ToString("N");
                 created["fmg_principal"] =
                     new EntityReference("systemuser", plan.BeneficiaryId);
@@ -189,8 +200,9 @@ namespace FinancialManager.CashOperations
                 created["fmg_isactive"] = true;
                 created["fmg_allowshared"] = plan.ExplicitShared;
                 created["fmg_expiresatutc"] = plan.ExpiresUtc;
-                if (service.Create(created) == Guid.Empty)
-                    throw new CashPlanningException("F5Q021", "Grant creation not acknowledged.");
+                IssueIfServer("fmg_cashaccessgrant", "Create", created.Id);
+                if (service.Create(created) != created.Id)
+                    throw new CashPlanningException("F5Q021", "Grant creation identity changed.");
             }
             else
             {
@@ -212,6 +224,7 @@ namespace FinancialManager.CashOperations
             update["fmg_isactive"] = isActive;
             update["fmg_allowshared"] = allowShared;
             update["fmg_expiresatutc"] = expiry;
+            IssueIfServer("fmg_cashaccessgrant", "Update", row.Id);
             service.Execute(new UpdateRequest
             {
                 Target = update,
