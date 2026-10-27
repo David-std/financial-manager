@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AssemblyName>FinancialManager.CashExecution</AssemblyName>
+    <PackageId>fmg_CashExecution</PackageId>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Authors>Financial Manager contributors</Authors>
+    <Description>Independent, fail-closed F5 financial Cash Custom API and guarded execution package.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.60" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.PowerApps.MSBuild.Plugin" Version="1.*" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+    <ProjectReference Include="../../src/FinancialManager.CashDomain/FinancialManager.CashDomain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../FinancialManager.CashOperations/F5_CashOperationEndpoint.cs" Link="F5_CashOperationEndpoint.cs" />
+    <Compile Include="../FinancialManager.CashOperations/DataverseCashLedgerTransaction.cs" Link="DataverseCashLedgerTransaction.cs" />
+    <Compile Include="../FinancialManager.CashOperations/DataverseCashAuthorization.cs" Link="DataverseCashAuthorization.cs" />
+    <Compile Include="../FinancialManager.CashOperations/F5_ServerWriteScope.cs" Link="F5_ServerWriteScope.cs" />
+    <Compile Include="../FinancialManager.CashOperations/F5_FinancialWriteCandidatePolicy.cs" Link="F5_FinancialWriteCandidatePolicy.cs" />
+    <Compile Include="../FinancialManager.CashOperations/F5_FinancialHeaderCompletionPolicy.cs" Link="F5_FinancialHeaderCompletionPolicy.cs" />
+    <Compile Include="../FinancialManager.CashOperations/F5_ValidatedNestedCashGuard.cs" Link="F5_ValidatedNestedCashGuard.cs" />
+  </ItemGroup>
+</Project>

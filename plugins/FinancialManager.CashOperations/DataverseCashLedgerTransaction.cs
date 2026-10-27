@@ -9,9 +9,9 @@ using Microsoft.Xrm.Sdk.Query;
 namespace FinancialManager.CashOperations
 {
     /// <summary>
-    /// SDK-bound cash ledger adapter. SOURCE ONLY: not registered as any
-    /// operational Custom API. The F5G001 guard intentionally denies all
-    /// these writes until a trusted nested server context is accepted.
+    /// SDK-bound cash ledger adapter used by the registered development
+    /// Custom APIs. The original active F5G001 guards intentionally deny
+    /// all of these financial writes until a live accepted safe cutover.
     /// Each call requires the same synchronous Dataverse transaction.
     /// </summary>
     public sealed class DataverseCashLedgerTransaction : ICashLedgerTransaction

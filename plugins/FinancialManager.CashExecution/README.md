@@ -1,0 +1,13 @@
+# Financial Manager — F5 CashExecution
+
+Independent Dataverse plug-in package `fmg_CashExecution` for development. Includes the server endpoint for `fmg_SettleCashReceipt` and `fmg_PostCashTransfer` and **the unregistered candidate** `F5_ValidatedNestedCashGuard`. Compiles for `net48`, containing `FinancialManager.CashExecution.dll` and `FinancialManager.CashDomain.dll` only.
+
+**Registration is not cash activation.** The two Custom APIs are registered in `financial-manager-dev` with explicit table-specific execute privileges and typed input/output contracts. The original 18 F5G001 CashIntegrity guards still reject financial CRUD; the 3 F5A009 grant and 3 F5Q009 review guards also remain active. No grant or row is created by installing this package.
+
+The prospective guard requires **two independently verified and distinct MainOperation SDK step pins**, passed as `<receipt-guid>|<transfer-guid>` through trusted step configuration (not client input), and independently revalidates the interactive actor's live account/operation rights, canonical request fingerprint, exact header/leg fields, row-version concurrency and two-leg completion. The candidate is not wired to Dataverse; it is not acceptable to change F5G001 steps until successful connected end-to-end authorization, direct CRUD denial, two-leg atomic rollback, idempotency and concurrency tests.
+
+**Connected evidence (outside Git):** `FinancialManager-Work/F5-FINANCIAL-API-NEGATIVE-20261027.log`, `F5-TRUST-ISOLATED-ROLLBACK-20261027.log`, and saved original `F5-CashExecution-20261027-original-package.nupkg`. The synthetic CashTrust proof is not a financial settlement acceptance. Never ship local NuGet archives, secrets, user identity IDs or Dataverse runtime step GUIDs in the repository.
+
+**Deployment modes:** `cash-financial-package-new-inspect`, `cash-financial-api-inspect`, `cash-financial-step-inspect`, `cash-financial-negative-probe --apply`. `cash-financial-direct-update-probe --apply` requires direct F5G001 rejection of updates for all six tables, without touching existing data. The stricter `cash-financial-direct-deny-probe --apply` also probes Delete; deleting nonexistent records may be rejected by Dataverse before the guard and **does not prove Delete guard execution**. Running against the wrong organization is prohibited; all calls require authenticated correct dev organization identity.
+
+The user deferred the manual second-human login. The server must still enforce distinct proposer, beneficiary and approver as required by the business policy. Cash postings remain disabled until separate connected positive acceptance.

@@ -7,9 +7,9 @@ using Microsoft.Xrm.Sdk.Query;
 namespace FinancialManager.CashOperations
 {
     /// <summary>
-    /// SOURCE ONLY: NOT REGISTERED to any financial Custom API.
-    /// Once the F5 guard has a reviewed platform-only nested context,
-    /// this is the typed synchronous MainOperation implementation.
+    /// Registered as a guarded Dataverse Custom API in the dev environment.
+    /// The current F5G001 financial table guards deny all ledger writes;
+    /// this endpoint is NOT yet accepted for operational postings.
     /// There is no alternate administrator or client-claimed authorization.
     /// </summary>
     public sealed class F5_CashOperationEndpoint : IPlugin

@@ -10,6 +10,7 @@ using Xunit;
 public sealed class FinancialNestedWriteCandidateTests
 {
     private static readonly Guid Pin = Guid.Parse("10000000-0000-4000-8000-000000000321");
+    private static readonly Guid ReceiptPin = Guid.Parse("10000000-0000-4000-8000-000000000329");
     private static readonly Guid User = Guid.Parse("10000000-0000-4000-8000-000000000322");
     private static readonly Guid A = Guid.Parse("10000000-0000-4000-8000-000000000323");
     private static readonly Guid B = Guid.Parse("10000000-0000-4000-8000-000000000324");
@@ -201,6 +202,7 @@ public sealed class FinancialNestedWriteCandidateTests
         var child = Context(row);
         var parent = child.ParentContext;
         parent.MessageName = "fmg_SettleCashReceipt";
+        parent.OwningExtension = new EntityReference("sdkmessageprocessingstep", ReceiptPin);
         parent.InputParameters.Remove("DestinationAccount");
         parent.InputParameters["RequestKey"] = "nested-receipt-test";
         parent.InputParameters["EvidenceReference"] = "receipt test evidence";
@@ -212,7 +214,7 @@ public sealed class FinancialNestedWriteCandidateTests
     {
         var db = new ReadOnlyDataverse { GrantedOperation = 797282000 };
         F5_FinancialWriteCandidatePolicy.RequireCreate(
-            ReceiptContext(ReceiptHeader()), Pin, db);
+            ReceiptContext(ReceiptHeader()), ReceiptPin, db);
         Assert.Equal(0, db.Writes);
     }
 
@@ -224,15 +226,15 @@ public sealed class FinancialNestedWriteCandidateTests
         row["fmg_scope"] = new OptionSetValue(797281011);
         Assert.Throws<InvalidPluginExecutionException>(() =>
             F5_FinancialWriteCandidatePolicy.RequireCreate(
-                ReceiptContext(row), Pin, db));
+                ReceiptContext(row), ReceiptPin, db));
         row = ReceiptHeader();
         row["fmg_branch"] = new EntityReference("fmg_branch", Guid.NewGuid());
         Assert.Throws<InvalidPluginExecutionException>(() =>
             F5_FinancialWriteCandidatePolicy.RequireCreate(
-                ReceiptContext(row), Pin, db));
+                ReceiptContext(row), ReceiptPin, db));
         Assert.Throws<CashPlanningException>(() =>
             F5_FinancialWriteCandidatePolicy.RequireCreate(
-                ReceiptContext(ReceiptHeader()), Pin, new ReadOnlyDataverse()));
+                ReceiptContext(ReceiptHeader()), ReceiptPin, new ReadOnlyDataverse()));
     }
 
     [Fact]
@@ -340,6 +342,88 @@ public sealed class FinancialNestedWriteCandidateTests
         db.StoredHeader["fmg_requestfingerprint"] = new string('F', 64);
         Assert.Throws<InvalidPluginExecutionException>(() =>
             Validate(Posting(0), db));
+    }
+
+    [Fact]
+    public void NewCandidateGuardNeverAuthorizesAClientDirectCreate()
+    {
+        var direct = Context(HeaderRow());
+        direct.ParentContext = null;
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(direct, ReceiptPin, Pin,
+                new ReadOnlyDataverse()));
+    }
+
+    [Fact]
+    public void NewCandidateGuardUsesExactlySameVerifiedCashPlanChecks()
+    {
+        var db = CompletedLedger();
+        F5_ValidatedNestedCashGuard.RequireOperation(Context(HeaderRow()), ReceiptPin, Pin, db);
+        F5_ValidatedNestedCashGuard.RequireOperation(Completion(), ReceiptPin, Pin, db);
+        Assert.Equal(0, db.Writes);
+        var forged = Posting(1);
+        forged["fmg_signedamount"] = new Money(999m);
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(Context(forged), ReceiptPin, Pin, db));
+    }
+
+    [Fact]
+    public void NewCandidateGuardRejectsDeletePostingUpdateAndUntrustedStage()
+    {
+        var db = CompletedLedger();
+        var posting = Context(Posting(1));
+        posting.MessageName = "Update";
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(posting, ReceiptPin, Pin, db));
+        var target = Context(HeaderRow());
+        target.MessageName = "Delete";
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(target, ReceiptPin, Pin, db));
+        target = Context(HeaderRow());
+        target.Stage = 20;
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(target, ReceiptPin, Pin, db));
+    }
+
+    [Fact]
+    public void ReceiptAndTransferMustNotReuseTheSameMainOperationStep()
+    {
+        var transfer = Context(HeaderRow());
+        transfer.ParentContext.OwningExtension =
+            new EntityReference("sdkmessageprocessingstep", ReceiptPin);
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(transfer,
+                ReceiptPin, Pin, new ReadOnlyDataverse()));
+
+        var receipt = ReceiptContext(ReceiptHeader());
+        receipt.ParentContext.OwningExtension =
+            new EntityReference("sdkmessageprocessingstep", Pin);
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(receipt,
+                ReceiptPin, Pin, new ReadOnlyDataverse
+                {
+                    GrantedOperation = 797282000
+                }));
+        Assert.Throws<InvalidPluginExecutionException>(() =>
+            F5_ValidatedNestedCashGuard.RequireOperation(transfer,
+                Pin, Pin, new ReadOnlyDataverse()));
+    }
+
+    [Fact]
+    public void GuardConstructorRequiresBothDistinctExactStepPins()
+    {
+        foreach (var config in new[] {
+            "", "invalid", Pin.ToString("D"),
+            Pin.ToString("D") + "|" + Pin.ToString("D"),
+            Pin.ToString("D") + "|invalid"
+        })
+        {
+            Assert.Throws<InvalidPluginExecutionException>(() =>
+                new F5_ValidatedNestedCashGuard(config, ""));
+        }
+        var guard = new F5_ValidatedNestedCashGuard(
+            ReceiptPin.ToString("D") + "|" + Pin.ToString("D"), "");
+        Assert.NotNull(guard);
     }
 
     private static RemoteExecutionContext Completion()
