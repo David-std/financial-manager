@@ -55,7 +55,8 @@ namespace FinancialManager.CashOperations
             var query = new QueryExpression(Grants)
             {
                 ColumnSet = new ColumnSet("fmg_principal", "fmg_cashaccount",
-                    "fmg_operation", "fmg_isactive", "fmg_allowshared"),
+                    "fmg_operation", "fmg_isactive", "fmg_allowshared",
+                    "fmg_expiresatutc"),
                 TopCount = 100
             };
             query.Criteria.AddCondition("fmg_principal", ConditionOperator.Equal,
@@ -75,8 +76,21 @@ namespace FinancialManager.CashOperations
                     principal.Id != platformInitiatingUserId || account == null ||
                     account.LogicalName != "fmg_cashaccount" ||
                     account.Id == Guid.Empty || kind == null ||
-                    !row.Contains("fmg_isactive") || !row.Contains("fmg_allowshared"))
+                    !row.Contains("fmg_isactive") || !row.Contains("fmg_allowshared") ||
+                    !row.Contains("fmg_expiresatutc"))
                     throw new CashPlanningException("F5A001", "Malformed grant from Dataverse.");
+                // A TimeZoneIndependent datetime is intentionally stored
+                // as a UTC clock value by the protected approval service.
+                // Do not interpret it in the browser's local timezone.
+                var expiry = row.GetAttributeValue<DateTime>("fmg_expiresatutc");
+                if (expiry == DateTime.MinValue || expiry == DateTime.MaxValue)
+                    throw new CashPlanningException("F5A001", "Invalid grant expiry.");
+                var utcExpiry = DateTime.SpecifyKind(expiry, DateTimeKind.Utc);
+                var nowUtc = DateTime.UtcNow;
+                if (utcExpiry > nowUtc.AddDays(90))
+                    throw new CashPlanningException("F5A001", "Grant expiry exceeds approved lifetime.");
+                if (utcExpiry <= nowUtc)
+                    continue; // revoked/expired grant never becomes a permission
                 // The choices must be the exact operation codes in the schema,
                 // not another table's status or client-selected labels.
                 var operation = DecodeOperation(kind.Value);

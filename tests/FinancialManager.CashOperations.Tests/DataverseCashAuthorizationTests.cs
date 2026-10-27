@@ -30,6 +30,7 @@ public sealed class DataverseCashAuthorizationTests
         g["fmg_operation"] = new OptionSetValue(operation);
         g["fmg_isactive"] = active;
         g["fmg_allowshared"] = shared;
+        g["fmg_expiresatutc"] = DateTime.UtcNow.AddDays(3);
         return g;
     }
     private sealed class ReadOnlyFake : IOrganizationService
@@ -181,6 +182,39 @@ public sealed class DataverseCashAuthorizationTests
         svc.Grants.Add(NewGrant(A, 797282000, user: Other));
         Assert.Equal("F5A001", Assert.Throws<CashPlanningException>(() =>
             new DataverseCashAuthorization(svc).Authorize(User, Receipt())).Code);
+    }
+
+    [Fact]
+    public void ExpiredGrantNeverAuthorizesCashOperation()
+    {
+        var svc = new ReadOnlyFake();
+        svc.Grants.Add(NewGrant(A, 797282000));
+        svc.Grants[0]["fmg_expiresatutc"] = DateTime.UtcNow.AddMinutes(-1);
+        var actor = new DataverseCashAuthorization(svc).Authorize(User, Receipt());
+        Assert.False(actor.CanPerformOnAccount(CashOperationKind.SettleReceipt, A));
+        Assert.Equal(0, svc.Writes);
+    }
+
+    [Fact]
+    public void FarFutureGrantExpiryCannotCreateIndefinitePermission()
+    {
+        var svc = new ReadOnlyFake();
+        svc.Grants.Add(NewGrant(A, 797282000));
+        svc.Grants[0]["fmg_expiresatutc"] = DateTime.UtcNow.AddYears(3);
+        Assert.Equal("F5A001", Assert.Throws<CashPlanningException>(() =>
+            new DataverseCashAuthorization(svc).Authorize(User, Receipt())).Code);
+        Assert.Equal(0, svc.Writes);
+    }
+
+    [Fact]
+    public void MissingGrantExpiryFailsClosed()
+    {
+        var svc = new ReadOnlyFake();
+        svc.Grants.Add(NewGrant(A, 797282000));
+        svc.Grants[0].Attributes.Remove("fmg_expiresatutc");
+        Assert.Equal("F5A001", Assert.Throws<CashPlanningException>(() =>
+            new DataverseCashAuthorization(svc).Authorize(User, Receipt())).Code);
+        Assert.Equal(0, svc.Writes);
     }
 
     [Fact]

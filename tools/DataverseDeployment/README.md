@@ -289,3 +289,8 @@ The dev grant guard was installed and independently tested with `F5A009` on dire
 `cash-runtime-probe` is a **read-only** invocation of the existing `fmg_CashTransactionReadiness` Custom API. It does not need `--apply`, does not create cash rows, and emits observed stage, IsInTransaction, identity parity and `CashWritesEnabled=False`. Dev evidence observed stage 30, in-transaction True and matching identities. This evidence does not relax F5G001.
 
 `cash-ledger-contract-inspect` is read-only. It checks that receipt/transfer/posting tables have exactly the expected SDK field types, PEN money precision 2, cash status/operation choices, lookup targets, active idempotency keys, audit/concurrency, and no stored money rows. Run before any new API test; if drift is reported, repair schema separately, do not try a cash write. `F5_CashOperationEndpoint` remains **unregistered source**, no operational API should be deployed by this command.
+
+
+## F5 cash-grant expiry safety migration
+
+`cash-grant-expiry-inspect` is read-only. `cash-grant-expiry --apply` is a guarded, idempotent **metadata-only** migration that adds `fmg_cashaccessgrant.fmg_expiresatutc` (audited, TimeZoneIndependent DateAndTime) and publishes only this table. It requires the grant unique key to be `Active`, 18/18 F5G001 cash and 3/3 F5A009 grant guards, all six F5 cash tables empty, and no grant rows. It assigns no roles and creates no authorizations. The SDK reader requires expiry when any grant eventually exists and denies expired grants. No grant creation API is registered or used as part of this migration.
