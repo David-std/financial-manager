@@ -25,8 +25,8 @@ class DependencyAuditTests(unittest.TestCase):
             import shutil
             shutil.copytree(SOURCE / "uxagentprojects", dest / "uxagentprojects")
             shutil.copy2(SOURCE / "Other/Solution.xml", dest / "Other/Solution.xml")
-            shutil.copy2(SOURCE / "AppModules/financial_manager_bee9f134/appmodule.xml",
-                         dest / "AppModules/financial_manager_bee9f134/appmodule.xml")
+            shutil.copy2(SOURCE / "AppModules/financial_manager_bee9f134/AppModule.xml",
+                         dest / "AppModules/financial_manager_bee9f134/AppModule.xml")
             p = dest / "Other/Solution.xml"
             s = p.read_text(encoding="utf-8")
             self.assertIn("</MissingDependencies>", s)

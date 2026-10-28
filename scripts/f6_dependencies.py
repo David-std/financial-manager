@@ -78,7 +78,7 @@ def inspect(source: Path = SOURCE) -> DependencyReport:
         errors.append("The four pinned solution-aware UX projects are incomplete.")
     if active:
         errors.append("Unincluded Active UX project dependencies remain in the export.")
-    app = source / "AppModules/financial_manager_bee9f134/appmodule.xml"
+    app = source / "AppModules/financial_manager_bee9f134/AppModule.xml"
     if not app.is_file():
         errors.append("Source app module missing; cannot validate app dependencies.")
     else:
