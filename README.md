@@ -7,9 +7,39 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 - Power Apps: financial movement and budget workflows
 - Microsoft Dataverse: operational records, authorization, and auditing
 - Power BI: financial analysis, comparisons, and budget reporting
-- Financial workspace (offline preview): [Financial Workspace](apps/financial-workspace/README.md), synthetic reporting plus temporary expense/budget Drafts, task queue, category explorer and session activity; no Dataverse writes
+- Financial workspace (React): [Financial Workspace](apps/financial-workspace/README.md), with separate synthetic DEMO and delegated Dataverse LIVE modes; LIVE Draft operations and protected actions are subject to server authorization
 - Power Automate: approved workflow actions and optional future integrations
 
+
+## Preview
+
+<table>
+  <tr>
+    <th width="50%" align="center">React</th>
+    <th width="50%" align="center">Power BI</th>
+  </tr>
+  <tr>
+    <td align="center"><strong>Inicio</strong><p><img src="docs/images/react-workspace.png" alt="Inicio de React" width="100%"></p></td>
+    <td align="center"><strong>Resumen de gastos</strong><p><img src="docs/images/power-bi-report.png" alt="Resumen de gastos en Power BI" width="100%"></p></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Categorías</strong><p><img src="docs/images/react-categories.png" alt="Categorías en React" width="100%"></p></td>
+    <td align="center"><strong>Análisis de categorías</strong><p><img src="docs/images/power-bi-categories.png" alt="Categorías de gasto en Power BI" width="100%"></p></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Análisis</strong><p><img src="docs/images/react-analysis.png" alt="Análisis en React" width="100%"></p></td>
+    <td align="center"><strong>Tendencias</strong><p><img src="docs/images/power-bi-trends.png" alt="Tendencias en Power BI" width="100%"></p></td>
+  </tr>
+</table>
+
+<table>
+  <tr><th align="center">Power Apps</th></tr>
+  <tr>
+    <td align="center"><strong>Gestión de gastos</strong><p><img src="docs/images/power-apps-gastos.png" alt="Gestión de gastos en Power Apps" width="78%"></p></td>
+  </tr>
+</table>
+
+<sub>Capturas del proyecto: React en modo DEMO con datos sintéticos; Power BI en Desktop; Power Apps en entorno DEV. </sub>
 
 ## Documentation
 
@@ -37,7 +67,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 | `integrations/` | Optional iOS and conversational reporting specifications |
 | `scripts/` | Repository checks |
 | `tests/` | Automated repository validation |
-| `apps/financial-workspace/` | Responsive offline React finance app with synthetic data and session-only Draft interactions; not a live Fabric app |
+| `apps/financial-workspace/` | Responsive React workspace with isolated DEMO data and delegated Dataverse LIVE operations; not a Fabric app |
 
 ## Working principles
 
