@@ -15,7 +15,8 @@
     "test:live": "node live-dataverse.test.mjs",
     "test:ui": "node smoke.mjs",
     "test:auth": "node auth-popup.test.mjs",
-    "test:lookups": "node draft-lookups.test.mjs"
+    "test:lookups": "node draft-lookups.test.mjs",
+    "test:browser-fetch": "node browser-fetch.test.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.27.0",

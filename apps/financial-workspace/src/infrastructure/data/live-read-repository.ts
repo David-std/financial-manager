@@ -73,7 +73,10 @@ const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export class DelegatedLiveRepository {
   constructor(
     private readonly session: VerifiedDelegatedSession,
-    private readonly http: typeof fetch = fetch,
+    // Keep native browser fetch bound to Window. Calling an extracted fetch
+    // as this.http(...) changes its receiver and throws 'Illegal invocation'.
+    // An injected HTTP function is still supported for deterministic tests.
+    private readonly http: typeof fetch = (input, init) => fetch(input, init),
   ) {}
 
   /** WhoAmI verifies the authenticated user+organization before EVERY data call. */
