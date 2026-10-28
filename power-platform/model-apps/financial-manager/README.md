@@ -61,3 +61,39 @@ Reformatting code in Git does **not** automatically update the running app. Tran
 - The source-controlled solution still emits plug-in-assembly warnings when repacked and has not been import-tested into a separate tenant.
 
 Specification: [screen responsibilities](../../../docs/screens.md), [security](../../../docs/security.md) and [UI acceptance checklist](../../../docs/ui-acceptance.md).
+
+## Scrolling and expense transition acceptance
+
+All four model-driven generative pages use an explicitly bounded
+vertical scroll area so the outer Power Apps shell can keep its fixed
+height while the body scrolls on touch/mobile and desktop. Budget
+tables remain independently horizontally scrollable and keyboard
+focusable. Actual wheel/touch behavior must still be tested inside
+the published app, not inferred from CSS contracts.
+
+The **Post** button on a Draft now requires an explicitly saved,
+reloaded/confirmed Draft: finish amount, date, flow class, scope,
+branch if applicable, active leaf category, eligible account and PEN;
+select **Guardar borrador**, verify the record, and only then choose
+**Contabilizar**. Unsaved editor changes are rejected rather than
+being auto-saved while posting. The app re-reads the Draft fields
+before the state transition and re-reads the resulting status. Server
+plug-in FTV007 remains the authority: non-admin finance users are
+still denied privileged transitions until the role gate is accepted.
+The generated-page dataApi pre-read does not prove atomic ETag
+concurrency, and does not replace the server plug-in.
+
+**Void** is offered only when the record is Posted; enter a nonempty
+reason, confirm, and verify the resulting Voided status/reason. Posted
+financial fields remain immutable, including via direct table/API
+access. Never use a fictitious role selector or administrator bypass
+to claim a production user authorization test passed.
+
+Read-only metadata checks: `expense-readiness`,
+`app-nav-inspect`, `budget-approval-inspect` (all in the
+DataverseDeployment CLI). The existing `verify --apply` executes
+controlled synthetic rollback-only Create/Post/Void and negative
+mutation scenarios in DEV, with a deliberately failing final request
+for each ExecuteTransaction; it must not be mistaken for UI UAT or
+user-role/segregation acceptance. Keep evidence and screenshots
+outside Git, and never run on production.

@@ -59,7 +59,14 @@ const useStyles = makeStyles({
     gap: tokens.spacingVerticalL,
     padding: tokens.spacingHorizontalXXL,
     backgroundColor: tokens.colorNeutralBackground2,
-    minHeight: "100%",
+    // Generative pages run inside a fixed-height model-driven app surface.
+    // Give that surface its own vertical scroll, including on mobile/touch.
+    height: "100%",
+    minHeight: 0,
+    overflowY: "auto",
+    overflowX: "hidden",
+    overscrollBehaviorY: "contain",
+    WebkitOverflowScrolling: "touch",
     boxSizing: "border-box",
     color: tokens.colorNeutralForeground1,
   },
@@ -540,6 +547,16 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
       setPendingPost(false);
       return;
     }
+    // Require the operator to save and independently verify a Draft before Post.
+    // Auto-saving during a state transition hides stale edits and creates a race.
+    if (
+      !data.record ||
+      editorFingerprint(inputs) !== editorFingerprint(buildInputs(data.record, data.categories))
+    ) {
+      setFeedback("Guarda el borrador y comprueba los valores persistidos antes de contabilizar.");
+      setPendingPost(false);
+      return;
+    }
     if (transitionInProgress.current) return;
     transitionInProgress.current = true;
     setBusy(true);
@@ -547,11 +564,14 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
     try {
       const current = await dataApi.retrieveRow("fmg_financialtransaction", {
         id: recordId,
-        select: ["fmg_status"],
+        select: [...draftReadColumns],
       });
-      if (current.fmg_status !== 797280000)
+      if (
+        current.fmg_status !== 797280000 ||
+        draftFingerprint(current) !== draftFingerprint(data.record)
+      )
         throw new Error(
-          "El estado del movimiento cambió. Actualiza la pantalla antes de continuar.",
+          "El borrador cambió en Dataverse. Actualiza la pantalla antes de contabilizar.",
         );
     } catch (err) {
       setFeedback(err instanceof Error ? err.message : "No se pudo comprobar el estado actual.");
@@ -560,14 +580,8 @@ const ExpenseDetail = (props: GeneratedComponentProps) => {
       transitionInProgress.current = false;
       return;
     }
-    setBusy(false);
-    const saved = await saveDraft();
-    if (!saved) {
-      transitionInProgress.current = false;
-      return;
-    }
-    setBusy(true);
     try {
+      // Posting remains server-authorized (FTV007); no client-role bypass.
       await dataApi.updateRow("fmg_financialtransaction", recordId, { fmg_status: 797280001 });
       const confirmed = await dataApi.retrieveRow("fmg_financialtransaction", {
         id: recordId,

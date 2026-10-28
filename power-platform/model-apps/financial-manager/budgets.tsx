@@ -47,7 +47,14 @@ const useStyles = makeStyles({
     padding: tokens.spacingHorizontalXXL,
     backgroundColor: tokens.colorNeutralBackground2,
     color: tokens.colorNeutralForeground1,
-    minHeight: "100%",
+    // Generative pages run inside a fixed-height model-driven app surface.
+    // Give that surface its own vertical scroll, including on mobile/touch.
+    height: "100%",
+    minHeight: 0,
+    overflowY: "auto",
+    overflowX: "hidden",
+    overscrollBehaviorY: "contain",
+    WebkitOverflowScrolling: "touch",
     boxSizing: "border-box",
   },
   heading: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
@@ -915,7 +922,12 @@ const BudgetPage = ({ dataApi }: GeneratedComponentProps) => {
         </div>
       )}
       {!state.loading && !state.error && visible.length > 0 && (
-        <div className={classes.tableContainer}>
+        <div
+          className={classes.tableContainer}
+          role="region"
+          tabIndex={0}
+          aria-label="Tabla de presupuestos desplazable horizontalmente"
+        >
           <table className={classes.table}>
             <thead>
               <tr>
@@ -1029,7 +1041,12 @@ const BudgetPage = ({ dataApi }: GeneratedComponentProps) => {
               {lines.length === 0 ? (
                 <Text size={200}>Este presupuesto todavía no tiene asignaciones.</Text>
               ) : (
-                <div className={classes.tableContainer}>
+                <div
+                  className={classes.tableContainer}
+                  role="region"
+                  tabIndex={0}
+                  aria-label="Tabla de presupuestos desplazable horizontalmente"
+                >
                   <table className={classes.table}>
                     <thead>
                       <tr>

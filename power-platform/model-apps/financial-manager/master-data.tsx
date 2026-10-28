@@ -41,7 +41,14 @@ const useStyles = makeStyles({
     padding: tokens.spacingHorizontalXXL,
     backgroundColor: tokens.colorNeutralBackground2,
     color: tokens.colorNeutralForeground1,
-    minHeight: "100%",
+    // Generative pages run inside a fixed-height model-driven app surface.
+    // Give that surface its own vertical scroll, including on mobile/touch.
+    height: "100%",
+    minHeight: 0,
+    overflowY: "auto",
+    overflowX: "hidden",
+    overscrollBehaviorY: "contain",
+    WebkitOverflowScrolling: "touch",
     boxSizing: "border-box",
   },
   header: {
