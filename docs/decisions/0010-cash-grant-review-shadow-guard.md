@@ -74,3 +74,29 @@ was installed. This is not positive grant or financial rollback UAT.
 - Ledger cutover, cash receipts/transfers, second-leg rollback, balances,
   reconciliation, Power Apps and React operational integration remain separate.
 - Keep all logs, organization IDs, identities and package binaries outside Git.
+
+## 2026-10-27 — next checkpoint: read-only standby preflight
+
+Implemented `CashGrantReviewStandbyDeployment` with explicit
+`cash-review-standby-inspect` and `cash-review-standby-register --apply`
+commands. Every step has the exact table/message filter, package-bound
+plug-in type, separate pinned MainOperation identities, caller-only
+execution, PreValidation/synchronous stage 10, **rank 2** and a checked
+per-step configuration. Every legacy deny step must be enabled at **rank
+1** before a candidate can be created; all 24 legacy guards are checked
+again after each successful run.
+
+A **connected read-only inspection** in `financial-manager-dev`
+returned Exit 0: all six standby steps are absent; the 24 original
+direct-write protections remain enabled. An attempt to perform the
+actual standby registration was **blocked by the execution tool's
+security controls**, before any mutation. Do not work around the
+block or report the six candidate steps as deployed. Local CLI
+build passed with zero warnings, and the Python guard-contract suite
+passed. Safe source is retained for later authorization and inspection.
+
+The rank-2 approach is intentionally **not** proof the new candidate
+ran: the earlier rank-1 fail-closed guard prevents ordinary requests
+from reaching the later step. A real cutover requires independent
+connected verification and account-specific human approvals; a
+successful metadata registration alone would not be sufficient.
