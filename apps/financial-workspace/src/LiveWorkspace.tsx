@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import CashReadOnlyPanel from "./CashReadOnlyPanel";
 import { ArrowRight, Database, RefreshCcw, ShieldCheck } from "lucide-react";
 import "./live-workspace.css";
 import {
@@ -21,12 +22,12 @@ import {
 } from "./infrastructure/data/identity-check";
 import {
   DelegatedLiveRepository,
-  type LiveCollection,
+  type StandardLiveCollection,
   type LivePage,
 } from "./infrastructure/data/live-read-repository";
 
 const paymentCommandsEnabled = import.meta.env.VITE_FM_ENABLE_PAYMENT_COMMANDS === "true";
-const sections: ReadonlyArray<{ key: LiveCollection; name: string }> = [
+const sections: ReadonlyArray<{ key: StandardLiveCollection; name: string }> = [
   { key: "expenses", name: "Movimientos" },
   { key: "budgets", name: "Presupuestos" },
   { key: "allocations", name: "Asignaciones" },
@@ -35,7 +36,7 @@ const sections: ReadonlyArray<{ key: LiveCollection; name: string }> = [
   { key: "branches", name: "Sedes" },
   { key: "accounts", name: "Cuentas" },
 ];
-const empty: Record<LiveCollection, LivePage> = {
+const empty: Record<StandardLiveCollection, LivePage> = {
   expenses: { rows: [], next: null },
   budgets: { rows: [], next: null },
   allocations: { rows: [], next: null },
@@ -59,7 +60,7 @@ const labels: Record<string, string> = {
   fmg_code: "Código",
   fmg_isactive: "Activa (Dataverse)",
 };
-const fields: Record<LiveCollection, ReadonlyArray<string>> = {
+const fields: Record<StandardLiveCollection, ReadonlyArray<string>> = {
   expenses: ["fmg_name", "fmg_transactiondate", "fmg_amount", "fmg_status", "fmg_scope"],
   budgets: ["fmg_name", "fmg_year", "fmg_version", "fmg_status", "fmg_scope"],
   allocations: ["fmg_name", "fmg_month", "fmg_amount"],
@@ -69,7 +70,7 @@ const fields: Record<LiveCollection, ReadonlyArray<string>> = {
   accounts: ["fmg_name", "fmg_isactive", "_fmg_branch_value"],
 };
 
-function value(field: string, data: unknown, collection: LiveCollection): string {
+function value(field: string, data: unknown, collection: StandardLiveCollection): string {
   if (data === null || data === undefined) return "Sin asignar";
   if (typeof data === "boolean") return data ? "Sí" : "No";
   if (field === "fmg_status" && typeof data === "number") {
@@ -99,9 +100,10 @@ function value(field: string, data: unknown, collection: LiveCollection): string
 export default function LiveWorkspace() {
   const [session, setSession] = useState<VerifiedDelegatedSession | null>(null);
   const [repo, setRepo] = useState<DelegatedLiveRepository | null>(null);
-  const [tab, setTab] = useState<LiveCollection>("expenses");
-  const [pages, setPages] = useState<Record<LiveCollection, LivePage>>(empty);
-  const [issues, setIssues] = useState<Partial<Record<LiveCollection, string>>>({});
+  const [tab, setTab] = useState<StandardLiveCollection>("expenses");
+  const [showCash, setShowCash] = useState(false);
+  const [pages, setPages] = useState<Record<StandardLiveCollection, LivePage>>(empty);
+  const [issues, setIssues] = useState<Partial<Record<StandardLiveCollection, string>>>({});
   const [busy, setBusy] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   useEffect(() => {
@@ -152,7 +154,7 @@ export default function LiveWorkspace() {
       sections.map(({ key }) => loadCompleteReferenceCatalog(key, source)),
     );
     const nextPages = { ...empty };
-    const nextIssues: Partial<Record<LiveCollection, string>> = {};
+    const nextIssues: Partial<Record<StandardLiveCollection, string>> = {};
     results.forEach((result, index) => {
       const key = sections[index].key;
       if (result.status === "fulfilled") nextPages[key] = result.value;
@@ -441,6 +443,7 @@ export default function LiveWorkspace() {
     setRepo(null);
     setPages(empty);
     setIssues({});
+    setShowCash(false);
     setSelected(null);
     setDraftId("");
     setMessage("Sesión cerrada. Los registros ya no se muestran.");
@@ -513,6 +516,16 @@ export default function LiveWorkspace() {
               <strong>{pages.activity.rows.length}</strong>
               <small>Actividad consultada</small>
             </div>
+          </section>
+          <section className="live-cash-access">
+            <button
+              type="button"
+              aria-expanded={showCash}
+              onClick={() => setShowCash((current) => !current)}
+            >
+              {showCash ? "Ocultar consulta de caja" : "Consultar caja y conciliaciones"}
+            </button>
+            {showCash && repo && <CashReadOnlyPanel repo={repo} />}
           </section>
           <nav aria-label="Secciones Dataverse" className="live-tabs">
             {sections.map(({ key, name }) => (

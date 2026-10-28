@@ -378,3 +378,57 @@
   line-height: 1.55;
   margin: 0;
 }
+
+.live-cash-access {
+  margin: 16px 0 22px;
+}
+.live-cash-access > button {
+  border: 1px solid #ccdcd5;
+  background: #ffffff;
+  color: #2e5c67;
+  border-radius: 11px;
+  min-height: 39px;
+  padding: 9px 16px;
+  font-weight: 700;
+}
+.live-cash-readonly {
+  margin-top: 12px;
+  padding: clamp(15px, 2.6vw, 28px);
+  border: 1px solid #d9e5de;
+  border-radius: 16px;
+  background: #f7faf8;
+}
+.live-cash-readonly h2,
+.live-cash-readonly h3 {
+  margin: 0 0 7px;
+}
+.live-cash-readonly p {
+  color: #526d74;
+  max-width: 78ch;
+  line-height: 1.5;
+}
+.live-cash-readonly .live-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 5px;
+  scrollbar-width: thin;
+  padding-bottom: 9px;
+}
+.live-cash-readonly .live-tabs button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.live-cash-readonly .live-tabs button[aria-pressed="true"] {
+  background: #dcece5;
+  color: #285e66;
+  font-weight: 800;
+}
+.live-cash-readonly .live-section-heading {
+  margin-top: 16px;
+}
+.live-cash-readonly .live-table-scroll {
+  max-width: 100%;
+}
+.live-cash-readonly .live-field-help {
+  font-size: 11px;
+}

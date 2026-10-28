@@ -9,7 +9,15 @@ import {
   type DraftChange,
 } from "./conditional-draft";
 
-export type LiveCollection =
+export type CashLiveCollection =
+  | "cashReceipts"
+  | "cashTransfers"
+  | "cashPostings"
+  | "cashOpenings"
+  | "bankStatements"
+  | "bankReconciliations";
+
+export type StandardLiveCollection =
   | "expenses"
   | "budgets"
   | "allocations"
@@ -17,10 +25,48 @@ export type LiveCollection =
   | "categories"
   | "branches"
   | "accounts";
+export type LiveCollection = StandardLiveCollection | CashLiveCollection;
 export type LiveRow = Readonly<Record<string, unknown>>;
 export type LivePage = Readonly<{ rows: LiveRow[]; next: string | null }>;
 
 const TABLES: Record<LiveCollection, { set: string; select: string; order: string; id: string }> = {
+  cashReceipts: {
+    set: "fmg_cashreceipts",
+    select: "fmg_cashreceiptid,fmg_name,fmg_amount,fmg_receivedon,fmg_status,modifiedon",
+    order: "modifiedon desc,fmg_cashreceiptid asc",
+    id: "fmg_cashreceiptid",
+  },
+  cashTransfers: {
+    set: "fmg_cashtransfers",
+    select: "fmg_cashtransferid,fmg_name,fmg_amount,fmg_transferredon,fmg_status,modifiedon",
+    order: "modifiedon desc,fmg_cashtransferid asc",
+    id: "fmg_cashtransferid",
+  },
+  cashPostings: {
+    set: "fmg_cashpostings",
+    select: "fmg_cashpostingid,fmg_name,fmg_signedamount,fmg_postedon,fmg_kind,modifiedon",
+    order: "modifiedon desc,fmg_cashpostingid asc",
+    id: "fmg_cashpostingid",
+  },
+  cashOpenings: {
+    set: "fmg_accountopenings",
+    select: "fmg_accountopeningid,fmg_name,fmg_amount,fmg_effectiveon,fmg_status,modifiedon",
+    order: "modifiedon desc,fmg_accountopeningid asc",
+    id: "fmg_accountopeningid",
+  },
+  bankStatements: {
+    set: "fmg_bankstatements",
+    select: "fmg_bankstatementid,fmg_name,fmg_closingbalance,fmg_asof,fmg_status,modifiedon",
+    order: "modifiedon desc,fmg_bankstatementid asc",
+    id: "fmg_bankstatementid",
+  },
+  bankReconciliations: {
+    set: "fmg_bankreconciliations",
+    select:
+      "fmg_bankreconciliationid,fmg_name,fmg_bookbalance,fmg_statementbalance,fmg_difference,fmg_asof,fmg_status,modifiedon",
+    order: "modifiedon desc,fmg_bankreconciliationid asc",
+    id: "fmg_bankreconciliationid",
+  },
   expenses: {
     set: "fmg_financialtransactions",
     select:
