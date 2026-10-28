@@ -23,7 +23,7 @@ const TABLES: Record<LiveCollection, { set: string; select: string; order: strin
   expenses: {
     set: "fmg_financialtransactions",
     select:
-      "fmg_financialtransactionid,fmg_name,fmg_status,fmg_amount,fmg_transactiondate,fmg_scope,fmg_flowclass,fmg_description,_fmg_branch_value,_fmg_cashaccount_value,_fmg_category_value,modifiedon",
+      "fmg_financialtransactionid,fmg_name,fmg_status,fmg_amount,fmg_transactiondate,fmg_scope,fmg_flowclass,fmg_description,_fmg_branch_value,_fmg_cashaccount_value,_fmg_category_value,versionnumber,modifiedon",
     order: "modifiedon desc,fmg_financialtransactionid asc",
     id: "fmg_financialtransactionid",
   },
@@ -221,6 +221,104 @@ export class DelegatedLiveRepository {
     });
     if (check.status !== 404)
       throw new Error("No se verificó la ausencia del borrador tras eliminarlo.");
+  }
+
+  /** Protected server operation; no direct status PATCH is permitted from React. */
+  async executePaymentCommand(
+    kind: "post" | "void",
+    id: string,
+    expectedVersion: unknown,
+    reason?: string,
+  ): Promise<void> {
+    if (!GUID.test(id) || (kind !== "post" && kind !== "void"))
+      throw new FinanceAuthorizationUnavailable();
+    const version =
+      typeof expectedVersion === "string"
+        ? expectedVersion
+        : typeof expectedVersion === "number" && Number.isSafeInteger(expectedVersion)
+          ? String(expectedVersion)
+          : "";
+    if (!/^\d{1,40}$/.test(version))
+      throw new Error("No se pudo comprobar la versión del gasto. Actualiza la lista.");
+    const checkedReason = reason?.trim() ?? "";
+    if (kind === "void" && (checkedReason.length < 10 || checkedReason.length > 500))
+      throw new Error("La anulación necesita un motivo de 10 a 500 caracteres.");
+
+    const base = this.session.organizationUrl + "api/data/v9.2/";
+    const url =
+      base +
+      "fmg_financialtransactions(" +
+      id +
+      ")?$select=fmg_status,versionnumber,fmg_voidreason";
+    const headers = {
+      Authorization: "Bearer " + (await this.trustedToken()),
+      Accept: "application/json",
+    };
+    const current = await this.http(url, {
+      method: "GET",
+      headers,
+      credentials: "omit",
+      cache: "no-store",
+      redirect: "error",
+    });
+    if (current.status === 401 || current.status === 403)
+      throw new FinanceAuthorizationUnavailable();
+    if (current.status !== 200)
+      throw new Error("No se pudo verificar el gasto antes de la operación.");
+    const before: Record<string, unknown> = await current.json();
+    if (
+      String(before.versionnumber ?? "") !== version ||
+      before.fmg_status !== (kind === "post" ? 797280000 : 797280001)
+    )
+      throw new Error("El gasto cambió de estado o versión. Actualiza antes de continuar.");
+
+    const message =
+      kind === "post" ? "fmg_PostFinancialTransaction" : "fmg_VoidFinancialTransaction";
+    const payload: Record<string, unknown> = { RecordId: id, ExpectedRowVersion: version };
+    if (kind === "void") payload.Reason = checkedReason;
+    const response = await this.http(base + message, {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      credentials: "omit",
+      cache: "no-store",
+      redirect: "error",
+    });
+    if (response.status === 401 || response.status === 403)
+      throw new FinanceAuthorizationUnavailable();
+    if (response.status === 412 || response.status === 409)
+      throw new Error("Conflicto de versión. Relee el gasto antes de intentar de nuevo.");
+    if (response.status !== 200)
+      throw new Error(
+        "La operación no se confirmó (HTTP " +
+          response.status +
+          "). Comprueba el estado del gasto antes de volver a intentarlo.",
+      );
+    const result: unknown = await response.json();
+    if (
+      !result ||
+      typeof result !== "object" ||
+      (result as Record<string, unknown>).Completed !== true
+    )
+      throw new Error("La API no confirmó la operación. Relee el registro antes de reintentar.");
+    const again = await this.http(url, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + (await this.trustedToken()),
+        Accept: "application/json",
+      },
+      credentials: "omit",
+      cache: "no-store",
+      redirect: "error",
+    });
+    if (again.status !== 200)
+      throw new Error("La operación respondió correctamente, pero no se pudo releer el gasto.");
+    const after: Record<string, unknown> = await again.json();
+    if (
+      after.fmg_status !== (kind === "post" ? 797280001 : 797280002) ||
+      (kind === "void" && after.fmg_voidreason !== checkedReason)
+    )
+      throw new Error("La relectura no confirmó el estado financiero esperado.");
   }
 
   async readPage(collection: LiveCollection, next?: string): Promise<LivePage> {

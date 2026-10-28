@@ -14,6 +14,7 @@ import {
   type LivePage,
 } from "./infrastructure/data/live-read-repository";
 
+const paymentCommandsEnabled = import.meta.env.VITE_FM_ENABLE_PAYMENT_COMMANDS === "true";
 const sections: ReadonlyArray<{ key: LiveCollection; name: string }> = [
   { key: "expenses", name: "Movimientos" },
   { key: "budgets", name: "Presupuestos" },
@@ -187,6 +188,53 @@ export default function LiveWorkspace() {
         ...prev,
         [tab]: error instanceof Error ? error.message : "No se pudo leer la página.",
       }));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function command(kind: "post" | "void", row: Record<string, unknown>) {
+    if (
+      !repo ||
+      busy ||
+      !paymentCommandsEnabled ||
+      typeof row.fmg_financialtransactionid !== "string"
+    )
+      return;
+    let reason: string | undefined;
+    if (kind === "void") {
+      const typed = window.prompt("Motivo de la anulación (mínimo 10 caracteres):");
+      if (typed === null) return;
+      reason = typed;
+    }
+    if (
+      !window.confirm(
+        kind === "post"
+          ? "¿Contabilizar este gasto? No podrás modificar sus datos financieros después."
+          : "¿Anular este gasto contabilizado? El registro se conservará para auditoría.",
+      )
+    )
+      return;
+    setBusy(true);
+    try {
+      await repo.executePaymentCommand(
+        kind,
+        row.fmg_financialtransactionid,
+        row.versionnumber,
+        reason,
+      );
+      await fetchAll(repo);
+      setSelected(null);
+      setMessage(
+        kind === "post"
+          ? "Gasto contabilizado y releído en Dataverse."
+          : "Gasto anulado con motivo y releído en Dataverse.",
+      );
+    } catch (error) {
+      setMessage(
+        (error instanceof Error ? error.message : "Operación no confirmada.") +
+          " Relee el gasto antes de repetir la acción.",
+      );
     } finally {
       setBusy(false);
     }
@@ -690,6 +738,16 @@ export default function LiveWorkspace() {
                                 Abrir Draft
                               </button>
                             )}
+                          {paymentCommandsEnabled && row.fmg_status === 797280000 && (
+                            <button disabled={busy} onClick={() => void command("post", row)}>
+                              Contabilizar
+                            </button>
+                          )}
+                          {paymentCommandsEnabled && row.fmg_status === 797280001 && (
+                            <button disabled={busy} onClick={() => void command("void", row)}>
+                              Anular
+                            </button>
+                          )}
                         </td>
                       )}
                     </tr>

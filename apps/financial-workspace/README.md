@@ -222,3 +222,49 @@ perform an interactive sign-in/WhoAmI test. A real, authorized user must then
 verify visibility across site/role, Draft creation/edit/deletion and conflict
 412 with two sessions. Final server-protected Post/Void and budget approval
 remain unexposed until their guards and approver separation are accepted.
+
+## Protected expense Post / Void endpoints (F3 and F4 integration)
+
+An **independent** `fmg_PaymentExecution` sandbox plug-in provides
+`fmg_PostFinancialTransaction` and `fmg_VoidFinancialTransaction`.
+These are private **unbound Custom APIs** with the exact Dataverse execute
+privilege `prvWritefmg_financialtransaction`. Required request inputs are
+`RecordId` (GUID) and `ExpectedRowVersion` (decimal SDK version string),
+plus `Reason` (10–500 characters) for Void. Both return `Completed` (bool).
+The server requires a synchronous transactional MainOperation, identifies
+the actor from Dataverse execution context, checks the System Administrator
+role **under current FTV007 policy**, reads and matches the SDK RowVersion,
+verifies Draft→Posted or Posted→Voided, repeats `PaymentIntegrity`'s PEN,
+category, account, amount, scope and immutability validation, then sends an
+`UpdateRequest` with `IfRowVersionMatches`. The existing three expense
+PreValidation guard steps, including `FTV007`, remain untouched.
+
+`payment-package-inspect`, `payment-api-inspect` and `expense-readiness`
+are read-only; mutating registration requires explicit `--apply`. An
+independent package install requires a reviewed absolute NuGet path and
+SHA256 checksum. `payment-api-probe --apply` sends invalid-version requests
+to both APIs, expects `FPC002` and **never writes any row**. The existing
+`verify --apply` covers 11 expense transitions including Post/Void in
+guaranteed-rollback transactions. Neither replaces acceptance of a positive
+execution of these two particular Custom APIs with an authorized human user.
+
+React LIVE always reads `versionnumber` and only calls the Custom APIs; it
+never changes `fmg_status` directly. The feature flag
+`VITE_FM_ENABLE_PAYMENT_COMMANDS` defaults to **false**. When explicitly
+enabled in a DEV-only `.env.local`, the action requires a confirmation (and
+an explicit reason for Void), re-reads the record and version first, checks
+server result and re-reads final status. Ambiguous responses never trigger
+automatic retry. Normal non-admin operators remain denied under `FTV007`
+until their authorization design is approved.
+
+**Budget approval F3/F4/F7:** the existing private bound
+`fmg_ApproveBudget` already has a dedicated plug-in, 9 precisely scoped role
+privileges, `fmg_budgetapprovalclaim` and an active unique scope key for
+annual/version protection. `budget-approval-inspect` is read-only. Do **not**
+assign `Financial Manager Budget Approver` to the same human who creates
+or submits budgets. When only a single administrator is available, keep
+`BGV009` and the approve button disabled. Completion still needs a distinct
+real approver identity and role assignment, submitted valid allocation(s),
+an authenticated acceptance of the API with independent user, competing
+versions/approvals race test, and readback/audit of the final approved
+version. No fake approver or temporary admin bypass qualifies as acceptance.
