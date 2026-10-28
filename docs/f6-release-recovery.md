@@ -19,7 +19,7 @@ Si cualquiera falta, detenerse antes de importar.
   paquete administrado anterior y los datos con mecanismos soportados.
 - Confirmar publisher `fmg`, versión incremental y permisos mínimos
   de la identidad de despliegue; verificar dependencias
-  `uxagentproject`/AppModuleWebResources/Settings.
+  `AppModuleWebResources 2.5` y `AppChannel` (`msdyn_AppFrameworkInfraExtensions 1.0.0.27`). Los cuatro proyectos `uxagentproject` deben viajar dentro del paquete revisado.
 - Configurar GitHub Environment con aprobación y secretos; ninguna
   credencial debe quedar en Git, consola compartida o paquete.
 - Ensayar importación mediante herramientas oficiales, registrar

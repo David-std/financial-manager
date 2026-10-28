@@ -1,0 +1,878 @@
+// --- BEGIN GENERATED RUNTIME TYPES ---
+
+var fmg_financialtransaction_statecode;
+(function (fmg_financialtransaction_statecode) {
+    fmg_financialtransaction_statecode[fmg_financialtransaction_statecode["Activo"] = 0] = "Activo";
+    fmg_financialtransaction_statecode[fmg_financialtransaction_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_financialtransaction_statecode || (fmg_financialtransaction_statecode = {}));
+var fmg_financialtransaction_statuscode;
+(function (fmg_financialtransaction_statuscode) {
+    fmg_financialtransaction_statuscode[fmg_financialtransaction_statuscode["Activo"] = 1] = "Activo";
+    fmg_financialtransaction_statuscode[fmg_financialtransaction_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_financialtransaction_statuscode || (fmg_financialtransaction_statuscode = {}));
+var fmg_financialtransaction_fmg_flowclass;
+(function (fmg_financialtransaction_fmg_flowclass) {
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["OperatingPayment"] = 797280000] = "OperatingPayment";
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["CapitalPayment"] = 797280001] = "CapitalPayment";
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["TaxPayment"] = 797280002] = "TaxPayment";
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["OtherPayment"] = 797280003] = "OtherPayment";
+})(fmg_financialtransaction_fmg_flowclass || (fmg_financialtransaction_fmg_flowclass = {}));
+var fmg_financialtransaction_fmg_scope;
+(function (fmg_financialtransaction_fmg_scope) {
+    fmg_financialtransaction_fmg_scope[fmg_financialtransaction_fmg_scope["Branch"] = 797280000] = "Branch";
+    fmg_financialtransaction_fmg_scope[fmg_financialtransaction_fmg_scope["Shared"] = 797280001] = "Shared";
+})(fmg_financialtransaction_fmg_scope || (fmg_financialtransaction_fmg_scope = {}));
+var fmg_financialtransaction_fmg_status;
+(function (fmg_financialtransaction_fmg_status) {
+    fmg_financialtransaction_fmg_status[fmg_financialtransaction_fmg_status["Draft"] = 797280000] = "Draft";
+    fmg_financialtransaction_fmg_status[fmg_financialtransaction_fmg_status["Posted"] = 797280001] = "Posted";
+    fmg_financialtransaction_fmg_status[fmg_financialtransaction_fmg_status["Voided"] = 797280002] = "Voided";
+})(fmg_financialtransaction_fmg_status || (fmg_financialtransaction_fmg_status = {}));
+var fmg_category_statecode;
+(function (fmg_category_statecode) {
+    fmg_category_statecode[fmg_category_statecode["Activo"] = 0] = "Activo";
+    fmg_category_statecode[fmg_category_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_category_statecode || (fmg_category_statecode = {}));
+var fmg_category_statuscode;
+(function (fmg_category_statuscode) {
+    fmg_category_statuscode[fmg_category_statuscode["Activo"] = 1] = "Activo";
+    fmg_category_statuscode[fmg_category_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_category_statuscode || (fmg_category_statuscode = {}));
+var fmg_category_fmg_isactive;
+(function (fmg_category_fmg_isactive) {
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["No"] = 0] = "No";
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isactive || (fmg_category_fmg_isactive = {}));
+var fmg_category_fmg_isgroup;
+(function (fmg_category_fmg_isgroup) {
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["No"] = 0] = "No";
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isgroup || (fmg_category_fmg_isgroup = {}));
+var fmg_cashaccount_statecode;
+(function (fmg_cashaccount_statecode) {
+    fmg_cashaccount_statecode[fmg_cashaccount_statecode["Activo"] = 0] = "Activo";
+    fmg_cashaccount_statecode[fmg_cashaccount_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_cashaccount_statecode || (fmg_cashaccount_statecode = {}));
+var fmg_cashaccount_statuscode;
+(function (fmg_cashaccount_statuscode) {
+    fmg_cashaccount_statuscode[fmg_cashaccount_statuscode["Activo"] = 1] = "Activo";
+    fmg_cashaccount_statuscode[fmg_cashaccount_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_cashaccount_statuscode || (fmg_cashaccount_statuscode = {}));
+var fmg_cashaccount_fmg_isactive;
+(function (fmg_cashaccount_fmg_isactive) {
+    fmg_cashaccount_fmg_isactive[fmg_cashaccount_fmg_isactive["No"] = 0] = "No";
+    fmg_cashaccount_fmg_isactive[fmg_cashaccount_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_cashaccount_fmg_isactive || (fmg_cashaccount_fmg_isactive = {}));
+var fmg_cashaccount_fmg_type;
+(function (fmg_cashaccount_fmg_type) {
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Cash"] = 797280000] = "Cash";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Bank"] = 797280001] = "Bank";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Wallet"] = 797280002] = "Wallet";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Other"] = 797280003] = "Other";
+})(fmg_cashaccount_fmg_type || (fmg_cashaccount_fmg_type = {}));
+var fmg_branch_statecode;
+(function (fmg_branch_statecode) {
+    fmg_branch_statecode[fmg_branch_statecode["Activo"] = 0] = "Activo";
+    fmg_branch_statecode[fmg_branch_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_branch_statecode || (fmg_branch_statecode = {}));
+var fmg_branch_statuscode;
+(function (fmg_branch_statuscode) {
+    fmg_branch_statuscode[fmg_branch_statuscode["Activo"] = 1] = "Activo";
+    fmg_branch_statuscode[fmg_branch_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_branch_statuscode || (fmg_branch_statuscode = {}));
+var fmg_branch_fmg_isactive;
+(function (fmg_branch_fmg_isactive) {
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["No"] = 0] = "No";
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_branch_fmg_isactive || (fmg_branch_fmg_isactive = {}));
+var transactioncurrency_statecode;
+(function (transactioncurrency_statecode) {
+    transactioncurrency_statecode[transactioncurrency_statecode["Activo"] = 0] = "Activo";
+    transactioncurrency_statecode[transactioncurrency_statecode["Inactivo"] = 1] = "Inactivo";
+})(transactioncurrency_statecode || (transactioncurrency_statecode = {}));
+var transactioncurrency_statuscode;
+(function (transactioncurrency_statuscode) {
+    transactioncurrency_statuscode[transactioncurrency_statuscode["Activo"] = 1] = "Activo";
+    transactioncurrency_statuscode[transactioncurrency_statuscode["Inactivo"] = 2] = "Inactivo";
+})(transactioncurrency_statuscode || (transactioncurrency_statuscode = {}));
+var transactioncurrency_currencytype;
+(function (transactioncurrency_currencytype) {
+    transactioncurrency_currencytype[transactioncurrency_currencytype["System"] = 0] = "System";
+    transactioncurrency_currencytype[transactioncurrency_currencytype["Custom"] = 1] = "Custom";
+})(transactioncurrency_currencytype || (transactioncurrency_currencytype = {}));
+
+// --- END GENERATED RUNTIME TYPES ---
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Badge, Button, Card, Field, Input, Spinner, Text, Textarea, makeStyles, tokens, } from "@fluentui/react-components";
+import { ArrowClockwiseRegular, CheckmarkRegular, SaveRegular, ShieldLockRegular, } from "@fluentui/react-icons";
+var useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        gap: tokens.spacingVerticalL,
+        padding: tokens.spacingHorizontalXXL,
+        backgroundColor: tokens.colorNeutralBackground2,
+        // Generative pages run inside a fixed-height model-driven app surface.
+        // Give that surface its own vertical scroll, including on mobile/touch.
+        height: "100%",
+        minHeight: 0,
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch",
+        boxSizing: "border-box",
+        color: tokens.colorNeutralForeground1,
+    },
+    header: {
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: tokens.spacingHorizontalM,
+    },
+    title: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
+    form: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+        gap: tokens.spacingHorizontalM,
+    },
+    panel: { padding: tokens.spacingHorizontalL, backgroundColor: tokens.colorNeutralBackground1 },
+    toolbar: {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: tokens.spacingHorizontalM,
+        alignItems: "center",
+    },
+    error: { color: tokens.colorPaletteRedForeground1 },
+    select: {
+        width: "100%",
+        padding: "10px",
+        borderRadius: "5px",
+        border: "1px solid #aaa",
+        backgroundColor: "#fff",
+    },
+    wide: { gridColumn: "1/-1" },
+});
+var initial = {
+    date: "",
+    amount: "",
+    flow: "",
+    scope: "",
+    group: "",
+    category: "",
+    branch: "",
+    account: "",
+    description: "",
+    reference: "",
+    voidReason: "",
+};
+function guid(value) {
+    if (typeof value !== "string")
+        return "";
+    var m = value.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+    return m ? m[0].toLowerCase() : "";
+}
+function active(value) {
+    return value === 1 || value === true;
+}
+function dateInput(value) {
+    if (!value)
+        return "";
+    var d = new Date(value);
+    return Number.isFinite(d.getTime()) ? d.toISOString().slice(0, 10) : "";
+}
+function buildInputs(row, categories) {
+    var category = guid(row._fmg_category_value);
+    var cat = categories.find(function (c) { return c.fmg_categoryid.toLowerCase() === category; });
+    return {
+        date: dateInput(row.fmg_transactiondate),
+        amount: row.fmg_amount == null ? "" : String(row.fmg_amount),
+        flow: row.fmg_flowclass == null ? "" : String(row.fmg_flowclass),
+        scope: row.fmg_scope == null ? "" : String(row.fmg_scope),
+        group: guid(cat === null || cat === void 0 ? void 0 : cat._fmg_parentcategory_value),
+        category: category,
+        branch: guid(row._fmg_branch_value),
+        account: guid(row._fmg_cashaccount_value),
+        description: row.fmg_description || "",
+        reference: row.fmg_documentreference || "",
+        voidReason: row.fmg_voidreason || "",
+    };
+}
+function statusText(status) {
+    return status === 797280001 ? "Confirmado" : status === 797280002 ? "Anulado" : "Borrador";
+}
+// Only business fields editable in a Draft enter this comparison.
+// It is a best-effort stale-editor check, NOT transactional optimistic locking.
+function draftFingerprint(row) {
+    return JSON.stringify([
+        row.fmg_status,
+        dateInput(row.fmg_transactiondate),
+        row.fmg_amount == null ? "" : String(Number(row.fmg_amount)),
+        row.fmg_flowclass == null ? "" : String(row.fmg_flowclass),
+        row.fmg_scope == null ? "" : String(row.fmg_scope),
+        guid(row._fmg_category_value),
+        guid(row._fmg_branch_value),
+        guid(row._fmg_cashaccount_value),
+        row.fmg_description || "",
+        row.fmg_documentreference || "",
+    ]);
+}
+function editorFingerprint(values) {
+    return JSON.stringify([
+        values.date,
+        values.amount === "" ? "" : String(Number(values.amount)),
+        values.flow,
+        values.scope,
+        values.category,
+        values.branch,
+        values.account,
+        values.description,
+        values.reference,
+    ]);
+}
+var draftReadColumns = [
+    "fmg_status",
+    "fmg_transactiondate",
+    "fmg_amount",
+    "fmg_flowclass",
+    "fmg_scope",
+    "_fmg_category_value",
+    "_fmg_branch_value",
+    "_fmg_cashaccount_value",
+    "fmg_description",
+    "fmg_documentreference",
+];
+var ExpenseDetail = function (props) {
+    var _a, _b, _c;
+    var css = useStyles();
+    var dataApi = props.dataApi;
+    var pageProps = props;
+    var recordId = guid(((_a = pageProps.pageInput) === null || _a === void 0 ? void 0 : _a.recordId) ||
+        pageProps.recordId ||
+        (typeof pageInput !== "undefined" ? pageInput === null || pageInput === void 0 ? void 0 : pageInput.recordId : "") ||
+        ((_b = window.pageInput) === null || _b === void 0 ? void 0 : _b.recordId));
+    var _d = useState({
+        loading: !!recordId,
+        record: null,
+        categories: [],
+        accounts: [],
+        branches: [],
+        pen: "",
+        error: "",
+    }), data = _d[0], setData = _d[1];
+    var _e = useState(initial), inputs = _e[0], setInputs = _e[1];
+    var _f = useState(0), version = _f[0], setVersion = _f[1];
+    var _g = useState(false), pendingPost = _g[0], setPendingPost = _g[1];
+    var _h = useState(false), pendingVoid = _h[0], setPendingVoid = _h[1];
+    var _j = useState(false), pendingRefresh = _j[0], setPendingRefresh = _j[1];
+    var _k = useState(false), busy = _k[0], setBusy = _k[1];
+    // Synchronous per-page guard: rapid clicks cannot issue duplicate financial transitions.
+    var transitionInProgress = useRef(false);
+    var _l = useState(""), feedback = _l[0], setFeedback = _l[1];
+    var ready = !!dataApi;
+    useEffect(function () {
+        if (!recordId || !ready)
+            return;
+        var mounted = true;
+        setData(function (d) { return (__assign(__assign({}, d), { loading: true, error: "" })); });
+        Promise.all([
+            dataApi.retrieveRow("fmg_financialtransaction", {
+                id: recordId,
+                select: [
+                    "fmg_financialtransactionid",
+                    "fmg_name",
+                    "fmg_status",
+                    "fmg_transactiondate",
+                    "fmg_amount",
+                    "fmg_flowclass",
+                    "fmg_scope",
+                    "_fmg_category_value",
+                    "_fmg_branch_value",
+                    "_fmg_cashaccount_value",
+                    "fmg_description",
+                    "fmg_documentreference",
+                    "fmg_voidreason",
+                ],
+            }),
+            dataApi.queryTable("fmg_category", {
+                select: [
+                    "fmg_categoryid",
+                    "fmg_name",
+                    "fmg_code",
+                    "fmg_isactive",
+                    "fmg_isgroup",
+                    "_fmg_parentcategory_value",
+                ],
+                pageSize: 100,
+            }),
+            dataApi.queryTable("fmg_cashaccount", {
+                select: ["fmg_cashaccountid", "fmg_name", "fmg_isactive", "_fmg_branch_value"],
+                pageSize: 100,
+            }),
+            dataApi.queryTable("fmg_branch", {
+                select: ["fmg_branchid", "fmg_name", "fmg_isactive"],
+                pageSize: 100,
+            }),
+            dataApi.queryTable("transactioncurrency", {
+                select: ["transactioncurrencyid", "isocurrencycode"],
+                filter: "isocurrencycode eq 'PEN'",
+                pageSize: 5,
+            }),
+        ])
+            .then(function (_a) {
+            var row = _a[0], cats = _a[1], accounts = _a[2], branches = _a[3], currencies = _a[4];
+            if (!mounted)
+                return;
+            var categories = cats.rows;
+            var pen = currencies.rows.length === 1
+                ? currencies.rows[0].transactioncurrencyid
+                : "";
+            setData({
+                loading: false,
+                record: row,
+                categories: categories,
+                accounts: accounts.rows,
+                branches: branches.rows,
+                pen: pen,
+                error: "",
+            });
+            setInputs(buildInputs(row, categories));
+        })
+            .catch(function (err) {
+            if (mounted)
+                setData(function (d) { return (__assign(__assign({}, d), { loading: false, error: err instanceof Error ? err.message : "No se pudo cargar el movimiento." })); });
+        });
+        return function () {
+            mounted = false;
+        };
+    }, [recordId, ready, version]);
+    var groups = useMemo(function () { return data.categories.filter(function (c) { return active(c.fmg_isactive) && active(c.fmg_isgroup); }); }, [data.categories]);
+    var leaves = useMemo(function () {
+        return data.categories.filter(function (c) {
+            return active(c.fmg_isactive) &&
+                !active(c.fmg_isgroup) &&
+                c.fmg_code !== "999" &&
+                guid(c._fmg_parentcategory_value) === inputs.group;
+        });
+    }, [data.categories, inputs.group]);
+    var accounts = useMemo(function () {
+        return data.accounts.filter(function (c) {
+            if (!active(c.fmg_isactive))
+                return false;
+            var assigned = guid(c._fmg_branch_value);
+            if (inputs.scope === "797280001")
+                return !assigned;
+            if (inputs.scope === "797280000")
+                return !assigned || (!!inputs.branch && assigned === inputs.branch);
+            // Never offer a location-specific account before the spending scope is selected.
+            return !assigned;
+        });
+    }, [data.accounts, inputs.scope, inputs.branch]);
+    function change(field, value) {
+        setInputs(function (current) {
+            var _a;
+            return (__assign(__assign({}, current), (_a = {}, _a[field] = value, _a)));
+        });
+        setFeedback("");
+        if (field !== "voidReason") {
+            setPendingPost(false);
+            setPendingRefresh(false);
+        }
+    }
+    function reload() {
+        setVersion(function (v) { return v + 1; });
+        setPendingPost(false);
+        setPendingVoid(false);
+        setPendingRefresh(false);
+        setFeedback("");
+    }
+    var draft = ((_c = data.record) === null || _c === void 0 ? void 0 : _c.fmg_status) === 797280000;
+    var dirty = !!(draft &&
+        data.record &&
+        editorFingerprint(inputs) !== editorFingerprint(buildInputs(data.record, data.categories)));
+    function requestRefresh() {
+        if (dirty)
+            setPendingRefresh(true);
+        else
+            reload();
+    }
+    function validOptionalSelections() {
+        if (inputs.date) {
+            var date = new Date(inputs.date + "T12:00:00.000Z");
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(inputs.date) ||
+                !Number.isFinite(date.getTime()) ||
+                date.toISOString().slice(0, 10) !== inputs.date)
+                return "Indica una fecha válida.";
+        }
+        if (inputs.flow && !["797280000", "797280001", "797280002", "797280003"].includes(inputs.flow))
+            return "La clasificación no es válida.";
+        if (inputs.scope && !["797280000", "797280001"].includes(inputs.scope))
+            return "El ámbito no es válido.";
+        if (inputs.branch) {
+            var branch = data.branches.find(function (b) { return guid(b.fmg_branchid) === inputs.branch; });
+            if (inputs.scope !== "797280000" || !branch || !active(branch.fmg_isactive))
+                return "Selecciona una sede activa compatible con el ámbito.";
+        }
+        if (inputs.category) {
+            var category = data.categories.find(function (c) { return guid(c.fmg_categoryid) === inputs.category; });
+            if (!category ||
+                !active(category.fmg_isactive) ||
+                active(category.fmg_isgroup) ||
+                category.fmg_code === "999" ||
+                guid(category._fmg_parentcategory_value) !== inputs.group)
+                return "Selecciona una categoría de detalle activa del grupo indicado.";
+        }
+        if (inputs.account) {
+            var account = data.accounts.find(function (a) { return guid(a.fmg_cashaccountid) === inputs.account; });
+            var assigned = guid(account === null || account === void 0 ? void 0 : account._fmg_branch_value);
+            if (!account ||
+                !active(account.fmg_isactive) ||
+                !(inputs.scope === "797280001"
+                    ? !assigned
+                    : inputs.scope === "797280000" &&
+                        (!assigned || (!!inputs.branch && assigned === inputs.branch))))
+                return "La cuenta seleccionada no corresponde al ámbito o a la sede.";
+        }
+        return "";
+    }
+    function saveDraft() {
+        return __awaiter(this, void 0, void 0, function () {
+            var invalidSelection, payload, latest, saved_1, mismatches, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!recordId || !draft || busy)
+                            return [2 /*return*/, false];
+                        if (inputs.amount.trim() &&
+                            (!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(inputs.amount.trim()) ||
+                                !Number.isFinite(Number(inputs.amount)) ||
+                                Number(inputs.amount) <= 0)) {
+                            setFeedback("Indica un importe positivo con máximo dos decimales, usando punto decimal.");
+                            return [2 /*return*/, false];
+                        }
+                        invalidSelection = validOptionalSelections();
+                        if (invalidSelection) {
+                            setFeedback(invalidSelection);
+                            return [2 /*return*/, false];
+                        }
+                        payload = {
+                            fmg_description: inputs.description,
+                            fmg_documentreference: inputs.reference,
+                        };
+                        // Omitted fields retain their previous Dataverse values; cleared draft inputs must be explicit.
+                        payload.fmg_transactiondate = inputs.date ? new Date(inputs.date + "T12:00:00.000Z") : null;
+                        payload.fmg_amount = inputs.amount ? Number(inputs.amount) : null;
+                        payload.fmg_flowclass = inputs.flow ? Number(inputs.flow) : null;
+                        payload.fmg_scope = inputs.scope ? Number(inputs.scope) : null;
+                        // Generated-page dataApi writes lookups through typed foreign-key columns, not @odata.bind.
+                        payload._fmg_category_value = inputs.category ? "/fmg_category(" + inputs.category + ")" : null;
+                        payload._fmg_cashaccount_value = inputs.account
+                            ? "/fmg_cashaccount(" + inputs.account + ")"
+                            : null;
+                        payload._fmg_branch_value =
+                            inputs.scope === "797280001"
+                                ? null
+                                : inputs.branch
+                                    ? "/fmg_branch(" + inputs.branch + ")"
+                                    : null;
+                        if (data.pen)
+                            payload._transactioncurrencyid_value = "/transactioncurrency(" + data.pen + ")";
+                        setBusy(true);
+                        setFeedback("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 5, 6, 7]);
+                        return [4 /*yield*/, dataApi.retrieveRow("fmg_financialtransaction", {
+                                id: recordId,
+                                select: __spreadArray([], draftReadColumns, true),
+                            })];
+                    case 2:
+                        latest = _a.sent();
+                        if (!data.record ||
+                            latest.fmg_status !== 797280000 ||
+                            draftFingerprint(latest) !== draftFingerprint(data.record))
+                            throw new Error("Este borrador cambió en Dataverse desde que se abrió. Conserva tus datos, " +
+                                "revisa los cambios y actualiza antes de guardar. No se ha enviado ninguna modificación.");
+                        return [4 /*yield*/, dataApi.updateRow("fmg_financialtransaction", recordId, payload)];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, dataApi.retrieveRow("fmg_financialtransaction", {
+                                id: recordId,
+                                select: __spreadArray(__spreadArray([
+                                    "fmg_financialtransactionid",
+                                    "fmg_name"
+                                ], draftReadColumns, true), [
+                                    "_transactioncurrencyid_value",
+                                    "fmg_voidreason",
+                                ], false),
+                            })];
+                    case 4:
+                        saved_1 = _a.sent();
+                        mismatches = [];
+                        if (guid(saved_1._fmg_category_value) !== inputs.category)
+                            mismatches.push("categoría");
+                        if (guid(saved_1._fmg_cashaccount_value) !== inputs.account)
+                            mismatches.push("cuenta de origen");
+                        if (guid(saved_1._fmg_branch_value) !== (inputs.scope === "797280001" ? "" : inputs.branch))
+                            mismatches.push("sede");
+                        if (data.pen && guid(saved_1._transactioncurrencyid_value) !== data.pen)
+                            mismatches.push("moneda");
+                        if (mismatches.length) {
+                            setFeedback("No se conservaron las relaciones: " +
+                                mismatches.join(", ") +
+                                ". El borrador debe revisarse antes de confirmar.");
+                            return [2 /*return*/, false];
+                        }
+                        if (saved_1.fmg_status !== 797280000 ||
+                            editorFingerprint(buildInputs(saved_1, data.categories)) !== editorFingerprint(inputs)) {
+                            setFeedback("Dataverse devolvió valores distintos de los enviados. " +
+                                "No se confirmará el pago: revisa la versión actual y los campos antes de continuar.");
+                            return [2 /*return*/, false];
+                        }
+                        // Refresh the baseline after each save so later edits can detect external changes.
+                        setData(function (previous) { return (__assign(__assign({}, previous), { record: saved_1 })); });
+                        setInputs(buildInputs(saved_1, data.categories));
+                        setFeedback("Borrador guardado correctamente.");
+                        return [2 /*return*/, true];
+                    case 5:
+                        err_1 = _a.sent();
+                        setFeedback(err_1 instanceof Error ? err_1.message : "No se pudo guardar el borrador.");
+                        return [2 /*return*/, false];
+                    case 6:
+                        setBusy(false);
+                        return [7 /*endfinally*/];
+                    case 7: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function post() {
+        return __awaiter(this, void 0, void 0, function () {
+            var selectedCategory, selectedAccount, assignedBranch, categoryValid, accountValid, parsedDate, dateValid, current, err_2, confirmed, err_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!recordId || busy || !draft)
+                            return [2 /*return*/];
+                        if (!inputs.date ||
+                            !inputs.amount ||
+                            !inputs.flow ||
+                            !inputs.scope ||
+                            !inputs.category ||
+                            !inputs.account ||
+                            (inputs.scope === "797280000" && !inputs.branch) ||
+                            !data.pen) {
+                            setFeedback("Completa fecha, importe, clasificación, ámbito, categoría, cuenta y sede si corresponde; la moneda PEN debe estar disponible.");
+                            return [2 /*return*/];
+                        }
+                        selectedCategory = data.categories.find(function (c) { return c.fmg_categoryid.toLowerCase() === inputs.category; });
+                        selectedAccount = data.accounts.find(function (a) { return a.fmg_cashaccountid.toLowerCase() === inputs.account; });
+                        assignedBranch = guid(selectedAccount === null || selectedAccount === void 0 ? void 0 : selectedAccount._fmg_branch_value);
+                        categoryValid = !!selectedCategory &&
+                            active(selectedCategory.fmg_isactive) &&
+                            !active(selectedCategory.fmg_isgroup) &&
+                            selectedCategory.fmg_code !== "999";
+                        accountValid = !!selectedAccount &&
+                            active(selectedAccount.fmg_isactive) &&
+                            (inputs.scope === "797280001"
+                                ? !assignedBranch
+                                : inputs.scope === "797280000" &&
+                                    !!inputs.branch &&
+                                    (!assignedBranch || assignedBranch === inputs.branch));
+                        parsedDate = new Date(inputs.date + "T12:00:00.000Z");
+                        dateValid = /^\d{4}-\d{2}-\d{2}$/.test(inputs.date) &&
+                            Number.isFinite(parsedDate.getTime()) &&
+                            parsedDate.toISOString().slice(0, 10) === inputs.date;
+                        if (!categoryValid || !accountValid || !dateValid) {
+                            setFeedback("Revisa la categoría de detalle activa, fecha, ámbito, sede y cuenta de origen antes de confirmar.");
+                            setPendingPost(false);
+                            return [2 /*return*/];
+                        }
+                        // Require the operator to save and independently verify a Draft before Post.
+                        // Auto-saving during a state transition hides stale edits and creates a race.
+                        if (!data.record ||
+                            editorFingerprint(inputs) !== editorFingerprint(buildInputs(data.record, data.categories))) {
+                            setFeedback("Guarda el borrador y comprueba los valores persistidos antes de contabilizar.");
+                            setPendingPost(false);
+                            return [2 /*return*/];
+                        }
+                        if (transitionInProgress.current)
+                            return [2 /*return*/];
+                        transitionInProgress.current = true;
+                        setBusy(true);
+                        setFeedback("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, dataApi.retrieveRow("fmg_financialtransaction", {
+                                id: recordId,
+                                select: __spreadArray([], draftReadColumns, true),
+                            })];
+                    case 2:
+                        current = _a.sent();
+                        if (current.fmg_status !== 797280000 ||
+                            draftFingerprint(current) !== draftFingerprint(data.record))
+                            throw new Error("El borrador cambió en Dataverse. Actualiza la pantalla antes de contabilizar.");
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_2 = _a.sent();
+                        setFeedback(err_2 instanceof Error ? err_2.message : "No se pudo comprobar el estado actual.");
+                        setBusy(false);
+                        setPendingPost(false);
+                        transitionInProgress.current = false;
+                        return [2 /*return*/];
+                    case 4:
+                        _a.trys.push([4, 7, 8, 9]);
+                        // Posting remains server-authorized (FTV007); no client-role bypass.
+                        return [4 /*yield*/, dataApi.updateRow("fmg_financialtransaction", recordId, { fmg_status: 797280001 })];
+                    case 5:
+                        // Posting remains server-authorized (FTV007); no client-role bypass.
+                        _a.sent();
+                        return [4 /*yield*/, dataApi.retrieveRow("fmg_financialtransaction", {
+                                id: recordId,
+                                select: ["fmg_status"],
+                            })];
+                    case 6:
+                        confirmed = _a.sent();
+                        if (confirmed.fmg_status !== 797280001) {
+                            throw new Error("Dataverse no confirmó el estado contabilizado. Actualiza antes de reintentar.");
+                        }
+                        reload();
+                        return [3 /*break*/, 9];
+                    case 7:
+                        err_3 = _a.sent();
+                        setFeedback(err_3 instanceof Error
+                            ? err_3.message
+                            : "No se pudo confirmar el gasto. Comprueba permisos y datos.");
+                        return [3 /*break*/, 9];
+                    case 8:
+                        setBusy(false);
+                        setPendingPost(false);
+                        transitionInProgress.current = false;
+                        return [7 /*endfinally*/];
+                    case 9: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function voidPayment() {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var current, voided, err_4;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (!recordId || busy || transitionInProgress.current || ((_a = data.record) === null || _a === void 0 ? void 0 : _a.fmg_status) !== 797280001)
+                            return [2 /*return*/];
+                        if (!inputs.voidReason.trim()) {
+                            setFeedback("Es obligatorio indicar el motivo de anulación.");
+                            return [2 /*return*/];
+                        }
+                        transitionInProgress.current = true;
+                        setBusy(true);
+                        setFeedback("");
+                        _c.label = 1;
+                    case 1:
+                        _c.trys.push([1, 5, 6, 7]);
+                        return [4 /*yield*/, dataApi.retrieveRow("fmg_financialtransaction", {
+                                id: recordId,
+                                select: ["fmg_status"],
+                            })];
+                    case 2:
+                        current = _c.sent();
+                        if (current.fmg_status !== 797280001)
+                            throw new Error("El movimiento ya no está contabilizado. Actualiza la pantalla antes de continuar.");
+                        return [4 /*yield*/, dataApi.updateRow("fmg_financialtransaction", recordId, {
+                                fmg_status: 797280002,
+                                fmg_voidreason: inputs.voidReason.trim(),
+                            })];
+                    case 3:
+                        _c.sent();
+                        return [4 /*yield*/, dataApi.retrieveRow("fmg_financialtransaction", {
+                                id: recordId,
+                                select: ["fmg_status", "fmg_voidreason"],
+                            })];
+                    case 4:
+                        voided = _c.sent();
+                        if (voided.fmg_status !== 797280002 ||
+                            ((_b = voided.fmg_voidreason) === null || _b === void 0 ? void 0 : _b.trim()) !== inputs.voidReason.trim()) {
+                            throw new Error("No se confirmó la anulación o el motivo en Dataverse. Actualiza antes de reintentar.");
+                        }
+                        reload();
+                        return [3 /*break*/, 7];
+                    case 5:
+                        err_4 = _c.sent();
+                        setFeedback(err_4 instanceof Error ? err_4.message : "No se pudo anular. Comprueba permisos y motivo.");
+                        return [3 /*break*/, 7];
+                    case 6:
+                        setBusy(false);
+                        setPendingVoid(false);
+                        transitionInProgress.current = false;
+                        return [7 /*endfinally*/];
+                    case 7: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    if (!recordId)
+        return (React.createElement("main", { className: css.root },
+            React.createElement(Text, { as: "h1", className: css.title }, "Detalle de gasto"),
+            React.createElement(Card, null, "Selecciona un movimiento en Gastos para ver su detalle.")));
+    return (React.createElement("main", { className: css.root, "aria-label": "Editar o consultar pago" },
+        React.createElement("header", { className: css.header },
+            React.createElement("div", null,
+                React.createElement(Text, { as: "h1", className: css.title }, "Detalle de gasto")),
+            React.createElement(Button, { icon: React.createElement(ArrowClockwiseRegular, null), onClick: requestRefresh, disabled: busy || data.loading }, "Actualizar")),
+        pendingRefresh && (React.createElement(Card, { className: css.panel, "aria-label": "Confirmar actualizaci\u00F3n de borrador" },
+            React.createElement(Text, { weight: "semibold" }, "Hay cambios sin guardar"),
+            React.createElement(Text, null, "Actualizar descartar\u00E1 las modificaciones realizadas en este formulario. No se ha modificado el registro en Dataverse."),
+            React.createElement("div", { className: css.toolbar },
+                React.createElement(Button, { appearance: "primary", disabled: busy, onClick: reload }, "Descartar cambios y actualizar"),
+                React.createElement(Button, { disabled: busy, onClick: function () { return setPendingRefresh(false); } }, "Seguir editando")))),
+        dirty && !pendingRefresh && (React.createElement(Text, { role: "status" }, "Tienes cambios sin guardar. Gu\u00E1rdalos antes de abandonar esta p\u00E1gina.")),
+        data.loading && React.createElement(Spinner, { label: "Cargando movimiento y cat\u00E1logos..." }),
+        data.error && (React.createElement(Text, { role: "alert", className: css.error }, data.error)),
+        !data.loading && !data.error && data.record && (React.createElement(React.Fragment, null,
+            React.createElement("div", { className: css.header },
+                React.createElement(Text, { weight: "semibold" }, data.record.fmg_name || "Movimiento"),
+                React.createElement(Badge, { appearance: "outline" }, statusText(data.record.fmg_status))),
+            React.createElement(Card, { className: css.panel },
+                React.createElement("div", { className: css.form },
+                    React.createElement(Field, { label: "Fecha del pago" },
+                        React.createElement(Input, { type: "date", disabled: !draft || busy, value: inputs.date, onChange: function (_, v) { return change("date", v.value); } })),
+                    React.createElement(Field, { label: "Importe (PEN)" },
+                        React.createElement(Input, { type: "number", min: "0.01", step: "0.01", disabled: !draft || busy, value: inputs.amount, onChange: function (_, v) { return change("amount", v.value); } })),
+                    React.createElement(Field, { label: "Clasificaci\u00F3n del pago" },
+                        React.createElement("select", { "aria-label": "Clasificaci\u00F3n del pago", className: css.select, disabled: !draft || busy, value: inputs.flow, onChange: function (e) { return change("flow", e.target.value); } },
+                            React.createElement("option", { value: "" }, "Seleccionar"),
+                            React.createElement("option", { value: "797280000" }, "Pago operativo"),
+                            React.createElement("option", { value: "797280001" }, "Pago de capital"),
+                            React.createElement("option", { value: "797280002" }, "Pago tributario"),
+                            React.createElement("option", { value: "797280003" }, "Otro pago"))),
+                    React.createElement(Field, { label: "\u00C1mbito" },
+                        React.createElement("select", { "aria-label": "\u00C1mbito", className: css.select, disabled: !draft || busy, value: inputs.scope, onChange: function (e) {
+                                change("scope", e.target.value);
+                                change("branch", "");
+                                change("account", "");
+                            } },
+                            React.createElement("option", { value: "" }, "Seleccionar"),
+                            React.createElement("option", { value: "797280000" }, "Por sede"),
+                            React.createElement("option", { value: "797280001" }, "Compartido"))),
+                    inputs.scope === "797280000" && (React.createElement(Field, { label: "Sede" },
+                        React.createElement("select", { "aria-label": "Sede", className: css.select, disabled: !draft || busy, value: inputs.branch, onChange: function (e) {
+                                change("branch", e.target.value);
+                                change("account", "");
+                            } },
+                            React.createElement("option", { value: "" }, "Seleccionar sede"),
+                            data.branches
+                                .filter(function (b) { return active(b.fmg_isactive); })
+                                .map(function (b) { return (React.createElement("option", { key: b.fmg_branchid, value: b.fmg_branchid }, b.fmg_name)); })))),
+                    React.createElement(Field, { label: "Grupo de categor\u00EDa" },
+                        React.createElement("select", { "aria-label": "Grupo de categor\u00EDa", className: css.select, disabled: !draft || busy, value: inputs.group, onChange: function (e) {
+                                change("group", e.target.value);
+                                change("category", "");
+                            } },
+                            React.createElement("option", { value: "" }, "Seleccionar grupo"),
+                            groups.map(function (g) { return (React.createElement("option", { key: g.fmg_categoryid, value: g.fmg_categoryid },
+                                g.fmg_code,
+                                " \u00B7 ",
+                                g.fmg_name)); }))),
+                    React.createElement(Field, { label: "Categor\u00EDa de detalle" },
+                        React.createElement("select", { "aria-label": "Categor\u00EDa de detalle", className: css.select, disabled: !draft || busy, value: inputs.category, onChange: function (e) { return change("category", e.target.value); } },
+                            React.createElement("option", { value: "" }, "Seleccionar categor\u00EDa"),
+                            leaves.map(function (c) { return (React.createElement("option", { key: c.fmg_categoryid, value: c.fmg_categoryid },
+                                c.fmg_code,
+                                " \u00B7 ",
+                                c.fmg_name)); }))),
+                    React.createElement(Field, { label: "Cuenta de origen" },
+                        React.createElement("select", { "aria-label": "Cuenta de origen", className: css.select, disabled: !draft || busy, value: inputs.account, onChange: function (e) { return change("account", e.target.value); } },
+                            React.createElement("option", { value: "" }, "Seleccionar cuenta"),
+                            accounts.map(function (a) { return (React.createElement("option", { key: a.fmg_cashaccountid, value: a.fmg_cashaccountid }, a.fmg_name)); }))),
+                    React.createElement(Field, { label: "Referencia de documento" },
+                        React.createElement(Input, { disabled: !draft || busy, maxLength: 100, value: inputs.reference, onChange: function (_, v) { return change("reference", v.value); } })),
+                    React.createElement(Field, { label: "Descripci\u00F3n", className: css.wide },
+                        React.createElement(Textarea, { disabled: !draft || busy, value: inputs.description, onChange: function (_, v) { return change("description", v.value); }, rows: 3 })))),
+            React.createElement("div", { className: css.toolbar },
+                draft && (React.createElement(React.Fragment, null,
+                    React.createElement(Button, { appearance: "secondary", icon: React.createElement(SaveRegular, null), onClick: function () {
+                            void saveDraft();
+                        }, disabled: busy }, "Guardar borrador"),
+                    !pendingPost && (React.createElement(Button, { appearance: "primary", icon: React.createElement(CheckmarkRegular, null), onClick: function () { return setPendingPost(true); }, disabled: busy }, "Confirmar pago")))),
+                data.record.fmg_status === 797280001 && !pendingVoid && (React.createElement(Button, { icon: React.createElement(ShieldLockRegular, null), onClick: function () { return setPendingVoid(true); }, disabled: busy }, "Solicitar anulaci\u00F3n"))),
+            pendingPost && (React.createElement(Card, { className: css.panel },
+                React.createElement(Text, { weight: "semibold" }, "\u00BFConfirmar este pago?"),
+                React.createElement(Text, { size: 200 }, "Al confirmar, los datos financieros quedar\u00E1n protegidos. Solo usuarios autorizados por Dataverse pueden hacerlo."),
+                React.createElement("div", { className: css.toolbar },
+                    React.createElement(Button, { appearance: "primary", disabled: busy, onClick: function () {
+                            void post();
+                        } }, "S\u00ED, confirmar"),
+                    React.createElement(Button, { disabled: busy, onClick: function () { return setPendingPost(false); } }, "Cancelar")))),
+            pendingVoid && (React.createElement(Card, { className: css.panel },
+                React.createElement(Field, { label: "Motivo obligatorio de anulaci\u00F3n" },
+                    React.createElement(Textarea, { disabled: busy, value: inputs.voidReason, onChange: function (_, v) { return change("voidReason", v.value); }, rows: 3 })),
+                React.createElement("div", { className: css.toolbar },
+                    React.createElement(Button, { appearance: "primary", disabled: busy || !inputs.voidReason.trim(), onClick: function () {
+                            void voidPayment();
+                        } }, "Anular movimiento"),
+                    React.createElement(Button, { disabled: busy, onClick: function () { return setPendingVoid(false); } }, "Cancelar")))),
+            feedback && (React.createElement(Text, { role: "status", className: feedback.toLowerCase().includes("correctamente") ? "" : css.error }, feedback))))));
+};
+export default ExpenseDetail;
+

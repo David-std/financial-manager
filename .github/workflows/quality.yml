@@ -24,6 +24,8 @@ jobs:
         run: python scripts/check_repository.py
       - name: F6 read-only solution source drift preflight (not a deployment)
         run: python scripts/f6_alm_preflight.py
+      - name: F6 managed Microsoft and UX project dependency inventory
+        run: python scripts/f6_dependencies.py
       - name: Block release tags from stale solution source
         if: startsWith(github.ref, 'refs/tags/')
         run: python scripts/f6_alm_preflight.py --release

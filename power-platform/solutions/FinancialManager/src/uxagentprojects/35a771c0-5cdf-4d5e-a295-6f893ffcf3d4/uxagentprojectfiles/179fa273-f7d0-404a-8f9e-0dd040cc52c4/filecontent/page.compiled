@@ -1,0 +1,332 @@
+// --- BEGIN GENERATED RUNTIME TYPES ---
+
+var fmg_category_statecode;
+(function (fmg_category_statecode) {
+    fmg_category_statecode[fmg_category_statecode["Activo"] = 0] = "Activo";
+    fmg_category_statecode[fmg_category_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_category_statecode || (fmg_category_statecode = {}));
+var fmg_category_statuscode;
+(function (fmg_category_statuscode) {
+    fmg_category_statuscode[fmg_category_statuscode["Activo"] = 1] = "Activo";
+    fmg_category_statuscode[fmg_category_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_category_statuscode || (fmg_category_statuscode = {}));
+var fmg_category_fmg_isactive;
+(function (fmg_category_fmg_isactive) {
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["No"] = 0] = "No";
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isactive || (fmg_category_fmg_isactive = {}));
+var fmg_category_fmg_isgroup;
+(function (fmg_category_fmg_isgroup) {
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["No"] = 0] = "No";
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isgroup || (fmg_category_fmg_isgroup = {}));
+var fmg_branch_statecode;
+(function (fmg_branch_statecode) {
+    fmg_branch_statecode[fmg_branch_statecode["Activo"] = 0] = "Activo";
+    fmg_branch_statecode[fmg_branch_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_branch_statecode || (fmg_branch_statecode = {}));
+var fmg_branch_statuscode;
+(function (fmg_branch_statuscode) {
+    fmg_branch_statuscode[fmg_branch_statuscode["Activo"] = 1] = "Activo";
+    fmg_branch_statuscode[fmg_branch_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_branch_statuscode || (fmg_branch_statuscode = {}));
+var fmg_branch_fmg_isactive;
+(function (fmg_branch_fmg_isactive) {
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["No"] = 0] = "No";
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_branch_fmg_isactive || (fmg_branch_fmg_isactive = {}));
+var fmg_cashaccount_statecode;
+(function (fmg_cashaccount_statecode) {
+    fmg_cashaccount_statecode[fmg_cashaccount_statecode["Activo"] = 0] = "Activo";
+    fmg_cashaccount_statecode[fmg_cashaccount_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_cashaccount_statecode || (fmg_cashaccount_statecode = {}));
+var fmg_cashaccount_statuscode;
+(function (fmg_cashaccount_statuscode) {
+    fmg_cashaccount_statuscode[fmg_cashaccount_statuscode["Activo"] = 1] = "Activo";
+    fmg_cashaccount_statuscode[fmg_cashaccount_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_cashaccount_statuscode || (fmg_cashaccount_statuscode = {}));
+var fmg_cashaccount_fmg_isactive;
+(function (fmg_cashaccount_fmg_isactive) {
+    fmg_cashaccount_fmg_isactive[fmg_cashaccount_fmg_isactive["No"] = 0] = "No";
+    fmg_cashaccount_fmg_isactive[fmg_cashaccount_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_cashaccount_fmg_isactive || (fmg_cashaccount_fmg_isactive = {}));
+var fmg_cashaccount_fmg_type;
+(function (fmg_cashaccount_fmg_type) {
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Cash"] = 797280000] = "Cash";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Bank"] = 797280001] = "Bank";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Wallet"] = 797280002] = "Wallet";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Other"] = 797280003] = "Other";
+})(fmg_cashaccount_fmg_type || (fmg_cashaccount_fmg_type = {}));
+
+// --- END GENERATED RUNTIME TYPES ---
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+import React, { useEffect, useMemo, useState } from "react";
+import { Badge, Button, Card, CardHeader, Input, Spinner, Text, makeStyles, tokens, } from "@fluentui/react-components";
+import { ArrowClockwiseRegular, BuildingRegular, FolderRegular, WalletRegular, OpenRegular, } from "@fluentui/react-icons";
+var cache = "__financialManagerCatalog2026";
+var useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        gap: tokens.spacingVerticalL,
+        padding: tokens.spacingHorizontalXXL,
+        backgroundColor: tokens.colorNeutralBackground2,
+        color: tokens.colorNeutralForeground1,
+        // Generative pages run inside a fixed-height model-driven app surface.
+        // Give that surface its own vertical scroll, including on mobile/touch.
+        height: "100%",
+        minHeight: 0,
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch",
+        boxSizing: "border-box",
+    },
+    header: {
+        display: "flex",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: tokens.spacingHorizontalM,
+    },
+    heading: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
+    info: { color: tokens.colorNeutralForeground3, fontSize: tokens.fontSizeBase300 },
+    cards: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))",
+        gap: tokens.spacingHorizontalM,
+    },
+    big: { fontSize: tokens.fontSizeHero600, fontWeight: tokens.fontWeightSemibold },
+    bar: { display: "flex", alignItems: "center", gap: tokens.spacingHorizontalS, flexWrap: "wrap" },
+    tableBox: {
+        overflowX: "auto",
+        borderRadius: tokens.borderRadiusMedium,
+        backgroundColor: tokens.colorNeutralBackground1,
+    },
+    table: { width: "100%", minWidth: "620px", borderCollapse: "collapse" },
+    cell: {
+        padding: tokens.spacingHorizontalM,
+        borderBottom: "1px solid " + tokens.colorNeutralStroke2,
+        textAlign: "left",
+    },
+    th: { fontWeight: tokens.fontWeightSemibold, backgroundColor: tokens.colorNeutralBackground3 },
+    error: { color: tokens.colorPaletteRedForeground1 },
+    empty: { padding: tokens.spacingHorizontalXXL, color: tokens.colorNeutralForeground3 },
+});
+function openRecord(table, id) {
+    var _a;
+    var xrm = window.Xrm;
+    if ((_a = xrm === null || xrm === void 0 ? void 0 : xrm.Navigation) === null || _a === void 0 ? void 0 : _a.navigateTo)
+        void xrm.Navigation.navigateTo({ pageType: "entityrecord", entityName: table, entityId: id });
+}
+var MasterDataPage = function (_a) {
+    var dataApi = _a.dataApi;
+    var css = useStyles();
+    var _b = useState(function () {
+        var _a;
+        return (_a = window[cache]) !== null && _a !== void 0 ? _a : {
+            loading: true,
+            categories: [],
+            branches: [],
+            accounts: [],
+            error: "",
+            limited: false,
+        };
+    }), state = _b[0], setState = _b[1];
+    var _c = useState(0), version = _c[0], setVersion = _c[1];
+    var _d = useState("category"), tab = _d[0], setTab = _d[1];
+    var _e = useState(""), search = _e[0], setSearch = _e[1];
+    var ready = !!dataApi;
+    useEffect(function () {
+        if (!ready)
+            return;
+        var active = true;
+        var global = window;
+        if (version === 0 && global[cache]) {
+            setState(global[cache]);
+            return;
+        }
+        setState(function (s) { return (__assign(__assign({}, s), { loading: true, error: "" })); });
+        var key = cache + "_request";
+        if (!global[key])
+            global[key] = Promise.all([
+                dataApi.queryTable("fmg_category", {
+                    select: [
+                        "fmg_categoryid",
+                        "fmg_name",
+                        "fmg_code",
+                        "fmg_acronym",
+                        "fmg_isgroup",
+                        "fmg_isactive",
+                        "fmg_parentcode",
+                    ],
+                    orderBy: "fmg_code asc",
+                    pageSize: 100,
+                }),
+                dataApi.queryTable("fmg_branch", {
+                    select: ["fmg_branchid", "fmg_name", "fmg_isactive"],
+                    pageSize: 100,
+                }),
+                dataApi.queryTable("fmg_cashaccount", {
+                    select: [
+                        "fmg_cashaccountid",
+                        "fmg_name",
+                        "fmg_type",
+                        "fmg_isactive",
+                        "_fmg_branch_value",
+                    ],
+                    pageSize: 100,
+                }),
+            ])
+                .then(function (_a) {
+                var c = _a[0], b = _a[1], a = _a[2];
+                var res = {
+                    loading: false,
+                    categories: c.rows,
+                    branches: b.rows,
+                    accounts: a.rows,
+                    error: "",
+                    limited: c.hasMoreRows || b.hasMoreRows || a.hasMoreRows,
+                };
+                global[cache] = res;
+                return res;
+            })
+                .catch(function (error) {
+                var res = {
+                    loading: false,
+                    categories: [],
+                    branches: [],
+                    accounts: [],
+                    limited: false,
+                    error: error instanceof Error ? error.message : "No se pudieron cargar los catálogos.",
+                };
+                global[cache] = res;
+                return res;
+            })
+                .finally(function () {
+                global[key] = null;
+            });
+        global[key].then(function (result) {
+            if (active)
+                setState(result);
+        });
+        return function () {
+            active = false;
+        };
+    }, [ready, version]);
+    var show = useMemo(function () {
+        var s = search.toLowerCase().trim();
+        if (tab === "category")
+            return state.categories.filter(function (r) {
+                return !s ||
+                    [r.fmg_name, r.fmg_code, r.fmg_acronym].some(function (x) {
+                        return String(x || "")
+                            .toLowerCase()
+                            .includes(s);
+                    });
+            });
+        if (tab === "branch")
+            return state.branches.filter(function (r) { var _a; return !s || ((_a = r.fmg_name) === null || _a === void 0 ? void 0 : _a.toLowerCase().includes(s)); });
+        return state.accounts.filter(function (r) { var _a; return !s || ((_a = r.fmg_name) === null || _a === void 0 ? void 0 : _a.toLowerCase().includes(s)); });
+    }, [tab, search, state]);
+    function refresh() {
+        window[cache] = null;
+        window[cache + "_request"] = null;
+        setVersion(function (x) { return x + 1; });
+    }
+    return (React.createElement("main", { className: css.root, "aria-label": "Cat\u00E1logos financieros" },
+        React.createElement("header", { className: css.header },
+            React.createElement("div", null,
+                React.createElement(Text, { as: "h1", className: css.heading }, "Datos maestros"),
+                React.createElement("p", { className: css.info }, "Consulta de categor\u00EDas de egreso, sedes y cuentas internas")),
+            React.createElement(Button, { icon: React.createElement(ArrowClockwiseRegular, null), onClick: refresh, disabled: state.loading }, "Actualizar")),
+        React.createElement("div", { className: css.cards },
+            React.createElement(Card, null,
+                React.createElement(CardHeader, { image: React.createElement(FolderRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Categor\u00EDas") }),
+                React.createElement(Text, { className: css.big }, state.categories.length)),
+            React.createElement(Card, null,
+                React.createElement(CardHeader, { image: React.createElement(BuildingRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Sedes") }),
+                React.createElement(Text, { className: css.big }, state.branches.length)),
+            React.createElement(Card, null,
+                React.createElement(CardHeader, { image: React.createElement(WalletRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Cuentas") }),
+                React.createElement(Text, { className: css.big }, state.accounts.length))),
+        React.createElement(Card, null,
+            React.createElement(Text, { weight: "semibold" }, "Consulta protegida"),
+            React.createElement(Text, { size: 200 }, "La modificaci\u00F3n de cat\u00E1logos corresponde a administradores. Las categor\u00EDas inactivas o de grupo no pueden utilizarse al confirmar gastos; la validaci\u00F3n se realiza en el servidor.")),
+        React.createElement("section", null,
+            React.createElement("div", { className: css.bar, style: { marginBottom: "12px" } },
+                React.createElement(Button, { appearance: tab === "category" ? "primary" : "secondary", onClick: function () {
+                        setTab("category");
+                        setSearch("");
+                    } }, "Categor\u00EDas"),
+                React.createElement(Button, { appearance: tab === "branch" ? "primary" : "secondary", onClick: function () {
+                        setTab("branch");
+                        setSearch("");
+                    } }, "Sedes"),
+                React.createElement(Button, { appearance: tab === "account" ? "primary" : "secondary", onClick: function () {
+                        setTab("account");
+                        setSearch("");
+                    } }, "Cuentas de origen"),
+                React.createElement(Input, { "aria-label": "Buscar en cat\u00E1logo", placeholder: "Buscar nombre o c\u00F3digo", value: search, onChange: function (_, v) { return setSearch(v.value); } })),
+            state.loading && React.createElement(Spinner, { label: "Cargando datos maestros..." }),
+            state.error && (React.createElement(Text, { role: "alert", className: css.error }, state.error)),
+            !state.loading && !state.error && show.length === 0 && (React.createElement("div", { className: css.empty }, "No se encontraron elementos para estos filtros.")),
+            !state.loading && !state.error && show.length > 0 && (React.createElement("div", { className: css.tableBox },
+                React.createElement("table", { className: css.table },
+                    React.createElement("thead", null,
+                        React.createElement("tr", null, (tab === "category"
+                            ? ["Código", "Categoría", "Clase", "Estado", "Acción"]
+                            : tab === "branch"
+                                ? ["Sede", "Estado", "Acción"]
+                                : ["Cuenta", "Tipo", "Estado", "Acción"]).map(function (h) { return (React.createElement("th", { className: css.cell + " " + css.th, key: h }, h)); }))),
+                    React.createElement("tbody", null,
+                        tab === "category" &&
+                            state.categories
+                                .filter(function (r) { return show.includes(r); })
+                                .map(function (r) { return (React.createElement("tr", { key: r.fmg_categoryid },
+                                React.createElement("td", { className: css.cell }, r.fmg_code),
+                                React.createElement("td", { className: css.cell }, r.fmg_name),
+                                React.createElement("td", { className: css.cell }, r.fmg_isgroup === 1 ? "Grupo" : "Categoría de detalle"),
+                                React.createElement("td", { className: css.cell },
+                                    React.createElement(Badge, { appearance: "outline" }, r.fmg_isactive === 1 ? "Activa" : "Inactiva")),
+                                React.createElement("td", { className: css.cell },
+                                    React.createElement(Button, { icon: React.createElement(OpenRegular, null), appearance: "subtle", onClick: function () { return openRecord("fmg_category", r.fmg_categoryid); } }, "Abrir")))); }),
+                        tab === "branch" &&
+                            state.branches
+                                .filter(function (r) { return show.includes(r); })
+                                .map(function (r) { return (React.createElement("tr", { key: r.fmg_branchid },
+                                React.createElement("td", { className: css.cell }, r.fmg_name),
+                                React.createElement("td", { className: css.cell },
+                                    React.createElement(Badge, { appearance: "outline" }, r.fmg_isactive === 1 ? "Activa" : "Inactiva")),
+                                React.createElement("td", { className: css.cell },
+                                    React.createElement(Button, { icon: React.createElement(OpenRegular, null), appearance: "subtle", onClick: function () { return openRecord("fmg_branch", r.fmg_branchid); } }, "Abrir")))); }),
+                        tab === "account" &&
+                            state.accounts
+                                .filter(function (r) { return show.includes(r); })
+                                .map(function (r) { return (React.createElement("tr", { key: r.fmg_cashaccountid },
+                                React.createElement("td", { className: css.cell }, r.fmg_name),
+                                React.createElement("td", { className: css.cell }, {
+                                    797280000: "Caja",
+                                    797280001: "Banco",
+                                    797280002: "Billetera",
+                                    797280003: "Otro",
+                                }[r.fmg_type] || "—"),
+                                React.createElement("td", { className: css.cell },
+                                    React.createElement(Badge, { appearance: "outline" }, r.fmg_isactive === 1 ? "Activa" : "Inactiva")),
+                                React.createElement("td", { className: css.cell },
+                                    React.createElement(Button, { icon: React.createElement(OpenRegular, null), appearance: "subtle", onClick: function () { return openRecord("fmg_cashaccount", r.fmg_cashaccountid); } }, "Abrir")))); })))))),
+        state.limited && (React.createElement(Text, { size: 200 }, "La lista puede estar incompleta por paginaci\u00F3n. Use las vistas nativas para consultar el resto."))));
+};
+export default MasterDataPage;
+

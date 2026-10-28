@@ -16,3 +16,4 @@
 *.pbix binary
 *.msapp binary
 *.zip binary
+power-platform/solutions/FinancialManager/src/uxagentprojects/**/filecontent/page.compiled -text -diff

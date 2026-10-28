@@ -35,9 +35,10 @@ class F6ALMPreflightTests(unittest.TestCase):
         self.assertEqual(result.missing_guards, ())
         self.assertEqual(result.missing_shadows, ())
         self.assertEqual(result.missing_packages, ())
-        # The currently exported model-driven app has external dependencies.
+        # The four model-app UX projects are now in source. Two managed
+        # Microsoft prerequisites still need verification in a target environment.
         self.assertFalse(result.release_ready)
-        self.assertIn("uxagentproject", result.missing_dependencies)
+        self.assertEqual(set(result.missing_dependencies), {"61", "SettingDefinition"})
 
     def test_missing_manifest_fails_closed(self):
         with tempfile.TemporaryDirectory() as work:

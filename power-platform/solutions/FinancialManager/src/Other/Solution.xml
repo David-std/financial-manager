@@ -193,22 +193,6 @@
         </Required>
         <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=financial_manager_bee9f134,settingdefinitionid.uniquename=AppChannel" id.parentappmoduleid.uniquename="financial_manager_bee9f134" id.settingdefinitionid.uniquename="AppChannel" />
       </MissingDependency>
-      <MissingDependency>
-        <Required type="uxagentproject" solution="Active" id="{1a6e3c3e-fb2e-43b0-b5dd-9071483d1a1f}" />
-        <Dependent type="62" schemaName="financial_manager_bee9f134" />
-      </MissingDependency>
-      <MissingDependency>
-        <Required type="uxagentproject" solution="Active" id="{35a771c0-5cdf-4d5e-a295-6f893ffcf3d4}" />
-        <Dependent type="62" schemaName="financial_manager_bee9f134" />
-      </MissingDependency>
-      <MissingDependency>
-        <Required type="uxagentproject" solution="Active" id="{4a317af5-b6a8-4a82-a22a-6b56447a082f}" />
-        <Dependent type="62" schemaName="financial_manager_bee9f134" />
-      </MissingDependency>
-      <MissingDependency>
-        <Required type="uxagentproject" solution="Active" id="{92083d36-806a-43dd-b289-2fafd9e3afb1}" />
-        <Dependent type="62" schemaName="financial_manager_bee9f134" />
-      </MissingDependency>
     </MissingDependencies>
   </SolutionManifest>
 </ImportExportXml>

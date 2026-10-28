@@ -5,18 +5,23 @@
 
 ## Estado comprobado
 
-- Código fuente ahora actualizado desde el export real: 371 archivos;
+- Código fuente ahora actualizado desde el export real: 407 archivos;
   siete Custom APIs obligatorias, **24** guardias rank-1,
   **15** validadores standby rank-2 y **10** paquetes NuGet.
 - `python scripts/f6_alm_preflight.py` comprueba manifiesto, componentes,
   ranks/stages de guardias, existencia e integridad ZIP de los NuGet.
 - `pac solution pack --packagetype Unmanaged` empaquetó localmente la
   exportación a un ZIP temporal; **no se importó** en ningún entorno.
-- El manifiesto todavía declara **seis dependencias externas**:
-  tipo 61 (recurso app), `SettingDefinition` y cuatro
-  `uxagentproject`. También hubo advertencias de diez referencias
-  PluginAssembly no definidas en customizations. Requieren resolver
-  requisitos en el destino, aunque `pac solution pack` finalice.
+- Los cuatro proyectos `uxagentproject` ya están incluidos en DEV y en la
+  exportación versionada (36 archivos nuevos); su ausencia de la lista
+  `Active` quedó confirmada mediante una nueva exportación oficial.
+- Quedan **dos requisitos administrados Microsoft para el entorno destino**:
+  `AppModuleWebResources 2.5` (icono predeterminado) y
+  `msdyn_AppFrameworkInfraExtensions 1.0.0.27` (`AppChannel`).
+  Ambos existen en DEV, pero su disponibilidad en un destino distinto
+  **no está certificada**. También hay diez advertencias sobre
+  referencias PluginAssembly durante `pac solution pack` que requieren
+  verificación en la importación de ensayo.
 - `F6_SOURCE_SYNCED=true`, pero
   **`F6_MANAGED_RELEASE_READY=false`**. La puerta `--release` debe
   fallar con código 2 y bloquear etiquetas de release en CI.
@@ -47,9 +52,9 @@ resultado de importación. No ejecutar `pac solution import`,
 
 ## Pendientes para una release administrada
 
-1. Decidir si se instala la app basada en modelos con sus dependencias
-   `uxagentproject` o se separa la solución operativa portable;
-   verificar con los fabricantes todas las dependencias requeridas.
+1. En el entorno de destino, confirmar o instalar las dos soluciones
+   administradas Microsoft con versiones compatibles. No extraer
+   ni copiar sus binarios desde DEV, ni quitar las referencias del XML.
 2. En un **entorno de aceptación separado y autorizado**, instalar
    y comprobar los paquetes y Custom APIs, confirmar los 24 guardias
    activos, auditar el estado de los 15 standby y demostrar que no hay

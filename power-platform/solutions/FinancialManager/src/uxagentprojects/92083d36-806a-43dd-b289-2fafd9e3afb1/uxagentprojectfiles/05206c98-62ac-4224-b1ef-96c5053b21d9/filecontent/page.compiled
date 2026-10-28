@@ -1,0 +1,551 @@
+// --- BEGIN GENERATED RUNTIME TYPES ---
+
+var fmg_financialtransaction_statecode;
+(function (fmg_financialtransaction_statecode) {
+    fmg_financialtransaction_statecode[fmg_financialtransaction_statecode["Activo"] = 0] = "Activo";
+    fmg_financialtransaction_statecode[fmg_financialtransaction_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_financialtransaction_statecode || (fmg_financialtransaction_statecode = {}));
+var fmg_financialtransaction_statuscode;
+(function (fmg_financialtransaction_statuscode) {
+    fmg_financialtransaction_statuscode[fmg_financialtransaction_statuscode["Activo"] = 1] = "Activo";
+    fmg_financialtransaction_statuscode[fmg_financialtransaction_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_financialtransaction_statuscode || (fmg_financialtransaction_statuscode = {}));
+var fmg_financialtransaction_fmg_flowclass;
+(function (fmg_financialtransaction_fmg_flowclass) {
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["OperatingPayment"] = 797280000] = "OperatingPayment";
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["CapitalPayment"] = 797280001] = "CapitalPayment";
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["TaxPayment"] = 797280002] = "TaxPayment";
+    fmg_financialtransaction_fmg_flowclass[fmg_financialtransaction_fmg_flowclass["OtherPayment"] = 797280003] = "OtherPayment";
+})(fmg_financialtransaction_fmg_flowclass || (fmg_financialtransaction_fmg_flowclass = {}));
+var fmg_financialtransaction_fmg_scope;
+(function (fmg_financialtransaction_fmg_scope) {
+    fmg_financialtransaction_fmg_scope[fmg_financialtransaction_fmg_scope["Branch"] = 797280000] = "Branch";
+    fmg_financialtransaction_fmg_scope[fmg_financialtransaction_fmg_scope["Shared"] = 797280001] = "Shared";
+})(fmg_financialtransaction_fmg_scope || (fmg_financialtransaction_fmg_scope = {}));
+var fmg_financialtransaction_fmg_status;
+(function (fmg_financialtransaction_fmg_status) {
+    fmg_financialtransaction_fmg_status[fmg_financialtransaction_fmg_status["Draft"] = 797280000] = "Draft";
+    fmg_financialtransaction_fmg_status[fmg_financialtransaction_fmg_status["Posted"] = 797280001] = "Posted";
+    fmg_financialtransaction_fmg_status[fmg_financialtransaction_fmg_status["Voided"] = 797280002] = "Voided";
+})(fmg_financialtransaction_fmg_status || (fmg_financialtransaction_fmg_status = {}));
+var fmg_budget_statecode;
+(function (fmg_budget_statecode) {
+    fmg_budget_statecode[fmg_budget_statecode["Activo"] = 0] = "Activo";
+    fmg_budget_statecode[fmg_budget_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_budget_statecode || (fmg_budget_statecode = {}));
+var fmg_budget_statuscode;
+(function (fmg_budget_statuscode) {
+    fmg_budget_statuscode[fmg_budget_statuscode["Activo"] = 1] = "Activo";
+    fmg_budget_statuscode[fmg_budget_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_budget_statuscode || (fmg_budget_statuscode = {}));
+var fmg_budget_fmg_scope;
+(function (fmg_budget_fmg_scope) {
+    fmg_budget_fmg_scope[fmg_budget_fmg_scope["Branch"] = 797280300] = "Branch";
+    fmg_budget_fmg_scope[fmg_budget_fmg_scope["Shared"] = 797280301] = "Shared";
+})(fmg_budget_fmg_scope || (fmg_budget_fmg_scope = {}));
+var fmg_budget_fmg_status;
+(function (fmg_budget_fmg_status) {
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Draft"] = 797280400] = "Draft";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Submitted"] = 797280401] = "Submitted";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Approved"] = 797280402] = "Approved";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Rejected"] = 797280403] = "Rejected";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Superseded"] = 797280404] = "Superseded";
+})(fmg_budget_fmg_status || (fmg_budget_fmg_status = {}));
+var fmg_budgetallocation_statecode;
+(function (fmg_budgetallocation_statecode) {
+    fmg_budgetallocation_statecode[fmg_budgetallocation_statecode["Activo"] = 0] = "Activo";
+    fmg_budgetallocation_statecode[fmg_budgetallocation_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_budgetallocation_statecode || (fmg_budgetallocation_statecode = {}));
+var fmg_budgetallocation_statuscode;
+(function (fmg_budgetallocation_statuscode) {
+    fmg_budgetallocation_statuscode[fmg_budgetallocation_statuscode["Activo"] = 1] = "Activo";
+    fmg_budgetallocation_statuscode[fmg_budgetallocation_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_budgetallocation_statuscode || (fmg_budgetallocation_statuscode = {}));
+var fmg_category_statecode;
+(function (fmg_category_statecode) {
+    fmg_category_statecode[fmg_category_statecode["Activo"] = 0] = "Activo";
+    fmg_category_statecode[fmg_category_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_category_statecode || (fmg_category_statecode = {}));
+var fmg_category_statuscode;
+(function (fmg_category_statuscode) {
+    fmg_category_statuscode[fmg_category_statuscode["Activo"] = 1] = "Activo";
+    fmg_category_statuscode[fmg_category_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_category_statuscode || (fmg_category_statuscode = {}));
+var fmg_category_fmg_isactive;
+(function (fmg_category_fmg_isactive) {
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["No"] = 0] = "No";
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isactive || (fmg_category_fmg_isactive = {}));
+var fmg_category_fmg_isgroup;
+(function (fmg_category_fmg_isgroup) {
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["No"] = 0] = "No";
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isgroup || (fmg_category_fmg_isgroup = {}));
+var fmg_branch_statecode;
+(function (fmg_branch_statecode) {
+    fmg_branch_statecode[fmg_branch_statecode["Activo"] = 0] = "Activo";
+    fmg_branch_statecode[fmg_branch_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_branch_statecode || (fmg_branch_statecode = {}));
+var fmg_branch_statuscode;
+(function (fmg_branch_statuscode) {
+    fmg_branch_statuscode[fmg_branch_statuscode["Activo"] = 1] = "Activo";
+    fmg_branch_statuscode[fmg_branch_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_branch_statuscode || (fmg_branch_statuscode = {}));
+var fmg_branch_fmg_isactive;
+(function (fmg_branch_fmg_isactive) {
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["No"] = 0] = "No";
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_branch_fmg_isactive || (fmg_branch_fmg_isactive = {}));
+var fmg_cashaccount_statecode;
+(function (fmg_cashaccount_statecode) {
+    fmg_cashaccount_statecode[fmg_cashaccount_statecode["Activo"] = 0] = "Activo";
+    fmg_cashaccount_statecode[fmg_cashaccount_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_cashaccount_statecode || (fmg_cashaccount_statecode = {}));
+var fmg_cashaccount_statuscode;
+(function (fmg_cashaccount_statuscode) {
+    fmg_cashaccount_statuscode[fmg_cashaccount_statuscode["Activo"] = 1] = "Activo";
+    fmg_cashaccount_statuscode[fmg_cashaccount_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_cashaccount_statuscode || (fmg_cashaccount_statuscode = {}));
+var fmg_cashaccount_fmg_isactive;
+(function (fmg_cashaccount_fmg_isactive) {
+    fmg_cashaccount_fmg_isactive[fmg_cashaccount_fmg_isactive["No"] = 0] = "No";
+    fmg_cashaccount_fmg_isactive[fmg_cashaccount_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_cashaccount_fmg_isactive || (fmg_cashaccount_fmg_isactive = {}));
+var fmg_cashaccount_fmg_type;
+(function (fmg_cashaccount_fmg_type) {
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Cash"] = 797280000] = "Cash";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Bank"] = 797280001] = "Bank";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Wallet"] = 797280002] = "Wallet";
+    fmg_cashaccount_fmg_type[fmg_cashaccount_fmg_type["Other"] = 797280003] = "Other";
+})(fmg_cashaccount_fmg_type || (fmg_cashaccount_fmg_type = {}));
+
+// --- END GENERATED RUNTIME TYPES ---
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+import React, { useEffect, useMemo, useState } from "react";
+import { Badge, Button, Card, CardHeader, Field, Input, Spinner, Text, makeStyles, tokens, } from "@fluentui/react-components";
+import { AddRegular, ArrowClockwiseRegular, CalendarRegular, DocumentRegular, OpenRegular, WalletRegular, } from "@fluentui/react-icons";
+var cacheKey = "__financialManagerExpenses2026";
+var useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        gap: tokens.spacingVerticalL,
+        padding: tokens.spacingHorizontalXXL,
+        backgroundColor: tokens.colorNeutralBackground2,
+        color: tokens.colorNeutralForeground1,
+        // Generative pages run inside a fixed-height model-driven app surface.
+        // Give that surface its own vertical scroll, including on mobile/touch.
+        height: "100%",
+        minHeight: 0,
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch",
+        boxSizing: "border-box",
+    },
+    title: {
+        fontSize: tokens.fontSizeHero700,
+        fontWeight: tokens.fontWeightSemibold,
+        lineHeight: tokens.lineHeightHero700,
+    },
+    header: {
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: tokens.spacingHorizontalM,
+    },
+    toolbar: {
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: tokens.spacingHorizontalS,
+    },
+    stats: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: tokens.spacingHorizontalM,
+    },
+    statValue: { fontWeight: tokens.fontWeightSemibold, fontSize: tokens.fontSizeHero600 },
+    card: { padding: tokens.spacingHorizontalM, backgroundColor: tokens.colorNeutralBackground1 },
+    form: {
+        display: "flex",
+        alignItems: "end",
+        flexWrap: "wrap",
+        gap: tokens.spacingHorizontalM,
+        padding: tokens.spacingHorizontalM,
+        backgroundColor: tokens.colorNeutralBackground1,
+        borderRadius: tokens.borderRadiusMedium,
+    },
+    formInput: { flexGrow: 1, minWidth: "220px", maxWidth: "500px" },
+    tableWrap: {
+        overflowX: "auto",
+        backgroundColor: tokens.colorNeutralBackground1,
+        borderRadius: tokens.borderRadiusMedium,
+    },
+    table: { borderCollapse: "collapse", width: "100%", minWidth: "760px" },
+    cell: {
+        borderBottom: "1px solid " + tokens.colorNeutralStroke2,
+        padding: tokens.spacingHorizontalM,
+        textAlign: "left",
+        verticalAlign: "middle",
+        fontSize: tokens.fontSizeBase300,
+    },
+    heading: {
+        fontWeight: tokens.fontWeightSemibold,
+        backgroundColor: tokens.colorNeutralBackground3,
+    },
+    empty: {
+        textAlign: "center",
+        padding: tokens.spacingHorizontalXXXL,
+        color: tokens.colorNeutralForeground3,
+    },
+    error: { color: tokens.colorPaletteRedForeground1, fontWeight: tokens.fontWeightMedium },
+    notice: { color: tokens.colorNeutralForeground3, fontSize: tokens.fontSizeBase200 },
+});
+function formatMoney(value) {
+    if (value === null || value === undefined || !Number.isFinite(value))
+        return "—";
+    return ("S/ " +
+        Number(value).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+}
+function dateLabel(value) {
+    if (!value)
+        return "—";
+    var date = new Date(value);
+    return Number.isFinite(date.getTime()) ? date.toLocaleDateString("es-PE") : "—";
+}
+function statusText(value) {
+    if (value === 797280001)
+        return "Confirmado";
+    if (value === 797280002)
+        return "Anulado";
+    return "Borrador";
+}
+function typeText(value) {
+    if (value === 797280000)
+        return "Operativo";
+    if (value === 797280001)
+        return "Capital";
+    if (value === 797280002)
+        return "Tributario";
+    if (value === 797280003)
+        return "Otro pago";
+    return "—";
+}
+function lookupLabel(row, field) {
+    var data = row;
+    var value = data[field + "@OData.Community.Display.V1.FormattedValue"];
+    return typeof value === "string" && value.trim() ? value : "—";
+}
+function openTransaction(id) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function () {
+        var host;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    host = window.Xrm;
+                    if (!((_a = host === null || host === void 0 ? void 0 : host.Navigation) === null || _a === void 0 ? void 0 : _a.navigateTo))
+                        throw new Error("La navegación a Detalle del gasto no está disponible.");
+                    return [4 /*yield*/, host.Navigation.navigateTo({
+                            pageType: "generative",
+                            pageId: "4a317af5-b6a8-4a82-a22a-6b56447a082f",
+                            entityName: "fmg_financialtransaction",
+                            recordId: id,
+                        }, { target: 1 })];
+                case 1:
+                    _b.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+var ExpensePage = function (_a) {
+    var dataApi = _a.dataApi;
+    var styles = useStyles();
+    var currentCache = window[cacheKey];
+    var _b = useState(function () { return currentCache !== null && currentCache !== void 0 ? currentCache : { loading: true, records: [], error: "", hasMore: false }; }), data = _b[0], setData = _b[1];
+    var _c = useState(0), reload = _c[0], setReload = _c[1];
+    var _d = useState(""), search = _d[0], setSearch = _d[1];
+    var _e = useState("all"), status = _e[0], setStatus = _e[1];
+    var _f = useState("all"), scopeFilter = _f[0], setScopeFilter = _f[1];
+    var _g = useState("all"), flowFilter = _g[0], setFlowFilter = _g[1];
+    var _h = useState(""), description = _h[0], setDescription = _h[1];
+    var _j = useState(false), saving = _j[0], setSaving = _j[1];
+    var _k = useState(""), feedback = _k[0], setFeedback = _k[1];
+    var ready = !!dataApi;
+    useEffect(function () {
+        if (!ready)
+            return;
+        var mounted = true;
+        var initial = window[cacheKey];
+        if (initial && reload === 0) {
+            setData(initial);
+            return;
+        }
+        setData(function (previous) { return (__assign(__assign({}, previous), { loading: true, error: "" })); });
+        var globalState = window;
+        var requestKey = cacheKey + "_request";
+        if (!globalState[requestKey]) {
+            globalState[requestKey] = dataApi
+                .queryTable("fmg_financialtransaction", {
+                select: [
+                    "fmg_financialtransactionid",
+                    "fmg_name",
+                    "fmg_transactiondate",
+                    "fmg_amount",
+                    "fmg_status",
+                    "fmg_flowclass",
+                    "fmg_scope",
+                    "fmg_description",
+                    "_fmg_category_value",
+                    "_fmg_branch_value",
+                    "_fmg_cashaccount_value",
+                ],
+                orderBy: "createdon desc",
+                pageSize: 200,
+            })
+                .then(function (result) {
+                var state = {
+                    loading: false,
+                    records: result.rows,
+                    hasMore: result.hasMoreRows,
+                    error: "",
+                };
+                globalState[cacheKey] = state;
+                return state;
+            })
+                .catch(function (error) {
+                var state = {
+                    loading: false,
+                    records: [],
+                    hasMore: false,
+                    error: error instanceof Error ? error.message : "No se pudieron consultar los movimientos.",
+                };
+                globalState[cacheKey] = state;
+                return state;
+            })
+                .finally(function () {
+                globalState[requestKey] = null;
+            });
+        }
+        globalState[requestKey].then(function (result) {
+            if (mounted)
+                setData(result);
+        });
+        return function () {
+            mounted = false;
+        };
+    }, [ready, reload]);
+    var visible = useMemo(function () {
+        return data.records.filter(function (record) {
+            var text = search.toLowerCase().trim();
+            var matchesText = !text ||
+                [record.fmg_name, record.fmg_description].some(function (v) { return typeof v === "string" && v.toLowerCase().includes(text); });
+            var matchesStatus = status === "all" || record.fmg_status === Number(status);
+            var matchesScope = scopeFilter === "all" || record.fmg_scope === Number(scopeFilter);
+            var matchesFlow = flowFilter === "all" || record.fmg_flowclass === Number(flowFilter);
+            return matchesText && matchesStatus && matchesScope && matchesFlow;
+        });
+    }, [data.records, search, status, scopeFilter, flowFilter]);
+    var confirmed = data.records.filter(function (item) { return item.fmg_status === 797280001; });
+    var total = confirmed.reduce(function (sum, item) { return sum + (Number(item.fmg_amount) || 0); }, 0);
+    var draftCount = data.records.filter(function (item) { return item.fmg_status === 797280000; }).length;
+    function refresh() {
+        window[cacheKey] = null;
+        window[cacheKey + "_request"] = null;
+        setReload(function (count) { return count + 1; });
+    }
+    function createDraft(event) {
+        return __awaiter(this, void 0, void 0, function () {
+            var newId, error_1, error_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        if (saving || !description.trim())
+                            return [2 /*return*/];
+                        setSaving(true);
+                        setFeedback("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 7, 8, 9]);
+                        return [4 /*yield*/, dataApi.createRow("fmg_financialtransaction", {
+                                fmg_description: description.trim(),
+                                fmg_status: 797280000,
+                            })];
+                    case 2:
+                        newId = _a.sent();
+                        setDescription("");
+                        setFeedback("Borrador creado correctamente. Completa sus datos antes de confirmar.");
+                        refresh();
+                        if (!(typeof newId !== "string" || !newId.trim())) return [3 /*break*/, 3];
+                        setFeedback("Se creó el borrador, pero no se recibió el identificador para abrirlo. Localízalo en la lista.");
+                        return [3 /*break*/, 6];
+                    case 3:
+                        _a.trys.push([3, 5, , 6]);
+                        return [4 /*yield*/, openTransaction(newId)];
+                    case 4:
+                        _a.sent();
+                        return [3 /*break*/, 6];
+                    case 5:
+                        error_1 = _a.sent();
+                        setFeedback("Borrador creado, pero no se pudo abrir el detalle: " +
+                            (error_1 instanceof Error ? error_1.message : "Error de navegación."));
+                        return [3 /*break*/, 6];
+                    case 6: return [3 /*break*/, 9];
+                    case 7:
+                        error_2 = _a.sent();
+                        setFeedback(error_2 instanceof Error ? error_2.message : "No se pudo guardar el borrador.");
+                        return [3 /*break*/, 9];
+                    case 8:
+                        setSaving(false);
+                        return [7 /*endfinally*/];
+                    case 9: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    return (React.createElement("main", { className: styles.root, "aria-label": "Gesti\u00F3n de gastos de Financial Manager" },
+        React.createElement("header", { className: styles.header },
+            React.createElement("div", null,
+                React.createElement(Text, { className: styles.title, as: "h1" }, "Gastos")),
+            React.createElement("div", { className: styles.toolbar },
+                React.createElement(Button, { icon: React.createElement(ArrowClockwiseRegular, null), onClick: refresh, disabled: data.loading }, "Actualizar"))),
+        React.createElement("section", { className: styles.stats, "aria-label": "Resumen de movimientos consultados" },
+            React.createElement(Card, { className: styles.card },
+                React.createElement(CardHeader, { image: React.createElement(WalletRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Gastos confirmados") }),
+                React.createElement(Text, { className: styles.statValue }, formatMoney(total)),
+                React.createElement(Text, { size: 200 }, "Registros cargados")),
+            React.createElement(Card, { className: styles.card },
+                React.createElement(CardHeader, { image: React.createElement(DocumentRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Borradores") }),
+                React.createElement(Text, { className: styles.statValue }, draftCount),
+                React.createElement(Text, { size: 200 }, "Pendientes de confirmar")),
+            React.createElement(Card, { className: styles.card },
+                React.createElement(CardHeader, { image: React.createElement(CalendarRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Movimientos cargados") }),
+                React.createElement(Text, { className: styles.statValue }, data.records.length),
+                React.createElement(Text, { size: 200 }, "Hasta 200 recientes"))),
+        React.createElement("form", { className: styles.form, onSubmit: createDraft, "aria-label": "Crear borrador de gasto" },
+            React.createElement(Field, { label: "Descripci\u00F3n", className: styles.formInput },
+                React.createElement(Input, { value: description, onChange: function (_, next) { return setDescription(next.value); }, maxLength: 2000, placeholder: "Ej. Energ\u00EDa, octubre" })),
+            React.createElement(Button, { type: "submit", appearance: "primary", icon: React.createElement(AddRegular, null), disabled: saving || !description.trim() }, saving ? "Guardando..." : "Nuevo borrador"),
+            feedback && React.createElement(Text, { role: "status" }, feedback)),
+        React.createElement("section", { "aria-label": "Listado de gastos" },
+            React.createElement("div", { className: styles.toolbar, style: { marginBottom: "12px" } },
+                React.createElement(Input, { "aria-label": "Buscar por referencia o descripci\u00F3n", placeholder: "Buscar referencia o descripci\u00F3n", value: search, onChange: function (_, next) { return setSearch(next.value); } }),
+                React.createElement("label", { htmlFor: "fmStatus" }, "Estado "),
+                React.createElement("select", { id: "fmStatus", value: status, onChange: function (event) { return setStatus(event.target.value); }, style: { padding: "8px", borderRadius: "6px", borderColor: "#aaa" } },
+                    React.createElement("option", { value: "all" }, "Todos"),
+                    React.createElement("option", { value: "797280000" }, "Borradores"),
+                    React.createElement("option", { value: "797280001" }, "Confirmados"),
+                    React.createElement("option", { value: "797280002" }, "Anulados")),
+                React.createElement("label", { htmlFor: "fmScope" }, "\u00C1mbito "),
+                React.createElement("select", { id: "fmScope", "aria-label": "Filtrar por \u00E1mbito", value: scopeFilter, onChange: function (event) { return setScopeFilter(event.target.value); }, style: { padding: "8px", borderRadius: "6px", borderColor: "#aaa" } },
+                    React.createElement("option", { value: "all" }, "Todos"),
+                    React.createElement("option", { value: "797280000" }, "Por sede"),
+                    React.createElement("option", { value: "797280001" }, "Compartido")),
+                React.createElement("label", { htmlFor: "fmFlow" }, "Clase "),
+                React.createElement("select", { id: "fmFlow", "aria-label": "Filtrar por clase", value: flowFilter, onChange: function (event) { return setFlowFilter(event.target.value); }, style: { padding: "8px", borderRadius: "6px", borderColor: "#aaa" } },
+                    React.createElement("option", { value: "all" }, "Todas"),
+                    React.createElement("option", { value: "797280000" }, "Operativo"),
+                    React.createElement("option", { value: "797280001" }, "Capital"),
+                    React.createElement("option", { value: "797280002" }, "Tributario"),
+                    React.createElement("option", { value: "797280003" }, "Otro pago")),
+                React.createElement(Text, { size: 200, "aria-live": "polite", className: styles.notice },
+                    visible.length,
+                    " de ",
+                    data.records.length,
+                    " registros cargados coinciden.")),
+            data.loading && (React.createElement("div", { className: styles.empty },
+                React.createElement(Spinner, { label: "Cargando movimientos..." }))),
+            data.error && (React.createElement("div", { className: styles.error, role: "alert" },
+                data.error,
+                React.createElement(Button, { onClick: refresh }, "Reintentar"))),
+            !data.loading && !data.error && visible.length === 0 && (React.createElement("div", { className: styles.empty }, "No se encontraron movimientos para estos filtros.")),
+            !data.loading && !data.error && visible.length > 0 && (React.createElement("div", { className: styles.tableWrap },
+                React.createElement("table", { className: styles.table },
+                    React.createElement("thead", null,
+                        React.createElement("tr", null, [
+                            "Referencia",
+                            "Fecha",
+                            "Estado",
+                            "Clase",
+                            "Categoría",
+                            "Sede",
+                            "Importe",
+                            "Detalle",
+                        ].map(function (title) { return (React.createElement("th", { key: title, className: styles.cell + " " + styles.heading }, title)); }))),
+                    React.createElement("tbody", null, visible.map(function (record) { return (React.createElement("tr", { key: record.fmg_financialtransactionid },
+                        React.createElement("td", { className: styles.cell }, record.fmg_name || "—"),
+                        React.createElement("td", { className: styles.cell }, dateLabel(record.fmg_transactiondate)),
+                        React.createElement("td", { className: styles.cell },
+                            React.createElement(Badge, { appearance: "outline" }, statusText(record.fmg_status))),
+                        React.createElement("td", { className: styles.cell }, typeText(record.fmg_flowclass)),
+                        React.createElement("td", { className: styles.cell }, lookupLabel(record, "_fmg_category_value")),
+                        React.createElement("td", { className: styles.cell }, record.fmg_scope === 797280001
+                            ? "Compartido"
+                            : lookupLabel(record, "_fmg_branch_value")),
+                        React.createElement("td", { className: styles.cell }, formatMoney(record.fmg_amount)),
+                        React.createElement("td", { className: styles.cell },
+                            React.createElement(Button, { appearance: "subtle", icon: React.createElement(OpenRegular, null), onClick: function () {
+                                    void openTransaction(record.fmg_financialtransactionid).catch(function (error) {
+                                        return setFeedback(error instanceof Error
+                                            ? error.message
+                                            : "No se pudo abrir Detalle del gasto.");
+                                    });
+                                } }, "Abrir")))); })))))),
+        data.hasMore && (React.createElement(Text, { className: styles.notice },
+            "Esta pantalla filtra \u00FAnicamente los \u00FAltimos ",
+            data.records.length,
+            " registros cargados, no todo el historial. Consulta la vista nativa de Dataverse para buscar operaciones anteriores."))));
+};
+export default ExpensePage;
+

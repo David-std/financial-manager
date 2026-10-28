@@ -1,0 +1,941 @@
+// --- BEGIN GENERATED RUNTIME TYPES ---
+
+var fmg_budget_statecode;
+(function (fmg_budget_statecode) {
+    fmg_budget_statecode[fmg_budget_statecode["Activo"] = 0] = "Activo";
+    fmg_budget_statecode[fmg_budget_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_budget_statecode || (fmg_budget_statecode = {}));
+var fmg_budget_statuscode;
+(function (fmg_budget_statuscode) {
+    fmg_budget_statuscode[fmg_budget_statuscode["Activo"] = 1] = "Activo";
+    fmg_budget_statuscode[fmg_budget_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_budget_statuscode || (fmg_budget_statuscode = {}));
+var fmg_budget_fmg_scope;
+(function (fmg_budget_fmg_scope) {
+    fmg_budget_fmg_scope[fmg_budget_fmg_scope["Branch"] = 797280300] = "Branch";
+    fmg_budget_fmg_scope[fmg_budget_fmg_scope["Shared"] = 797280301] = "Shared";
+})(fmg_budget_fmg_scope || (fmg_budget_fmg_scope = {}));
+var fmg_budget_fmg_status;
+(function (fmg_budget_fmg_status) {
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Draft"] = 797280400] = "Draft";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Submitted"] = 797280401] = "Submitted";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Approved"] = 797280402] = "Approved";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Rejected"] = 797280403] = "Rejected";
+    fmg_budget_fmg_status[fmg_budget_fmg_status["Superseded"] = 797280404] = "Superseded";
+})(fmg_budget_fmg_status || (fmg_budget_fmg_status = {}));
+var fmg_budgetallocation_statecode;
+(function (fmg_budgetallocation_statecode) {
+    fmg_budgetallocation_statecode[fmg_budgetallocation_statecode["Activo"] = 0] = "Activo";
+    fmg_budgetallocation_statecode[fmg_budgetallocation_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_budgetallocation_statecode || (fmg_budgetallocation_statecode = {}));
+var fmg_budgetallocation_statuscode;
+(function (fmg_budgetallocation_statuscode) {
+    fmg_budgetallocation_statuscode[fmg_budgetallocation_statuscode["Activo"] = 1] = "Activo";
+    fmg_budgetallocation_statuscode[fmg_budgetallocation_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_budgetallocation_statuscode || (fmg_budgetallocation_statuscode = {}));
+var fmg_branch_statecode;
+(function (fmg_branch_statecode) {
+    fmg_branch_statecode[fmg_branch_statecode["Activo"] = 0] = "Activo";
+    fmg_branch_statecode[fmg_branch_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_branch_statecode || (fmg_branch_statecode = {}));
+var fmg_branch_statuscode;
+(function (fmg_branch_statuscode) {
+    fmg_branch_statuscode[fmg_branch_statuscode["Activo"] = 1] = "Activo";
+    fmg_branch_statuscode[fmg_branch_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_branch_statuscode || (fmg_branch_statuscode = {}));
+var fmg_branch_fmg_isactive;
+(function (fmg_branch_fmg_isactive) {
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["No"] = 0] = "No";
+    fmg_branch_fmg_isactive[fmg_branch_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_branch_fmg_isactive || (fmg_branch_fmg_isactive = {}));
+var fmg_category_statecode;
+(function (fmg_category_statecode) {
+    fmg_category_statecode[fmg_category_statecode["Activo"] = 0] = "Activo";
+    fmg_category_statecode[fmg_category_statecode["Inactivo"] = 1] = "Inactivo";
+})(fmg_category_statecode || (fmg_category_statecode = {}));
+var fmg_category_statuscode;
+(function (fmg_category_statuscode) {
+    fmg_category_statuscode[fmg_category_statuscode["Activo"] = 1] = "Activo";
+    fmg_category_statuscode[fmg_category_statuscode["Inactivo"] = 2] = "Inactivo";
+})(fmg_category_statuscode || (fmg_category_statuscode = {}));
+var fmg_category_fmg_isactive;
+(function (fmg_category_fmg_isactive) {
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["No"] = 0] = "No";
+    fmg_category_fmg_isactive[fmg_category_fmg_isactive["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isactive || (fmg_category_fmg_isactive = {}));
+var fmg_category_fmg_isgroup;
+(function (fmg_category_fmg_isgroup) {
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["No"] = 0] = "No";
+    fmg_category_fmg_isgroup[fmg_category_fmg_isgroup["Sí"] = 1] = "Sí";
+})(fmg_category_fmg_isgroup || (fmg_category_fmg_isgroup = {}));
+var transactioncurrency_statecode;
+(function (transactioncurrency_statecode) {
+    transactioncurrency_statecode[transactioncurrency_statecode["Activo"] = 0] = "Activo";
+    transactioncurrency_statecode[transactioncurrency_statecode["Inactivo"] = 1] = "Inactivo";
+})(transactioncurrency_statecode || (transactioncurrency_statecode = {}));
+var transactioncurrency_statuscode;
+(function (transactioncurrency_statuscode) {
+    transactioncurrency_statuscode[transactioncurrency_statuscode["Activo"] = 1] = "Activo";
+    transactioncurrency_statuscode[transactioncurrency_statuscode["Inactivo"] = 2] = "Inactivo";
+})(transactioncurrency_statuscode || (transactioncurrency_statuscode = {}));
+var transactioncurrency_currencytype;
+(function (transactioncurrency_currencytype) {
+    transactioncurrency_currencytype[transactioncurrency_currencytype["System"] = 0] = "System";
+    transactioncurrency_currencytype[transactioncurrency_currencytype["Custom"] = 1] = "Custom";
+})(transactioncurrency_currencytype || (transactioncurrency_currencytype = {}));
+
+// --- END GENERATED RUNTIME TYPES ---
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+import React, { useEffect, useMemo, useState } from "react";
+import { Badge, Button, Card, CardHeader, Input, Spinner, Text, makeStyles, tokens, } from "@fluentui/react-components";
+import { ArrowClockwiseRegular, OpenRegular, MoneyRegular, CalendarRegular, ShieldLockRegular, } from "@fluentui/react-icons";
+var cache = "__financialManagerBudgetPage2026v7";
+var useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        gap: tokens.spacingVerticalL,
+        padding: tokens.spacingHorizontalXXL,
+        backgroundColor: tokens.colorNeutralBackground2,
+        color: tokens.colorNeutralForeground1,
+        // Generative pages run inside a fixed-height model-driven app surface.
+        // Give that surface its own vertical scroll, including on mobile/touch.
+        height: "100%",
+        minHeight: 0,
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehaviorY: "contain",
+        WebkitOverflowScrolling: "touch",
+        boxSizing: "border-box",
+    },
+    heading: { fontSize: tokens.fontSizeHero700, fontWeight: tokens.fontWeightSemibold },
+    top: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: tokens.spacingHorizontalM,
+    },
+    description: { color: tokens.colorNeutralForeground3, fontSize: tokens.fontSizeBase300 },
+    cards: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: tokens.spacingHorizontalM,
+    },
+    big: { fontSize: tokens.fontSizeHero600, fontWeight: tokens.fontWeightSemibold },
+    toolbar: {
+        display: "flex",
+        gap: tokens.spacingHorizontalM,
+        flexWrap: "wrap",
+        alignItems: "center",
+    },
+    panel: {
+        backgroundColor: tokens.colorNeutralBackground1,
+        padding: tokens.spacingHorizontalM,
+        borderRadius: tokens.borderRadiusMedium,
+    },
+    formGrid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))",
+        gap: tokens.spacingHorizontalM,
+        alignItems: "end",
+    },
+    formField: { display: "flex", flexDirection: "column", gap: tokens.spacingVerticalXS },
+    actions: { display: "flex", gap: tokens.spacingHorizontalS, marginTop: tokens.spacingVerticalM },
+    formControl: {
+        minHeight: "34px",
+        padding: "6px",
+        border: "1px solid " + tokens.colorNeutralStroke1,
+        borderRadius: tokens.borderRadiusMedium,
+        backgroundColor: tokens.colorNeutralBackground1,
+        color: tokens.colorNeutralForeground1,
+    },
+    tableContainer: { overflowX: "auto", backgroundColor: tokens.colorNeutralBackground1 },
+    table: { borderCollapse: "collapse", minWidth: "710px", width: "100%" },
+    cell: {
+        padding: tokens.spacingHorizontalM,
+        borderBottom: "1px solid " + tokens.colorNeutralStroke2,
+        textAlign: "left",
+    },
+    th: { fontWeight: tokens.fontWeightSemibold, backgroundColor: tokens.colorNeutralBackground3 },
+    info: { padding: tokens.spacingHorizontalM, backgroundColor: tokens.colorNeutralBackground1 },
+    error: { color: tokens.colorPaletteRedForeground1 },
+});
+function active(value) {
+    return value === true || value === 1;
+}
+function idFromLookup(value) {
+    if (!value)
+        return "";
+    var valueMatch = value.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
+    return valueMatch ? valueMatch[0].toLowerCase() : "";
+}
+function displayAmount(value) {
+    return ("S/ " + value.toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+}
+function displayStatus(value) {
+    var map = {
+        797280400: "Borrador",
+        797280401: "Presentado",
+        797280402: "Aprobado",
+        797280403: "Rechazado",
+        797280404: "Sustituido",
+    };
+    return map[value] || "Sin estado";
+}
+function navigateBudget(id) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function () {
+        var xrm, pageInput;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    xrm = window.Xrm;
+                    if (!((_a = xrm === null || xrm === void 0 ? void 0 : xrm.Navigation) === null || _a === void 0 ? void 0 : _a.navigateTo))
+                        throw new Error("No se puede abrir el formulario de presupuestos.");
+                    pageInput = id
+                        ? { pageType: "entityrecord", entityName: "fmg_budget", entityId: id }
+                        : { pageType: "entityrecord", entityName: "fmg_budget" };
+                    return [4 /*yield*/, xrm.Navigation.navigateTo(pageInput, {
+                            target: 2,
+                            position: 1,
+                            width: { value: 80, unit: "%" },
+                            height: { value: 85, unit: "%" },
+                        })];
+                case 1:
+                    _b.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+var BudgetPage = function (_a) {
+    var dataApi = _a.dataApi;
+    var classes = useStyles();
+    var _b = useState(function () {
+        var _a;
+        return (_a = window[cache]) !== null && _a !== void 0 ? _a : {
+            loading: true,
+            budgets: [],
+            allocations: [],
+            branches: [],
+            categories: [],
+            currencies: [],
+            error: "",
+            limited: false,
+        };
+    }), state = _b[0], setState = _b[1];
+    var _c = useState(0), reload = _c[0], setReload = _c[1];
+    var _d = useState("all"), year = _d[0], setYear = _d[1];
+    var _e = useState(""), search = _e[0], setSearch = _e[1];
+    var _f = useState("all"), filter = _f[0], setFilter = _f[1];
+    var _g = useState(""), navigationError = _g[0], setNavigationError = _g[1];
+    var _h = useState(false), draftOpen = _h[0], setDraftOpen = _h[1];
+    var _j = useState(""), editingBudgetId = _j[0], setEditingBudgetId = _j[1];
+    var _k = useState(""), draftName = _k[0], setDraftName = _k[1];
+    var _l = useState(String(new Date().getFullYear())), draftYear = _l[0], setDraftYear = _l[1];
+    var _m = useState("1"), draftVersion = _m[0], setDraftVersion = _m[1];
+    var _o = useState("1"), draftMonth = _o[0], setDraftMonth = _o[1];
+    var _p = useState("797280301"), draftScope = _p[0], setDraftScope = _p[1];
+    var _q = useState(""), draftBranch = _q[0], setDraftBranch = _q[1];
+    var _r = useState(false), draftSaving = _r[0], setDraftSaving = _r[1];
+    var _s = useState(""), draftFeedback = _s[0], setDraftFeedback = _s[1];
+    var _t = useState(false), allocationOpen = _t[0], setAllocationOpen = _t[1];
+    var _u = useState(""), allocationBudget = _u[0], setAllocationBudget = _u[1];
+    var _v = useState(""), allocationCategory = _v[0], setAllocationCategory = _v[1];
+    var _w = useState("1"), allocationMonth = _w[0], setAllocationMonth = _w[1];
+    var _x = useState(""), allocationAmount = _x[0], setAllocationAmount = _x[1];
+    var _y = useState(false), allocationSaving = _y[0], setAllocationSaving = _y[1];
+    var _z = useState(""), allocationFeedback = _z[0], setAllocationFeedback = _z[1];
+    var _0 = useState(""), allocationEditing = _0[0], setAllocationEditing = _0[1];
+    var _1 = useState(""), reviewBudgetId = _1[0], setReviewBudgetId = _1[1];
+    var _2 = useState(""), submitCandidate = _2[0], setSubmitCandidate = _2[1];
+    var _3 = useState(false), submitting = _3[0], setSubmitting = _3[1];
+    var _4 = useState(""), submissionFeedback = _4[0], setSubmissionFeedback = _4[1];
+    var ready = !!dataApi;
+    useEffect(function () {
+        if (!ready)
+            return;
+        var active = true;
+        var shared = window;
+        if (reload === 0 && shared[cache]) {
+            setState(shared[cache]);
+            return;
+        }
+        setState(function (s) { return (__assign(__assign({}, s), { loading: true, error: "" })); });
+        var key = cache + "_inflight";
+        if (!shared[key])
+            shared[key] = Promise.all([
+                dataApi.queryTable("fmg_budget", {
+                    select: [
+                        "fmg_budgetid",
+                        "fmg_name",
+                        "fmg_year",
+                        "fmg_version",
+                        "fmg_status",
+                        "fmg_scope",
+                        "fmg_effectivefrommonth",
+                        "_fmg_branch_value",
+                    ],
+                    orderBy: "fmg_year desc",
+                    pageSize: 200,
+                }),
+                dataApi.queryTable("fmg_budgetallocation", {
+                    select: [
+                        "fmg_budgetallocationid",
+                        "_fmg_budget_value",
+                        "fmg_month",
+                        "fmg_amount",
+                        "_fmg_category_value",
+                    ],
+                    pageSize: 1000,
+                }),
+                dataApi.queryTable("fmg_branch", {
+                    select: ["fmg_branchid", "fmg_name", "fmg_isactive"],
+                    pageSize: 100,
+                }),
+                dataApi.queryTable("fmg_category", {
+                    select: ["fmg_categoryid", "fmg_code", "fmg_name", "fmg_isactive", "fmg_isgroup"],
+                    pageSize: 100,
+                }),
+                dataApi.queryTable("transactioncurrency", {
+                    select: ["transactioncurrencyid", "isocurrencycode"],
+                    pageSize: 100,
+                }),
+            ])
+                .then(function (_a) {
+                var b = _a[0], a = _a[1], branches = _a[2], categories = _a[3], currencies = _a[4];
+                var next = {
+                    loading: false,
+                    budgets: b.rows,
+                    allocations: a.rows,
+                    branches: branches.rows,
+                    categories: categories.rows,
+                    currencies: currencies.rows,
+                    error: "",
+                    limited: b.hasMoreRows ||
+                        a.hasMoreRows ||
+                        branches.hasMoreRows ||
+                        categories.hasMoreRows ||
+                        currencies.hasMoreRows,
+                };
+                shared[cache] = next;
+                return next;
+            })
+                .catch(function (err) {
+                var next = {
+                    loading: false,
+                    budgets: [],
+                    allocations: [],
+                    branches: [],
+                    categories: [],
+                    currencies: [],
+                    limited: false,
+                    error: err instanceof Error ? err.message : "No se pudieron cargar los presupuestos.",
+                };
+                shared[cache] = next;
+                return next;
+            })
+                .finally(function () {
+                shared[key] = null;
+            });
+        shared[key].then(function (result) {
+            if (active)
+                setState(result);
+        });
+        return function () {
+            active = false;
+        };
+    }, [ready, reload]);
+    var counts = useMemo(function () {
+        var sums = new Map();
+        for (var _i = 0, _a = state.allocations; _i < _a.length; _i++) {
+            var row = _a[_i];
+            var id = idFromLookup(row._fmg_budget_value);
+            sums.set(id, (sums.get(id) || 0) + (Number(row.fmg_amount) || 0));
+        }
+        return sums;
+    }, [state.allocations]);
+    var visible = useMemo(function () {
+        return state.budgets.filter(function (row) {
+            return ((year === "all" || String(row.fmg_year) === year) &&
+                (filter === "all" || String(row.fmg_status) === filter) &&
+                (!search.trim() ||
+                    String(row.fmg_name || "")
+                        .toLowerCase()
+                        .includes(search.trim().toLowerCase())));
+        });
+    }, [state.budgets, year, filter, search]);
+    var years = Array.from(new Set(state.budgets.map(function (row) { return String(row.fmg_year); })))
+        .sort()
+        .reverse();
+    var submitted = state.budgets.filter(function (row) { return row.fmg_status === 797280401; }).length;
+    function refresh() {
+        window[cache] = null;
+        window[cache + "_inflight"] = null;
+        setReload(function (v) { return v + 1; });
+    }
+    var editingBudget = state.budgets.find(function (b) { return b.fmg_budgetid === editingBudgetId; });
+    var editingHasAllocations = !!editingBudget &&
+        state.allocations.some(function (a) {
+            return idFromLookup(a._fmg_budget_value) ===
+                editingBudget.fmg_budgetid.toLowerCase();
+        });
+    function resetBudgetForm() {
+        setEditingBudgetId("");
+        setDraftName("");
+        setDraftYear(String(new Date().getFullYear()));
+        setDraftVersion("1");
+        setDraftMonth("1");
+        setDraftScope("797280301");
+        setDraftBranch("");
+        setDraftFeedback("");
+    }
+    function editBudget(row) {
+        if (row.fmg_status !== 797280400) {
+            setDraftFeedback("Solo se pueden editar presupuestos en borrador.");
+            return;
+        }
+        setEditingBudgetId(row.fmg_budgetid);
+        setDraftName(row.fmg_name || "");
+        setDraftYear(String(row.fmg_year));
+        setDraftVersion(String(row.fmg_version));
+        setDraftMonth(String(row.fmg_effectivefrommonth));
+        setDraftScope(String(row.fmg_scope));
+        setDraftBranch(idFromLookup(row._fmg_branch_value));
+        setDraftFeedback("");
+        setAllocationOpen(false);
+        setAllocationEditing("");
+        setSubmitCandidate("");
+        setDraftOpen(true);
+    }
+    function saveBudgetDraft() {
+        return __awaiter(this, void 0, void 0, function () {
+            var year, version, month, identity, wasEditing, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (draftSaving)
+                            return [2 /*return*/];
+                        year = Number(draftYear), version = Number(draftVersion), month = Number(draftMonth);
+                        if (!draftName.trim() ||
+                            !Number.isInteger(year) ||
+                            year < 2020 ||
+                            year > 2100 ||
+                            !Number.isInteger(version) ||
+                            version < 1 ||
+                            !Number.isInteger(month) ||
+                            month < 1 ||
+                            month > 12 ||
+                            (draftScope === "797280300" && !draftBranch)) {
+                            setDraftFeedback("Indica nombre, año, versión, mes efectivo y sede cuando corresponda.");
+                            return [2 /*return*/];
+                        }
+                        setDraftSaving(true);
+                        setDraftFeedback("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 6, 7, 8]);
+                        identity = {
+                            fmg_year: year,
+                            fmg_version: version,
+                            fmg_effectivefrommonth: month,
+                            fmg_scope: Number(draftScope),
+                            _fmg_branch_value: draftScope === "797280300" ? "/fmg_branch(" + draftBranch + ")" : null,
+                        };
+                        if (!editingBudgetId) return [3 /*break*/, 3];
+                        if (!editingBudget || editingBudget.fmg_status !== 797280400) {
+                            throw new Error("El presupuesto ya no está disponible para edición.");
+                        }
+                        // Once allocations exist, identity fields are frozen in this editor.
+                        return [4 /*yield*/, dataApi.updateRow("fmg_budget", editingBudgetId, __assign({ fmg_name: draftName.trim() }, (editingHasAllocations ? {} : identity)))];
+                    case 2:
+                        // Once allocations exist, identity fields are frozen in this editor.
+                        _a.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, dataApi.createRow("fmg_budget", __assign({ fmg_name: draftName.trim(), fmg_status: 797280400 }, identity))];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5:
+                        wasEditing = !!editingBudgetId;
+                        setDraftOpen(false);
+                        resetBudgetForm();
+                        setDraftFeedback(wasEditing ? "Presupuesto borrador actualizado." : "Presupuesto borrador creado.");
+                        refresh();
+                        return [3 /*break*/, 8];
+                    case 6:
+                        err_1 = _a.sent();
+                        setDraftFeedback(err_1 instanceof Error ? err_1.message : "No se pudo crear el presupuesto.");
+                        return [3 /*break*/, 8];
+                    case 7:
+                        setDraftSaving(false);
+                        return [7 /*endfinally*/];
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function editAllocation(row) {
+        var budgetId = idFromLookup(row._fmg_budget_value);
+        var budget = state.budgets.find(function (b) { return b.fmg_budgetid.toLowerCase() === budgetId; });
+        if (!budget || budget.fmg_status !== 797280400) {
+            setAllocationFeedback("Solo es posible modificar asignaciones de presupuestos en borrador.");
+            return;
+        }
+        setAllocationEditing(row.fmg_budgetallocationid);
+        setAllocationBudget(budget.fmg_budgetid);
+        setAllocationCategory(idFromLookup(row._fmg_category_value));
+        setAllocationMonth(String(row.fmg_month));
+        setAllocationAmount(String(row.fmg_amount));
+        setAllocationFeedback("");
+        setDraftOpen(false);
+        setAllocationOpen(true);
+    }
+    function newAllocation() {
+        setAllocationEditing("");
+        setAllocationCategory("");
+        setAllocationAmount("");
+        setAllocationBudget(reviewBudgetId &&
+            state.budgets.some(function (b) { return b.fmg_budgetid === reviewBudgetId && b.fmg_status === 797280400; })
+            ? reviewBudgetId
+            : "");
+        setAllocationOpen(true);
+        setDraftOpen(false);
+        setAllocationFeedback("");
+    }
+    function saveAllocation() {
+        return __awaiter(this, void 0, void 0, function () {
+            var budget, category, currency, original, month, amount, err_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (allocationSaving)
+                            return [2 /*return*/];
+                        budget = state.budgets.find(function (b) { return b.fmg_budgetid === allocationBudget && b.fmg_status === 797280400; });
+                        category = state.categories.find(function (c) {
+                            return c.fmg_categoryid === allocationCategory &&
+                                active(c.fmg_isactive) &&
+                                !active(c.fmg_isgroup) &&
+                                c.fmg_code !== "999";
+                        });
+                        currency = state.currencies.find(function (c) { return c.isocurrencycode === "PEN"; });
+                        original = state.allocations.find(function (a) { return a.fmg_budgetallocationid === allocationEditing; });
+                        month = Number(allocationMonth), amount = Number(allocationAmount);
+                        if (!budget ||
+                            !category ||
+                            !currency ||
+                            !Number.isInteger(month) ||
+                            month < 1 ||
+                            month > 12 ||
+                            !/^\d+(?:\.\d{1,2})?$/.test(allocationAmount.trim()) ||
+                            !Number.isFinite(amount) ||
+                            amount < 0 ||
+                            (allocationEditing &&
+                                (!original ||
+                                    idFromLookup(original._fmg_budget_value) !==
+                                        budget.fmg_budgetid.toLowerCase()))) {
+                            setAllocationFeedback("Revisa el presupuesto borrador, la categoría y el importe PEN (máximo dos decimales).");
+                            return [2 /*return*/];
+                        }
+                        setAllocationSaving(true);
+                        setAllocationFeedback("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 6, 7, 8]);
+                        if (!allocationEditing) return [3 /*break*/, 3];
+                        return [4 /*yield*/, dataApi.updateRow("fmg_budgetallocation", allocationEditing, { fmg_amount: amount })];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, dataApi.createRow("fmg_budgetallocation", {
+                            fmg_name: budget.fmg_name + " · " + category.fmg_code + " · " + String(month).padStart(2, "0"),
+                            fmg_month: month,
+                            fmg_amount: amount,
+                            _fmg_budget_value: "/fmg_budget(" + budget.fmg_budgetid + ")",
+                            _fmg_category_value: "/fmg_category(" + category.fmg_categoryid + ")",
+                            _transactioncurrencyid_value: "/transactioncurrency(" + currency.transactioncurrencyid + ")",
+                        })];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5:
+                        setAllocationOpen(false);
+                        setAllocationAmount("");
+                        setAllocationCategory("");
+                        setAllocationEditing("");
+                        setReviewBudgetId(budget.fmg_budgetid);
+                        setAllocationFeedback(allocationEditing
+                            ? "Importe actualizado."
+                            : "Asignación creada en el presupuesto borrador.");
+                        refresh();
+                        return [3 /*break*/, 8];
+                    case 6:
+                        err_2 = _a.sent();
+                        setAllocationFeedback(err_2 instanceof Error ? err_2.message : "No se pudo crear la asignación.");
+                        return [3 /*break*/, 8];
+                    case 7:
+                        setAllocationSaving(false);
+                        return [7 /*endfinally*/];
+                    case 8: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function submitDraftBudget() {
+        return __awaiter(this, void 0, void 0, function () {
+            var budget, hasLines, err_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (submitting || !submitCandidate)
+                            return [2 /*return*/];
+                        budget = state.budgets.find(function (b) { return b.fmg_budgetid === submitCandidate; });
+                        hasLines = state.allocations.some(function (a) {
+                            return idFromLookup(a._fmg_budget_value) === submitCandidate.toLowerCase();
+                        });
+                        if (!budget || budget.fmg_status !== 797280400 || !hasLines) {
+                            setSubmissionFeedback("Solo puede presentarse un presupuesto borrador con asignaciones.");
+                            return [2 /*return*/];
+                        }
+                        setSubmitting(true);
+                        setSubmissionFeedback("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, 4, 5]);
+                        return [4 /*yield*/, dataApi.updateRow("fmg_budget", submitCandidate, { fmg_status: 797280401 })];
+                    case 2:
+                        _a.sent();
+                        setSubmitCandidate("");
+                        setAllocationOpen(false);
+                        setAllocationEditing("");
+                        setSubmissionFeedback("Presupuesto presentado. Sus asignaciones ahora son de solo lectura.");
+                        refresh();
+                        return [3 /*break*/, 5];
+                    case 3:
+                        err_3 = _a.sent();
+                        setSubmissionFeedback(err_3 instanceof Error ? err_3.message : "No se pudo presentar el presupuesto.");
+                        return [3 /*break*/, 5];
+                    case 4:
+                        setSubmitting(false);
+                        return [7 /*endfinally*/];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function openBudget(id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        setNavigationError("");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, navigateBudget(id)];
+                    case 2:
+                        _a.sent();
+                        refresh();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_4 = _a.sent();
+                        setNavigationError(err_4 instanceof Error ? err_4.message : "No se pudo abrir el formulario de presupuesto.");
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    return (React.createElement("main", { className: classes.root, "aria-label": "Gesti\u00F3n de presupuestos" },
+        React.createElement("header", { className: classes.top },
+            React.createElement("div", null,
+                React.createElement(Text, { as: "h1", className: classes.heading }, "Presupuestos"),
+                React.createElement("p", { className: classes.description }, "Planificaci\u00F3n anual y asignaciones por categor\u00EDa y mes \u00B7 PEN")),
+            React.createElement("div", { className: classes.toolbar },
+                React.createElement(Button, { appearance: "primary", onClick: function () {
+                        if (draftOpen) {
+                            setDraftOpen(false);
+                            resetBudgetForm();
+                        }
+                        else {
+                            resetBudgetForm();
+                            setDraftOpen(true);
+                        }
+                        setAllocationOpen(false);
+                    } }, draftOpen ? "Cerrar formulario" : "Nuevo presupuesto"),
+                React.createElement(Button, { appearance: "secondary", disabled: !state.budgets.some(function (b) { return b.fmg_status === 797280400; }) || state.loading, onClick: function () {
+                        if (allocationOpen) {
+                            setAllocationOpen(false);
+                            setAllocationEditing("");
+                        }
+                        else
+                            newAllocation();
+                    } }, allocationOpen ? "Cerrar asignación" : "Nueva asignación"),
+                React.createElement(Button, { icon: React.createElement(ArrowClockwiseRegular, null), onClick: refresh, disabled: state.loading }, "Actualizar"))),
+        navigationError && (React.createElement(Text, { role: "alert", className: classes.error }, navigationError)),
+        submissionFeedback && React.createElement(Text, { role: "status" }, submissionFeedback),
+        submitCandidate && (React.createElement("section", { className: classes.panel, "aria-label": "Confirmar presentaci\u00F3n del presupuesto" },
+            React.createElement(Text, { weight: "semibold" }, "Presentar presupuesto"),
+            React.createElement(Text, { size: 200 }, "Al presentarlo, el presupuesto y sus asignaciones dejar\u00E1n de ser editables. La aprobaci\u00F3n sigue restringida."),
+            React.createElement("div", { className: classes.actions },
+                React.createElement(Button, { appearance: "primary", disabled: submitting, onClick: function () {
+                        void submitDraftBudget();
+                    } }, submitting ? "Presentando..." : "Confirmar presentación"),
+                React.createElement(Button, { appearance: "secondary", disabled: submitting, onClick: function () { return setSubmitCandidate(""); } }, "Cancelar")))),
+        draftFeedback && React.createElement(Text, { role: "status" }, draftFeedback),
+        draftOpen && (React.createElement("section", { className: classes.panel, "aria-label": "Editar presupuesto borrador" },
+            React.createElement(Text, { weight: "semibold" }, editingBudgetId ? "Editar presupuesto borrador" : "Nuevo presupuesto"),
+            editingHasAllocations && (React.createElement(Text, { size: 200 }, "Este presupuesto ya tiene asignaciones: solo puedes cambiar su nombre. A\u00F1o, sede, versi\u00F3n y vigencia permanecen fijos.")),
+            React.createElement("div", { className: classes.formGrid },
+                React.createElement("label", { className: classes.formField },
+                    "Nombre",
+                    React.createElement(Input, { "aria-label": "Nombre del presupuesto", value: draftName, onChange: function (_, v) { return setDraftName(v.value); }, placeholder: "Ej. Plan anual 2027" })),
+                React.createElement("label", { className: classes.formField },
+                    "A\u00F1o",
+                    React.createElement(Input, { "aria-label": "A\u00F1o del presupuesto", type: "number", disabled: editingHasAllocations, value: draftYear, onChange: function (_, v) { return setDraftYear(v.value); } })),
+                React.createElement("label", { className: classes.formField },
+                    "Versi\u00F3n",
+                    React.createElement(Input, { "aria-label": "Versi\u00F3n del presupuesto", type: "number", disabled: editingHasAllocations, value: draftVersion, onChange: function (_, v) { return setDraftVersion(v.value); } })),
+                React.createElement("label", { className: classes.formField },
+                    "Desde el mes",
+                    React.createElement("select", { className: classes.formControl, disabled: editingHasAllocations, value: draftMonth, onChange: function (e) { return setDraftMonth(e.target.value); }, "aria-label": "Mes inicial de vigencia" }, Array.from({ length: 12 }, function (_, i) { return i + 1; }).map(function (m) { return (React.createElement("option", { key: m, value: String(m) }, m)); }))),
+                React.createElement("label", { className: classes.formField },
+                    "\u00C1mbito",
+                    React.createElement("select", { className: classes.formControl, disabled: editingHasAllocations, value: draftScope, onChange: function (e) {
+                            setDraftScope(e.target.value);
+                            setDraftBranch("");
+                        }, "aria-label": "\u00C1mbito del presupuesto" },
+                        React.createElement("option", { value: "797280301" }, "Compartido"),
+                        React.createElement("option", { value: "797280300" }, "Por sede"))),
+                draftScope === "797280300" && (React.createElement("label", { className: classes.formField },
+                    "Sede",
+                    React.createElement("select", { className: classes.formControl, disabled: editingHasAllocations, value: draftBranch, onChange: function (e) { return setDraftBranch(e.target.value); }, "aria-label": "Sede del presupuesto" },
+                        React.createElement("option", { value: "" }, "Seleccionar sede"),
+                        state.branches
+                            .filter(function (b) { return active(b.fmg_isactive); })
+                            .map(function (b) { return (React.createElement("option", { key: b.fmg_branchid, value: b.fmg_branchid }, b.fmg_name)); }))))),
+            React.createElement("div", { className: classes.actions },
+                React.createElement(Button, { appearance: "primary", disabled: draftSaving || state.loading, onClick: function () {
+                        void saveBudgetDraft();
+                    } }, draftSaving
+                    ? "Guardando..."
+                    : editingBudgetId
+                        ? "Guardar cambios"
+                        : "Guardar borrador"),
+                React.createElement(Button, { appearance: "secondary", disabled: draftSaving, onClick: function () {
+                        setDraftOpen(false);
+                        resetBudgetForm();
+                    } }, "Cancelar")))),
+        allocationFeedback && React.createElement(Text, { role: "status" }, allocationFeedback),
+        allocationOpen && (React.createElement("section", { className: classes.panel, "aria-label": "Crear asignaci\u00F3n mensual" },
+            React.createElement(Text, { weight: "semibold" }, allocationEditing ? "Editar importe mensual" : "Nueva asignación mensual"),
+            React.createElement("div", { className: classes.formGrid },
+                React.createElement("label", { className: classes.formField },
+                    "Presupuesto borrador",
+                    React.createElement("select", { className: classes.formControl, disabled: !!allocationEditing, value: allocationBudget, onChange: function (e) { return setAllocationBudget(e.target.value); }, "aria-label": "Presupuesto de la asignaci\u00F3n" },
+                        React.createElement("option", { value: "" }, "Seleccionar presupuesto"),
+                        state.budgets
+                            .filter(function (b) { return b.fmg_status === 797280400; })
+                            .map(function (b) { return (React.createElement("option", { key: b.fmg_budgetid, value: b.fmg_budgetid },
+                            b.fmg_name,
+                            " \u00B7 ",
+                            b.fmg_year,
+                            " \u00B7 v",
+                            b.fmg_version)); }))),
+                React.createElement("label", { className: classes.formField },
+                    "Categor\u00EDa de detalle",
+                    React.createElement("select", { className: classes.formControl, disabled: !!allocationEditing, value: allocationCategory, onChange: function (e) { return setAllocationCategory(e.target.value); }, "aria-label": "Categor\u00EDa de la asignaci\u00F3n" },
+                        React.createElement("option", { value: "" }, "Seleccionar categor\u00EDa"),
+                        state.categories
+                            .filter(function (c) { return active(c.fmg_isactive) && !active(c.fmg_isgroup) && c.fmg_code !== "999"; })
+                            .map(function (c) { return (React.createElement("option", { key: c.fmg_categoryid, value: c.fmg_categoryid },
+                            c.fmg_code,
+                            " \u00B7 ",
+                            c.fmg_name)); }))),
+                React.createElement("label", { className: classes.formField },
+                    "Mes",
+                    React.createElement("select", { className: classes.formControl, disabled: !!allocationEditing, value: allocationMonth, onChange: function (e) { return setAllocationMonth(e.target.value); }, "aria-label": "Mes de asignaci\u00F3n" }, Array.from({ length: 12 }, function (_, i) { return i + 1; }).map(function (m) { return (React.createElement("option", { key: m, value: String(m) }, m)); }))),
+                React.createElement("label", { className: classes.formField },
+                    "Importe (PEN)",
+                    React.createElement(Input, { "aria-label": "Importe de la asignaci\u00F3n", type: "number", min: "0", step: "0.01", value: allocationAmount, onChange: function (_, v) { return setAllocationAmount(v.value); }, placeholder: "0.00" }))),
+            React.createElement("div", { className: classes.actions },
+                React.createElement(Button, { appearance: "primary", disabled: allocationSaving || state.loading, onClick: function () {
+                        void saveAllocation();
+                    } }, allocationSaving
+                    ? "Guardando..."
+                    : allocationEditing
+                        ? "Guardar importe"
+                        : "Guardar asignación"),
+                React.createElement(Button, { appearance: "secondary", disabled: allocationSaving, onClick: function () {
+                        setAllocationOpen(false);
+                        setAllocationEditing("");
+                    } }, "Cancelar")))),
+        React.createElement("section", { className: classes.cards, "aria-label": "Resumen de presupuestos" },
+            React.createElement(Card, null,
+                React.createElement(CardHeader, { image: React.createElement(CalendarRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Versiones visibles") }),
+                React.createElement(Text, { className: classes.big }, state.budgets.length)),
+            React.createElement(Card, null,
+                React.createElement(CardHeader, { image: React.createElement(MoneyRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Asignaciones consultadas") }),
+                React.createElement(Text, { className: classes.big }, state.allocations.length)),
+            React.createElement(Card, null,
+                React.createElement(CardHeader, { image: React.createElement(ShieldLockRegular, null), header: React.createElement(Text, { weight: "semibold" }, "Presentados") }),
+                React.createElement(Text, { className: classes.big }, submitted))),
+        React.createElement(Card, { className: classes.info },
+            React.createElement(Text, { weight: "semibold" }, "Aprobaci\u00F3n temporalmente deshabilitada"),
+            React.createElement(Text, { size: 200 }, "Los presupuestos se pueden preparar y presentar seg\u00FAn permisos. La transici\u00F3n a Aprobado est\u00E1 bloqueada por Dataverse hasta completar la separaci\u00F3n de funciones y el control de versiones concurrentes. No hay todav\u00EDa presupuesto aprobado v\u00E1lido para calcular diferencias frente a ejecuci\u00F3n.")),
+        React.createElement("section", { className: classes.panel },
+            React.createElement("div", { className: classes.toolbar },
+                React.createElement(Input, { "aria-label": "Buscar presupuesto por nombre", placeholder: "Buscar presupuesto", value: search, onChange: function (_, data) { return setSearch(data.value); } }),
+                React.createElement("label", { htmlFor: "fmBudgetYear" }, "A\u00F1o "),
+                React.createElement("select", { id: "fmBudgetYear", value: year, onChange: function (e) { return setYear(e.target.value); } },
+                    React.createElement("option", { value: "all" }, "Todos"),
+                    years.map(function (y) { return (React.createElement("option", { key: y, value: y }, y)); })),
+                React.createElement("label", { htmlFor: "fmBudgetStatus" }, "Estado "),
+                React.createElement("select", { id: "fmBudgetStatus", value: filter, onChange: function (e) { return setFilter(e.target.value); } },
+                    React.createElement("option", { value: "all" }, "Todos"),
+                    React.createElement("option", { value: "797280400" }, "Borrador"),
+                    React.createElement("option", { value: "797280401" }, "Presentado"),
+                    React.createElement("option", { value: "797280402" }, "Aprobado"),
+                    React.createElement("option", { value: "797280403" }, "Rechazado"),
+                    React.createElement("option", { value: "797280404" }, "Sustituido")))),
+        state.loading && React.createElement(Spinner, { label: "Cargando presupuesto y asignaciones..." }),
+        state.error && (React.createElement(Text, { role: "alert", className: classes.error }, state.error)),
+        !state.loading && !state.error && visible.length === 0 && (React.createElement("div", { className: classes.info },
+            React.createElement(Text, null, "No hay presupuestos para los filtros seleccionados."))),
+        !state.loading && !state.error && visible.length > 0 && (React.createElement("div", { className: classes.tableContainer, role: "region", tabIndex: 0, "aria-label": "Tabla de presupuestos desplazable horizontalmente" },
+            React.createElement("table", { className: classes.table },
+                React.createElement("thead", null,
+                    React.createElement("tr", null, [
+                        "Presupuesto",
+                        "Año",
+                        "Ámbito",
+                        "Versión",
+                        "Desde mes",
+                        "Estado",
+                        "Asignado (consultado)",
+                        "Detalle",
+                    ].map(function (t) { return (React.createElement("th", { key: t, className: classes.cell + " " + classes.th }, t)); }))),
+                React.createElement("tbody", null, visible.map(function (row) { return (React.createElement("tr", { key: row.fmg_budgetid },
+                    React.createElement("td", { className: classes.cell }, row.fmg_name),
+                    React.createElement("td", { className: classes.cell }, row.fmg_year),
+                    React.createElement("td", { className: classes.cell }, row.fmg_scope === 797280301 ? "Compartido" : "Por sede"),
+                    React.createElement("td", { className: classes.cell }, row.fmg_version),
+                    React.createElement("td", { className: classes.cell }, row.fmg_effectivefrommonth),
+                    React.createElement("td", { className: classes.cell },
+                        React.createElement(Badge, { appearance: "outline" }, displayStatus(row.fmg_status))),
+                    React.createElement("td", { className: classes.cell }, displayAmount(counts.get(String(row.fmg_budgetid).toLowerCase()) || 0)),
+                    React.createElement("td", { className: classes.cell },
+                        React.createElement(Button, { appearance: "subtle", onClick: function () {
+                                setReviewBudgetId(row.fmg_budgetid);
+                                setAllocationOpen(false);
+                                setAllocationEditing("");
+                            } }, "Asignaciones"),
+                        row.fmg_status === 797280400 && (React.createElement(Button, { appearance: "subtle", onClick: function () { return editBudget(row); } }, "Editar")),
+                        row.fmg_status === 797280400 && (React.createElement(Button, { appearance: "subtle", disabled: !state.allocations.some(function (a) {
+                                return idFromLookup(a._fmg_budget_value) ===
+                                    row.fmg_budgetid.toLowerCase();
+                            }), onClick: function () {
+                                setSubmitCandidate(row.fmg_budgetid);
+                                setSubmissionFeedback("");
+                            } }, "Presentar")),
+                        React.createElement(Button, { appearance: "subtle", icon: React.createElement(OpenRegular, null), onClick: function () {
+                                void openBudget(row.fmg_budgetid);
+                            } }, "Abrir")))); }))))),
+        !state.loading &&
+            !state.error &&
+            reviewBudgetId &&
+            (function () {
+                var budget = state.budgets.find(function (b) { return b.fmg_budgetid === reviewBudgetId; });
+                if (!budget)
+                    return null;
+                var lines = state.allocations
+                    .filter(function (a) {
+                    return idFromLookup(a._fmg_budget_value) ===
+                        reviewBudgetId.toLowerCase();
+                })
+                    .sort(function (a, b) { return a.fmg_month - b.fmg_month; });
+                return (React.createElement("section", { className: classes.panel, "aria-label": "Asignaciones del presupuesto" },
+                    React.createElement("div", { className: classes.top },
+                        React.createElement("div", null,
+                            React.createElement(Text, { weight: "semibold" },
+                                "Asignaciones \u00B7 ",
+                                budget.fmg_name),
+                            React.createElement(Text, { size: 200 },
+                                "Total consultado: ",
+                                displayAmount(counts.get(reviewBudgetId.toLowerCase()) || 0),
+                                " ",
+                                "\u00B7 ",
+                                lines.length,
+                                " l\u00EDneas")),
+                        React.createElement(Button, { onClick: function () { return setReviewBudgetId(""); } }, "Cerrar")),
+                    lines.length === 0 ? (React.createElement(Text, { size: 200 }, "Este presupuesto todav\u00EDa no tiene asignaciones.")) : (React.createElement("div", { className: classes.tableContainer, role: "region", tabIndex: 0, "aria-label": "Tabla de presupuestos desplazable horizontalmente" },
+                        React.createElement("table", { className: classes.table },
+                            React.createElement("thead", null,
+                                React.createElement("tr", null, ["Mes", "Categoría", "Importe (PEN)", "Acción"].map(function (label) { return (React.createElement("th", { className: classes.cell + " " + classes.th, key: label }, label)); }))),
+                            React.createElement("tbody", null, lines.map(function (line) {
+                                var category = state.categories.find(function (c) {
+                                    return c.fmg_categoryid.toLowerCase() ===
+                                        idFromLookup(line._fmg_category_value);
+                                });
+                                return (React.createElement("tr", { key: line.fmg_budgetallocationid },
+                                    React.createElement("td", { className: classes.cell }, line.fmg_month),
+                                    React.createElement("td", { className: classes.cell }, category
+                                        ? category.fmg_code + " · " + category.fmg_name
+                                        : "Categoría no disponible"),
+                                    React.createElement("td", { className: classes.cell }, displayAmount(Number(line.fmg_amount) || 0)),
+                                    React.createElement("td", { className: classes.cell }, budget.fmg_status === 797280400 ? (React.createElement(Button, { appearance: "subtle", onClick: function () { return editAllocation(line); } }, "Editar importe")) : (React.createElement(Text, { size: 200 }, "Solo lectura")))));
+                            })))))));
+            })(),
+        state.limited && (React.createElement(Text, { size: 200 }, "Listado parcial por paginaci\u00F3n. Use la vista nativa para consultar el conjunto completo de registros."))));
+};
+export default BudgetPage;
+
