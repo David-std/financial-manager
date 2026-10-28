@@ -41,6 +41,8 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Verify FM11 delegated sign-in page without network
+        run: node tests/fm11_shortcut_browser_smoke.mjs
       - name: Install formatter
         run: npm ci --ignore-scripts
       - name: Enforce Power Apps TSX formatting

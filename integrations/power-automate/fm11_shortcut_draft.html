@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Registrar gasto</title>
+<style>
+body{font:16px -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:35rem;margin:3rem auto;padding:0 1.2rem;color:#252b38;background:#fff}
+h1{font-size:1.5rem}main{line-height:1.6}#status{padding:1rem;border:1px solid #d5d9e1;border-radius:10px;overflow-wrap:anywhere}
+small{color:#606b7d}a{color:#1262b8}
+</style>
+</head>
+<body>
+<main>
+<h1>Registrar gasto</h1>
+<p id="status" role="status" aria-live="polite">Preparando acceso a Financial Manager…</p>
+<small>La solicitud solo crea un borrador, no registra ni ejecuta pagos.</small>
+</main>
+<script>
+"use strict";
+(() => {
+  const tenant="0128a3bb-db2d-49e9-b4e2-27dcbd1423cc";
+  const client="d6ad936e-45ae-4d21-b04f-d04397f0bc2b";
+  const origin="https://org49f8e9f0.crm3.dynamics.com";
+  const redirect=origin+"/WebResources/fmg_shortcut_draft.html";
+  const scope=origin+"/user_impersonation";
+  const authorize="https://login.microsoftonline.com/"+tenant+"/oauth2/v2.0/authorize";
+  const token="https://login.microsoftonline.com/"+tenant+"/oauth2/v2.0/token";
+  const storage="fmg-shortcut-draft-oauth-v1";
+  const status=document.querySelector("#status");
+  const known=new Set(["requestId","name","amountPen","date","categoryCode",
+    "branchCode","accountName","flowClass","description"]);
+  const required=["requestId","name","amountPen","date","categoryCode",
+    "branchCode","accountName","flowClass"];
+  const encoder=new TextEncoder();
+  function say(text){status.textContent=text;}
+  function clear(){sessionStorage.removeItem(storage);}
+  function base64Url(bytes){
+    let binary="";
+    for(const b of bytes)binary+=String.fromCharCode(b);
+    return btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  }
+  function entropy(){return base64Url(crypto.getRandomValues(new Uint8Array(64)));}
+  function validate(raw){
+    if(raw.length>12000)throw Error("La solicitud excede el tamaño permitido.");
+    const req=JSON.parse(raw);
+    if(!req||Array.isArray(req)||typeof req!=="object")throw Error("Solicitud inválida.");
+    if(Object.keys(req).some(k=>!known.has(k))||
+       required.some(k=>typeof req[k]!=="string")||
+       Object.values(req).some(v=>typeof v!=="string"))
+      throw Error("Campos de la solicitud incorrectos.");
+    if(!/^[A-Za-z0-9_-]{12,80}$/.test(req.requestId)||
+       req.name.trim().length<4||req.name.trim().length>100||
+       !/^(?:0|[1-9][0-9]*)(?:\.[0-9]{1,2})?$/.test(req.amountPen)||
+       !/^\d{4}-\d{2}-\d{2}$/.test(req.date)||
+       !/^\d{3}$/.test(req.categoryCode)||
+       !["LM","SR"].includes(req.branchCode)||
+       !["operativo","capital","impuesto","otro"].includes(req.flowClass)||
+       (req.description||"").length>1000)
+      throw Error("La solicitud contiene datos inválidos.");
+    return req;
+  }
+  async function request(url,options,bearer){
+    const headers={"Accept":"application/json","OData-Version":"4.0",
+      "OData-MaxVersion":"4.0","Authorization":"Bearer "+bearer};
+    if(options.body)headers["Content-Type"]="application/json; charset=utf-8";
+    const response=await fetch(url,{...options,headers,cache:"no-store",credentials:"omit",redirect:"error"});
+    if(!response.ok)throw Error("Dataverse rechazó la solicitud ("+response.status+").");
+    if(response.status===204)return null;
+    return await response.json();
+  }
+  async function start(raw){
+    validate(raw);
+    const state=entropy();
+    const verifier=entropy();
+    const digest=await crypto.subtle.digest("SHA-256",encoder.encode(verifier));
+    const challenge=base64Url(new Uint8Array(digest));
+    sessionStorage.setItem(storage,JSON.stringify({state,verifier,raw,created:Date.now()}));
+    history.replaceState(null,"",redirect);
+    const url=new URL(authorize);
+    url.search=new URLSearchParams({
+      client_id:client,response_type:"code",redirect_uri:redirect,
+      response_mode:"query",scope,code_challenge:challenge,
+      code_challenge_method:"S256",state,prompt:"select_account"
+    }).toString();
+    say("Redirigiendo al inicio de sesión de Microsoft…");
+    location.replace(url.toString());
+  }
+  async function finish(params){
+    const pending=JSON.parse(sessionStorage.getItem(storage)||"null");
+    history.replaceState(null,"",redirect);
+    if(params.has("error"))throw Error("Microsoft canceló o rechazó el inicio de sesión.");
+    if(!pending||Date.now()-pending.created>10*60*1000||
+       !params.get("state")||params.get("state")!==pending.state||
+       !params.get("code"))throw Error("La sesión de autenticación no coincide.");
+    const req=validate(pending.raw);
+    // Verify callback and discard ephemeral authorization material after redemption.
+    say("Verificando identidad…");
+    const response=await fetch(token,{
+      method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:new URLSearchParams({
+        client_id:client,grant_type:"authorization_code",
+        redirect_uri:redirect,code:params.get("code"),
+        code_verifier:pending.verifier,scope
+      }).toString(),cache:"no-store",credentials:"omit",redirect:"error"
+    });
+    const json=await response.json();
+    if(!response.ok||typeof json.access_token!=="string"||
+       json.token_type?.toLowerCase()!=="bearer")
+      throw Error("Microsoft no concedió acceso delegado a Dataverse.");
+    clear();
+    const access=json.access_token;
+    say("Creando solicitud autenticada en Dataverse…");
+    const staged={
+      fmg_name:req.name.trim(),
+      fmg_requestid:req.requestId,
+      fmg_sender:"Entra delegated",
+      fmg_mailmessageid:"shortcut-browser",
+      fmg_reviewstate:"Unverified",
+      fmg_validationstate:"FormatChecked",
+      fmg_concept:req.name.trim(),
+      fmg_amountpen:req.amountPen,
+      fmg_requesteddate:req.date,
+      fmg_categorycode:req.categoryCode,
+      fmg_branchcode:req.branchCode,
+      fmg_accountname:req.accountName,
+      fmg_flowclass:req.flowClass,
+      fmg_rawbody:JSON.stringify(req)
+    };
+    await request(origin+"/api/data/v9.2/fmg_mailintakes",
+      {method:"POST",body:JSON.stringify(staged)},access);
+    const key=encodeURIComponent(req.requestId);
+    const row=await request(origin+
+      "/api/data/v9.2/fmg_mailintakes(fmg_requestid='"+key+"')"+
+      "?$select=fmg_mailintakeid,versionnumber",
+      {method:"GET"},access);
+    if(!row||typeof row.fmg_mailintakeid!=="string"||
+       typeof row.versionnumber!=="number")
+      throw Error("Dataverse no confirmó la versión de la solicitud.");
+    say("Creando borrador financiero…");
+    const result=await request(origin+
+      "/api/data/v9.2/fmg_CreateDraftFromMailIntake",
+      {method:"POST",body:JSON.stringify({
+        IntakeId:row.fmg_mailintakeid,
+        ExpectedRowVersion:String(row.versionnumber)
+      })},access);
+    if(result?.Created!==true||
+       !/^[0-9a-f-]{36}$/i.test(result.DraftId||""))
+      throw Error("Dataverse no confirmó la creación del borrador.");
+    say("Borrador creado correctamente. ID: "+result.DraftId+
+        ". No se aprobó ni contabilizó ningún pago.");
+  }
+  async function run(){
+    if(location.origin!==origin||location.pathname!==new URL(redirect).pathname)
+      throw Error("Origen inesperado.");
+    const parameters=new URLSearchParams(location.search);
+    if(parameters.has("code")||parameters.has("error"))
+      return await finish(parameters);
+    const fragment=location.hash;
+    history.replaceState(null,"",redirect);
+    if(!fragment.startsWith("#draft="))
+      throw Error("No se recibieron los datos del gasto. Vuelve a Atajos y ejecuta Registrar gasto (Microsoft). Si acabas de iniciar sesión en Dataverse, repite el Atajo: la primera redirección puede perder el enlace.");
+    const bytes=Uint8Array.from(atob(fragment.substring(7)),c=>c.charCodeAt(0));
+    const raw=new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+    return await start(raw);
+  }
+  run().catch(error=>{
+    clear();
+    history.replaceState(null,"",redirect);
+    say(error instanceof Error?error.message:"No se pudo completar la operación.");
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "When_a_new_email_arrives_V3": {
+      "type": "OpenApiConnectionNotification",
+      "inputs": {
+        "parameters": {
+          "folderPath": "Inbox",
+          "subjectFilter": "FM11-DRAFT-V1",
+          "fetchOnlyWithAttachment": false,
+          "includeAttachments": false
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connectionName": "shared_office365",
+          "operationId": "OnNewEmailV3"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "splitOn": "@triggerOutputs()?['body/value']"
+    }
+  },
+  "actions": {
+    "Read_message_as_text": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connectionName": "shared_office365",
+          "operationId": "HttpRequest"
+        },
+        "parameters": {
+          "Uri": "@concat('https://graph.microsoft.com/v1.0/me/messages/', encodeUriComponent(triggerOutputs()?['body/id']), '?$select=id,subject,body')",
+          "Method": "GET",
+          "CustomHeader1": "Prefer: outlook.body-content-type=\"text\""
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "runAfter": {}
+    },
+    "Parse_request": {
+      "type": "ParseJson",
+      "inputs": {
+        "content": "@body('Read_message_as_text')?['body']?['content']",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "name",
+            "amountPen",
+            "date",
+            "categoryCode",
+            "branchCode",
+            "accountName",
+            "flowClass"
+          ],
+          "properties": {
+            "requestId": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 80
+            },
+            "name": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 100
+            },
+            "amountPen": {
+              "type": "string",
+              "maxLength": 16,
+              "minLength": 1
+            },
+            "date": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 10
+            },
+            "categoryCode": {
+              "type": "string",
+              "enum": [
+                "101",
+                "102",
+                "103",
+                "104",
+                "201",
+                "202",
+                "203",
+                "204",
+                "301",
+                "302",
+                "303",
+                "304",
+                "401",
+                "402",
+                "403",
+                "404",
+                "501",
+                "502",
+                "503",
+                "601",
+                "602",
+                "603",
+                "604",
+                "605",
+                "701",
+                "702",
+                "703",
+                "801",
+                "802",
+                "803",
+                "901",
+                "999"
+              ],
+              "minLength": 3,
+              "maxLength": 3
+            },
+            "branchCode": {
+              "type": "string",
+              "enum": [
+                "LM",
+                "SR"
+              ]
+            },
+            "accountName": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100
+            },
+            "flowClass": {
+              "type": "string",
+              "enum": [
+                "operativo",
+                "capital",
+                "impuesto",
+                "otro"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "Read_message_as_text": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Stage_unverified_request": {
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "CreateRecord"
+        },
+        "parameters": {
+          "entityName": "fmg_mailintakes",
+          "item/fmg_name": "@body('Parse_request')?['requestId']",
+          "item/fmg_requestid": "@body('Parse_request')?['requestId']",
+          "item/fmg_sender": "@triggerOutputs()?['body/from']",
+          "item/fmg_mailmessageid": "@triggerOutputs()?['body/id']",
+          "item/fmg_reviewstate": "Unverified",
+          "item/fmg_validationstate": "FormatChecked",
+          "item/fmg_concept": "@body('Parse_request')?['name']",
+          "item/fmg_amountpen": "@body('Parse_request')?['amountPen']",
+          "item/fmg_requesteddate": "@body('Parse_request')?['date']",
+          "item/fmg_categorycode": "@body('Parse_request')?['categoryCode']",
+          "item/fmg_branchcode": "@body('Parse_request')?['branchCode']",
+          "item/fmg_accountname": "@body('Parse_request')?['accountName']",
+          "item/fmg_flowclass": "@body('Parse_request')?['flowClass']",
+          "item/fmg_rawbody": "@body('Read_message_as_text')?['body']?['content']"
+        },
+        "authentication": "@parameters('$authentication')",
+        "retryPolicy": {
+          "type": "none"
+        }
+      },
+      "runAfter": {
+        "Parse_request": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Classify_stage_failure": {
+      "type": "Compose",
+      "inputs": "@if(or(equals(outputs('Stage_unverified_request')?['statusCode'],409),equals(outputs('Stage_unverified_request')?['statusCode'],412)),'DUPLICATE_REQUEST','STAGING_WRITE_FAILED')",
+      "runAfter": {
+        "Stage_unverified_request": [
+          "Failed",
+          "TimedOut"
+        ]
+      }
+    },
+    "Stop_stage_failure": {
+      "type": "Terminate",
+      "inputs": {
+        "runStatus": "Failed",
+        "runError": {
+          "code": "FM11_STAGE_REJECTED",
+          "message": "@outputs('Classify_stage_failure')"
+        }
+      },
+      "runAfter": {
+        "Classify_stage_failure": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}

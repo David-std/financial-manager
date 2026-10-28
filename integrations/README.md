@@ -1,17 +1,9 @@
-# Optional integrations
+# Integrations
 
-Integrations are separate from the first operational release. They may be added only after the Dataverse authorization model and transaction validation are tested.
+Financial Manager integrates with Apple Shortcuts and Microsoft Power Platform.
 
-## iOS Shortcuts
+- [Apple Shortcuts](ios-shortcuts/README.md): native expense request form, using Apple Mail for transport. No extra mobile app or server required.
+- [Power Automate](power-automate/README.md): Outlook intake and Dataverse staging in the existing DEV environment.
+- [Registrar gasto (Microsoft)](ios-shortcuts/README.md#delegated-microsoft-sign-in-variant-pending-iphone-acceptance) uses Safari and Entra PKCE; the SPA redirect is registered, but iPhone sign-in and Draft creation still require device acceptance. The HTTP transport remains a separate diagnostic.
 
-First iteration: open an authenticated Power Apps expense form using a deep link, prefill supported parameters, and require confirmation. This does not require a public ingestion endpoint.
-
-A future direct-submission flow must authenticate the caller, verify the user's permissions, enforce the same posting rules as the app, and deduplicate requests with a unique request ID. Never distribute an anonymous write-enabled flow URL.
-
-## Conversational reporting
-
-Expose only approved, read-only reporting operations with typed filters. The source system calculates totals; a model may interpret the user's question but must not supply fabricated numeric answers or arbitrary Dataverse queries.
-
-A WhatsApp channel requires a separate identity-binding and licensing review. No messaging channel or AI endpoint is deployed yet.
-
-See [Security](../docs/security.md) and [Architecture](../docs/architecture.md).
+A delivered email is not an approved expense. All financial transactions remain subject to server-side authorization, review, and posting controls.

@@ -16,4 +16,6 @@
 *.pbix binary
 *.msapp binary
 *.zip binary
+integrations/ios-shortcuts/*.unsigned.plist text eol=lf
+integrations/ios-shortcuts/*.unsigned.shortcut binary
 power-platform/solutions/FinancialManager/src/uxagentprojects/**/filecontent/page.compiled -text -diff

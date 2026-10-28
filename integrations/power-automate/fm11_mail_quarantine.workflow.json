@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "When_a_new_email_arrives_V3": {
+      "type": "OpenApiConnectionNotification",
+      "inputs": {
+        "parameters": {
+          "folderPath": "Inbox",
+          "subjectFilter": "FM11-DRAFT-V1",
+          "fetchOnlyWithAttachment": false,
+          "includeAttachments": false
+        },
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+          "connectionName": "shared_office365",
+          "operationId": "OnNewEmailV3"
+        },
+        "authentication": "@parameters('$authentication')"
+      },
+      "splitOn": "@triggerOutputs()?['body/value']"
+    }
+  },
+  "actions": {
+    "Quarantine_no_financial_writes": {
+      "type": "Terminate",
+      "runAfter": {},
+      "inputs": {
+        "runStatus": "Cancelled"
+      }
+    }
+  },
+  "outputs": {}
+}

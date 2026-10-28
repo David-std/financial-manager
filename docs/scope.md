@@ -35,7 +35,7 @@ The architectural decision and ordering are defined in [ADR 0003](decisions/0003
 | FM-08 | Daily/monthly/annual expense and budget reports with drill-through | Required |
 | FM-09 | Recent business activities and Dataverse auditing | Required |
 | FM-10 | Document reference and optional receipt attachment | Candidate; validate storage needs |
-| FM-11 | iOS Shortcut through an authenticated Power Apps deep link | Later |
+| FM-11 | Native iOS Shortcut and Power Automate intake for expense Drafts | Shortcut source generated; import signature, flow and iPhone validation pending |
 | FM-12 | Read-only conversational reporting | Later |
 | FM-13 | External messaging, banking, or billing-system integration | Out of scope |
 

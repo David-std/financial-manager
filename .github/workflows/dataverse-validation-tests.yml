@@ -22,6 +22,7 @@ on:
       - "tests/FinancialManager.CashOperations.Tests/**"
       - "tests/FinancialManager.CashAccessIntegrity.Tests/**"
       - "tests/FinancialManager.CashGrantRequestIntegrity.Tests/**"
+      - "plugins/FinancialManager.MailDraftExecution/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -45,6 +46,7 @@ on:
       - "tests/FinancialManager.CashOperations.Tests/**"
       - "tests/FinancialManager.CashAccessIntegrity.Tests/**"
       - "tests/FinancialManager.CashGrantRequestIntegrity.Tests/**"
+      - "plugins/FinancialManager.MailDraftExecution/**"
       - "tools/DataverseDeployment/**"
       - "power-platform/solutions/FinancialManager/src/**"
       - ".github/workflows/dataverse-validation-tests.yml"
@@ -68,6 +70,8 @@ jobs:
           }
       - name: Build Dataverse deployment and integration verifier
         run: dotnet build tools/DataverseDeployment/DataverseDeployment.csproj --configuration Release --nologo
+      - name: Build authenticated FM11 Draft Custom API package (no deploy)
+        run: dotnet build plugins/FinancialManager.MailDraftExecution/FinancialManager.MailDraftExecution.csproj --configuration Release --nologo
       - name: Build isolated F5 synthetic rollback diagnostic (dev only)
         run: dotnet build plugins/FinancialManager.CashTrustProbe/FinancialManager.CashTrustProbe.csproj --configuration Release --nologo
       - name: Build independent F5 cash execution package (no deploy)
