@@ -1,4 +1,28 @@
 /** Lightweight UI preflight only. Dataverse remains final authority. */
+export function validDraftPenAmount(raw: string): boolean {
+  const value = raw.trim().replace(",", ".");
+  if (value === "") return true; // incomplete Drafts may be saved, never Posted
+  return (
+    /^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(value) &&
+    Number.isFinite(Number(value)) &&
+    Number(value) > 0 &&
+    Number(value) <= 999999999999
+  );
+}
+
+export function validDraftDate(value: string): boolean {
+  if (!value) return true; // incomplete Drafts may be saved
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(value + "T12:00:00.000Z");
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+export function draftPenValue(raw: string): number | null {
+  if (!validDraftPenAmount(raw)) throw new Error("Importe PEN inválido.");
+  const value = raw.trim().replace(",", ".");
+  return value === "" ? null : Number(value);
+}
+
 export function formatPenOnBlur(raw: string): string {
   const value = raw.trim().replace(",", ".");
   if (!/^(?:0|[1-9]\d*)(?:\.\d{0,2})?$/.test(value)) return raw;

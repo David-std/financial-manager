@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Database, RefreshCcw, ShieldCheck } from "lucide-react";
 import "./live-workspace.css";
-import { formatPenOnBlur, missingPostingFields } from "./infrastructure/data/expense-draft-rules";
+import {
+  draftPenValue,
+  formatPenOnBlur,
+  missingPostingFields,
+  validDraftPenAmount,
+  validDraftDate,
+} from "./infrastructure/data/expense-draft-rules";
 import type { DraftVersion } from "./infrastructure/data/conditional-draft";
 import {
   verifyDelegatedDataverseIdentity,
@@ -318,17 +324,11 @@ export default function LiveWorkspace() {
 
   async function saveDraft() {
     if (!repo || !selected || busy) return;
-    if (
-      amount.trim() &&
-      (!/^(?:0|[1-9]\\d*)(?:\\.\\d{1,2})?$/.test(amount.trim()) || Number(amount) <= 0)
-    ) {
+    if (!validDraftPenAmount(amount)) {
       setMessage("El importe debe ser positivo, con un máximo de dos decimales.");
       return;
     }
-    if (
-      date &&
-      (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date) || Number.isNaN(Date.parse(date + "T12:00:00Z")))
-    ) {
+    if (!validDraftDate(date)) {
       setMessage("Introduce una fecha válida.");
       return;
     }
@@ -363,7 +363,7 @@ export default function LiveWorkspace() {
     try {
       const penId = await repo.resolvePenCurrency();
       await repo.saveDraft(selected, {
-        fmg_amount: amount.trim() ? Number(amount) : null,
+        fmg_amount: draftPenValue(amount),
         fmg_transactiondate: date ? date + "T12:00:00.000Z" : null,
         fmg_description: description,
         fmg_documentreference: reference,
