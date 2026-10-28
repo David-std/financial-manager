@@ -102,8 +102,11 @@ internal static class CashGrantReviewStandbyDeployment
         return ids[0].ToString("D") + "|" + ids[1].ToString("D");
     }
 
-    public static int Run(ServiceClient svc, bool apply)
+    public static int Run(ServiceClient svc, bool apply, string? targetStep = null)
     {
+        if (targetStep != null &&
+            !Tables.Any(t => Verbs.Any(v => targetStep == t.Table + "_" + v)))
+            throw new InvalidOperationException("Invalid single-step selection.");
         CashGuardDeployment.Run(svc, false, true);
         CashGrantGuardDeployment.Steps(svc, false, true);
         CashGrantRequestGuardDeployment.Steps(svc, false, true);
@@ -125,6 +128,8 @@ internal static class CashGrantReviewStandbyDeployment
         {
             foreach (var verb in Verbs)
             {
+                if (targetStep != null && targetStep != table.Table + "_" + verb)
+                    continue;
                 var sdk = ExactlyOne(svc, "sdkmessage", "name", verb, "sdkmessageid");
                 var filterQuery = new QueryExpression("sdkmessagefilter")
                 {

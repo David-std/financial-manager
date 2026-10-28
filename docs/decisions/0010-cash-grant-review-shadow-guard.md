@@ -100,3 +100,21 @@ ran: the earlier rank-1 fail-closed guard prevents ordinary requests
 from reaching the later step. A real cutover requires independent
 connected verification and account-specific human approvals; a
 successful metadata registration alone would not be sufficient.
+
+### Registro de un paso por operación (checkpoint adicional)
+
+Para facilitar validación atómica, el CLI admite además
+`cash-review-standby-one --apply fmg_cashgrantrequest_Create`
+(y únicamente las otras cinco combinaciones de tabla/verbo autorizadas).
+La selección se valida antes de cualquier consulta de mutación; la
+verificación de los 24 bloqueos anteriores se mantiene completa, antes
+y después, aun cuando se seleccione un único paso.
+
+Se intentó exactamente **un** registro individual en la organización
+DEV verificada; la herramienta remota lo bloqueó **antes** de
+ejecutarlo. No existe por ello una respuesta de Dataverse ni un paso
+nuevo registrado que pueda darse por aceptado. No se intentaron los
+otros cinco registros, porque el primer intento no alcanzó el
+servidor. La comprobación local posterior: CLI 0 warnings/0 errors y
+91 pruebas Python verdes. La continuidad del despliegue necesita
+acceso de ejecución permitido y evidencia posterior del entorno.

@@ -20,6 +20,7 @@ class CashGrantReviewStandbyContractTests(unittest.TestCase):
     def test_only_explicit_apply_can_register_standby(self):
         self.assertIn('"cash-review-standby-inspect"', self.program)
         self.assertIn('"cash-review-standby-register"', self.program)
+        self.assertIn('"cash-review-standby-one"', self.program)
         self.assertIn('mode == "cash-review-standby-register"', self.program)
         self.assertIn("Mutation requires explicit --apply", self.program)
         self.assertNotIn('mode != "cash-review-standby-register" && !apply', self.program)
