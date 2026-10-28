@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="ObservedStage">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_CashTransactionReadiness.ObservedStage</name>
+  <type>7</type>
+</customapiresponseproperty>

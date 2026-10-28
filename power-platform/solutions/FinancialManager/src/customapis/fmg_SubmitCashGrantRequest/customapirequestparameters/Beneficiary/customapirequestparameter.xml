@@ -1,0 +1,7 @@
+<customapirequestparameter uniquename="Beneficiary">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <logicalentityname>systemuser</logicalentityname>
+  <name>fmg_SubmitCashGrantRequest.Beneficiary</name>
+  <type>5</type>
+</customapirequestparameter>

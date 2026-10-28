@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="SameIdentity">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_CashTransactionReadiness.SameIdentity</name>
+  <type>0</type>
+</customapiresponseproperty>

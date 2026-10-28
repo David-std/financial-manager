@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SdkMessageProcessingStep Name="F5_ReviewStandby_fmg_cashgrantrequest_Create" SdkMessageProcessingStepId="{1083834c-8ed2-f111-b618-70a8a5aca0ae}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SdkMessageId>9ebdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeExportKey>5192FDF41AAA1B0E41C9C60BD952391710E5052614EB44BC45B024BEECD6E60B</PluginTypeExportKey>
+  <PrimaryEntity>fmg_cashgrantrequest</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Configuration>29640b00-60d2-f111-b618-70a8a5aca0ae|0bc1070c-60d2-f111-b618-70a8a5aca0ae</Configuration>
+  <Description>Standby rank-2 review validator. Legacy rank-1 deny remains enabled.</Description>
+  <FilteringAttributes></FilteringAttributes>
+  <InvocationSource>0</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>2</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>10</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

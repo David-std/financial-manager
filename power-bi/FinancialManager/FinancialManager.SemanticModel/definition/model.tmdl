@@ -9,4 +9,6 @@ ref table DimBranch
 ref table DimCashAccount
 ref table DimDate
 
+ref role F6_DenyUntilAuthorizedBranchMembership
+
 expression DataverseHost = "SET_DATAVERSE_HOST" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]

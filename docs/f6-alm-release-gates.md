@@ -1,73 +1,77 @@
-# F6 · ALM y preparación de lanzamiento (incremento inicial)
+# F6 · ALM, seguridad y puertas de publicación
 
-**Entorno de origen:** `financial-manager-dev`.
-**Estado:** comprobación de origen y exportación pendiente; **no preparado para release administrada**.
-**Condición F5:** laboratorio aceptado, operaciones financieras bloqueadas por los 24 guardias; la prueba con otra identidad continúa pendiente.
+**Fuente:** solución real `FinancialManager`, exportada sin escrituras desde
+`financial-manager-dev` el 28/10/2026. **No es una aprobación productiva**.
 
-## 1. Fuente versionada frente al entorno DEV
+## Estado comprobado
 
-`power-platform/solutions/FinancialManager/src` sigue siendo la exportación
-`FinancialManager` versión `0.1.0.0`. El verificador local compara las Custom
-APIs financieras que sabemos desplegadas con los componentes **presentes en Git**.
-No lee secretos, no llama al entorno ni interpreta permisos de los usuarios.
+- Código fuente ahora actualizado desde el export real: 371 archivos;
+  siete Custom APIs obligatorias, **24** guardias rank-1,
+  **15** validadores standby rank-2 y **10** paquetes NuGet.
+- `python scripts/f6_alm_preflight.py` comprueba manifiesto, componentes,
+  ranks/stages de guardias, existencia e integridad ZIP de los NuGet.
+- `pac solution pack --packagetype Unmanaged` empaquetó localmente la
+  exportación a un ZIP temporal; **no se importó** en ningún entorno.
+- El manifiesto todavía declara **seis dependencias externas**:
+  tipo 61 (recurso app), `SettingDefinition` y cuatro
+  `uxagentproject`. También hubo advertencias de diez referencias
+  PluginAssembly no definidas en customizations. Requieren resolver
+  requisitos en el destino, aunque `pac solution pack` finalice.
+- `F6_SOURCE_SYNCED=true`, pero
+  **`F6_MANAGED_RELEASE_READY=false`**. La puerta `--release` debe
+  fallar con código 2 y bloquear etiquetas de release en CI.
 
-Ejecutar desde la raíz:
+## Inspección sin efectos externos
+
+Desde la raíz del repositorio:
 
 ```powershell
 python scripts/f6_alm_preflight.py
-python scripts/f6_alm_preflight.py --release
+python -m unittest discover -s tests -q
+python scripts/check_repository.py
+npm run check:workspace
+powerbi-report-author validate power-bi/FinancialManager/FinancialManager.pbip
 ```
 
-La primera ejecución permite recopilar evidencia de deriva. La segunda es una
-puerta **fail-closed**: hasta actualizar y revisar la fuente, debe devolver
-`F6_RELEASE_BLOCKED_UNTIL_REVIEWED_FRESH_DEV_EXPORT` y código distinto de cero.
-No cambiar esta regla para ocultar componentes ausentes.
-
-## 2. Refrescar la exportación de forma controlada
-
-Con `pac env who` confirmar que se sigue en DEV. Clonar a un directorio **nuevo
-fuera de Git** y comparar con el proyecto existente antes de reemplazarlo:
+Para inspeccionar el ZIP sin publicar, utilizar una ruta **nueva**
+bajo `$env:TEMP`:
 
 ```powershell
-pac env who
-$target = Join-Path $env:TEMP "FinancialManager-F6-unmanaged-review"
-if (Test-Path $target) { throw "No sobreescribir una exportación anterior." }
-pac solution clone --name FinancialManager --packagetype Unmanaged --outputDirectory $target
+pac solution pack --folder "power-platform/solutions/FinancialManager/src" `
+  --zipfile "$env:TEMP/FinancialManager-f6-review.zip" --packagetype Unmanaged
 ```
 
-**No** importar en DEV ni en otros entornos. Antes de copiar al repositorio:
-verificar nuevas Custom APIs, pasos del SDK, soluciones y componentes de la
-app basada en modelos, diferencias de formularios/vistas, referencias a
-conexiones, credenciales o URLs sensibles, y versión y dependencias. Confirmar
-que el nuevo export incluye los validadores standby y conserva activos todos
-los guardias originales. No confundir componentes del paquete con datos ni
-historiales; las filas y auditorías requieren un plan de migración distinto.
+No guardar el ZIP en Git, ni convertir el éxito del empaquetado en un
+resultado de importación. No ejecutar `pac solution import`,
+`publish` o `upgrade` sin autorización de un entorno destino aislado.
 
-## 3. Paquete local de comprobación, sin publicación
+## Pendientes para una release administrada
 
-Se permite `pac solution pack --packagetype Unmanaged` en `$env:TEMP` como
-inspección local de la fuente. No se considera un artefacto de producción:
-la solución controlada actualmente no contiene todas las APIs desplegadas.
-**No crear un paquete Managed** hasta tener exportación revisada y validación
-`--release` satisfactoria. Un `pack` exitoso no demuestra importación,
-seguridad, compatibilidad de dependencias ni funcionamiento de DataVerse.
+1. Decidir si se instala la app basada en modelos con sus dependencias
+   `uxagentproject` o se separa la solución operativa portable;
+   verificar con los fabricantes todas las dependencias requeridas.
+2. En un **entorno de aceptación separado y autorizado**, instalar
+   y comprobar los paquetes y Custom APIs, confirmar los 24 guardias
+   activos, auditar el estado de los 15 standby y demostrar que no hay
+   cobros/transferencias activadas sin grants.
+3. Registrar identidad de aplicación de despliegue, permisos mínimos,
+   environment variables, referencias de conexión y configuración
+   protegida; usar GitHub Environments con revisores/secretos, nunca
+   credenciales en el repositorio ni en artefactos.
+4. Ensayar importación administrada, comprobación de diferencias
+   y recuperación/rollback sobre el destino aislado, sin crear balances
+   productivos ni eliminar tablas como mecanismo de rollback.
+5. Aceptar la experiencia de usuario (teclado, zoom, lectura de
+   formularios), RLS de Power BI con usuarios Viewer de distintas
+   sedes, refresh y exportación autorizada, y la recuperación tras
+   errores de conexión o expiración de sesión.
+6. Tras estas evidencias, emitir una versión incrementada y artefacto
+   firmado con hash; nunca una etiqueta de release mientras
+   `python scripts/f6_alm_preflight.py --release` falle.
 
-## 4. Próximas puertas F6
+**F5 continúa cerrado únicamente en laboratorio.** No desactivar
+`F5G001`, `F5A009`, `F5Q009` ni conceder grants para pruebas F6.
+La UAT con segundo usuario sigue aplazada, no aprobada.
 
-- Aceptar exportación actualizada, verificador estricto y reproducibilidad del
-  ZIP, con revisión de soluciones y dependencias.
-- Crear un entorno objetivo aislado, plan de copia, instalación de solución
-  administrada y rollback **solo cuando se autorice explícitamente**.
-- Preparar pipelines y GitHub environments protegidos, sin poner secretos
-  en variables planas de código, y controles de permisos mínimos.
-- Revisar auditoría de cuentas de caja: el usuario confirmó `audited=True`
-  por interfaz y con `cash-live-entitysets-inspect`. Mantener retención
-  actual (30 días) hasta definir una política aprobada.
-- Preparar reporting Power BI, RLS y pruebas con un segundo usuario, sin
-  enseñar datos de demostración como datos de producción.
-- Mantener **F5Q009**, **F5A009**, **F5G001** y los 24 guardias activos.
-  No activar cobros/grants/transferencias como parte de ALM.
-
-**Alcance de aceptación:** inicio de F6 completado cuando la comprobación
-de deriva corre en CI y bloquea releases desde fuente obsoleta. El release
-de Power Platform continúa pendiente de exportación y revisión.
+Ver también [RLS y reporting](f6-reporting-rls.md) y
+[plan de recuperación](f6-release-recovery.md).

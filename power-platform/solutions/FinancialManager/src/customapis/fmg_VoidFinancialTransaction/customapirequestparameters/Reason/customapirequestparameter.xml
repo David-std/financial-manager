@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="Reason">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_VoidFinancialTransaction.Reason</name>
+  <type>10</type>
+</customapirequestparameter>

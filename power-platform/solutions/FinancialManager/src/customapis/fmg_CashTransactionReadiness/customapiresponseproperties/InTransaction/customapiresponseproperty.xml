@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="InTransaction">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_CashTransactionReadiness.InTransaction</name>
+  <type>0</type>
+</customapiresponseproperty>

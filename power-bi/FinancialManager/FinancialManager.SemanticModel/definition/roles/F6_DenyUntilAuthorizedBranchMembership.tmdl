@@ -1,0 +1,10 @@
+/// Fail-closed viewer role: no financial or dimensional rows until genuine
+/// per-branch membership and delegated model permissions are validated.
+role F6_DenyUntilAuthorizedBranchMembership
+	modelPermission: read
+
+	tablePermission FactPostedExpense = FALSE()
+	tablePermission DimCashAccount = FALSE()
+	tablePermission DimCategory = FALSE()
+	tablePermission DimBranch = FALSE()
+	tablePermission DimDate = FALSE()

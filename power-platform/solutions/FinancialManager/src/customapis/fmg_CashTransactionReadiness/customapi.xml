@@ -1,0 +1,19 @@
+<customapi uniquename="fmg_CashTransactionReadiness">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Execution context only; no financial data or writes.">
+    <label description="Execution context only; no financial data or writes." languagecode="3082" />
+  </description>
+  <displayname default="F5 Dataverse transaction diagnostic (read only)">
+    <label description="F5 Dataverse transaction diagnostic (read only)" languagecode="3082" />
+  </displayname>
+  <executeprivilegename>prvReadfmg_CashTransfer</executeprivilegename>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>fmg_CashTransactionReadiness</name>
+  <plugintypeid>
+    <plugintypeexportkey>7895A42CB6821B7B39AB5E15B8BBBEB1EB00D0C28FA575276BEB5EA46E504BB5</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

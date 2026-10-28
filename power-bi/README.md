@@ -37,6 +37,15 @@ The builder works with invented payment records and saves its generated PBIP und
 
 The desktop-report generator is in `scripts/build_power_bi_v8.py`; the phone-layout refinement is `scripts/polish_power_bi_mobile_v9.py`. All generated PBIR sources must conform to schema and all changes require actual Desktop rendering checks, including filtered data, date labels, scrollable content and accessibility.
 
+## F6 RLS security gate
+
+The TMDL role `F6_DenyUntilAuthorizedBranchMembership` currently denies rows
+across all five model tables. This is a **fail-closed interim role** and not
+real per-branch authorization. Publishing the model is blocked until the
+branch membership mapping, Viewer-only permission boundary, actual user
+acceptance and data reconciliation are completed. See
+[F6 reporting and RLS](../docs/f6-reporting-rls.md).
+
 ## Operational safeguards
 
 - Reporting refresh can lag transaction writes; disclose freshness rather than suggesting immediate consistency.

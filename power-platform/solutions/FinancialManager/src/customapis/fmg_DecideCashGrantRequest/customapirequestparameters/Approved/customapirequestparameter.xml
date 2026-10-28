@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="Approved">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_DecideCashGrantRequest.Approved</name>
+  <type>0</type>
+</customapirequestparameter>

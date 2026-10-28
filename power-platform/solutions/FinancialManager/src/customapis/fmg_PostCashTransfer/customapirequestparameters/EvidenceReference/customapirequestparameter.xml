@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="EvidenceReference">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_PostCashTransfer.EvidenceReference</name>
+  <type>10</type>
+</customapirequestparameter>

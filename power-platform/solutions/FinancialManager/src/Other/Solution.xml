@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ImportExportXml version="9.2.26094.146" SolutionPackageVersion="9.2" languagecode="3082" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26094.146" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26102.00122">
+<ImportExportXml version="9.2.26102.122" SolutionPackageVersion="9.2" languagecode="3082" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26102.122" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26102.00122">
   <SolutionManifest>
     <UniqueName>FinancialManager</UniqueName>
     <LocalizedNames>
@@ -78,12 +78,21 @@
       </Addresses>
     </Publisher>
     <RootComponents>
+      <RootComponent type="1" schemaName="fmg_accountopening" behavior="0" />
       <RootComponent type="1" schemaName="fmg_activityevent" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_bankreconciliation" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_bankstatement" behavior="0" />
       <RootComponent type="1" schemaName="fmg_branch" behavior="0" />
       <RootComponent type="1" schemaName="fmg_budget" behavior="0" />
       <RootComponent type="1" schemaName="fmg_budgetallocation" behavior="0" />
       <RootComponent type="1" schemaName="fmg_budgetapprovalclaim" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_cashaccessgrant" behavior="0" />
       <RootComponent type="1" schemaName="fmg_cashaccount" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_cashgrantrequest" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_cashposting" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_cashreceipt" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_cashtransfer" behavior="0" />
+      <RootComponent type="1" schemaName="fmg_cashtrustprobe" behavior="0" />
       <RootComponent type="1" schemaName="fmg_category" behavior="0" />
       <RootComponent type="1" schemaName="fmg_financialtransaction" behavior="0" />
       <RootComponent type="1" schemaName="systemuser" behavior="1" />
@@ -104,22 +113,72 @@
       <RootComponent type="9" schemaName="fmg_tipodedatosscope" behavior="0" />
       <RootComponent type="9" schemaName="fmg_tipodedatosstatus" behavior="0" />
       <RootComponent type="91" id="{1abe5a6c-68ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.BudgetIntegrity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{84dcd31c-76d1-f111-b377-70a8a5aca0ae}" schemaName="FinancialManager.CashAccessIntegrity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{6bc7408f-3ad2-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.CashExecution, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{00d1d56f-b7d1-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.CashGrantRequestIntegrity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{5dd7e9b5-09d1-f111-b377-70a8a5aca0ae}" schemaName="FinancialManager.CashIntegrity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{dd9989d6-69d1-f111-b377-70a8a5aca0ae}" schemaName="FinancialManager.CashOperations, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{6bd03606-5ed2-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.CashReviewExecution, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{e47cfe2e-d5d1-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.CashTrustProbe, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
+      <RootComponent type="91" id="{5e015dcf-89d2-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.PaymentExecution, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
       <RootComponent type="91" id="{31965de4-59ce-f111-b618-70a8a5aca0ae}" schemaName="FinancialManager.Validation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" behavior="0" />
       <RootComponent type="92" id="{0367fbaa-5dcf-f111-b377-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{0667fbaa-5dcf-f111-b377-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{0967fbaa-5dcf-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{1083834c-8ed2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{19e94d85-8ed2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{2b027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{2e027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{31027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{34027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{36470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{37027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{39470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{3a027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{3c470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{3d027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{3f470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{40027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{43027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{44470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{46027ed7-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{47470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{4a470dd7-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{6067adc1-8ed2-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{6979d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{6c79d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{6cd97c70-76d1-f111-b377-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{7079d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{7479d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{74d97c70-76d1-f111-b377-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{7779d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{77d97c70-76d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{79a17ddd-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{7a79d683-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{9d06bbde-8ed2-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{9e6e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{a16e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{a56e32f7-59ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{a8033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{ab033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{ad67d5d0-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
       <RootComponent type="92" id="{af033c7d-68ce-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{b067d5d0-96d2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{cb9ce8e6-b7d1-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{cf9ce8e6-b7d1-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{d0e0364e-d5d1-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{d29ce8e6-b7d1-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{d4e0364e-d5d1-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{d5fb8668-8ed2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{d77072a6-8ed2-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{d7e0364e-d5d1-f111-b618-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{eafc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{eefc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{f1fc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{f4fc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{f7fc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{fbfc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
+      <RootComponent type="92" id="{fefc7fd1-09d1-f111-b377-70a8a5aca0ae}" behavior="0" />
     </RootComponents>
     <MissingDependencies>
       <MissingDependency>

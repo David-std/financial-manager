@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SdkMessageProcessingStep Name="F5_CashStandby_fmg_cashposting_Update" SdkMessageProcessingStepId="{47470dd7-96d2-f111-b618-70a8a5aca0ae}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SdkMessageId>20bebb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeExportKey>8E6EB4FDBFF2F0AAB89ADD4CC0E979C9A759EAD81320EA4C383779DCB58A61FA</PluginTypeExportKey>
+  <PrimaryEntity>fmg_cashposting</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Configuration>1b52eccd-3ad2-f111-b618-70a8a5aca0ae|3fecf8d3-3ad2-f111-b618-70a8a5aca0ae</Configuration>
+  <Description>Standby rank-2 financial validator. Legacy rank-1 deny remains enabled.</Description>
+  <FilteringAttributes></FilteringAttributes>
+  <InvocationSource>0</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>2</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>10</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="OperationId">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_SettleCashReceipt.OperationId</name>
+  <type>12</type>
+</customapiresponseproperty>

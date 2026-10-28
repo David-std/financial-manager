@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="Recorded">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_DecideCashGrantRequest.Recorded</name>
+  <type>0</type>
+</customapiresponseproperty>

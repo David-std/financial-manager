@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="Completed">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_PostFinancialTransaction.Completed</name>
+  <type>0</type>
+</customapiresponseproperty>

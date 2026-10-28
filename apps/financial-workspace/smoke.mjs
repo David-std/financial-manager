@@ -37,6 +37,20 @@ try {
     waitUntil: "domcontentloaded",
     timeout: 30000,
   });
+  // F6: keyboard reachability and reduced-motion preference, not a WCAG certification.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.keyboard.press("Tab");
+  assert.ok(
+    ["BUTTON", "A", "INPUT"].includes(
+      await page.evaluate(() => document.activeElement?.tagName ?? ""),
+    ),
+    "First keyboard Tab reaches an interactive element",
+  );
+  assert.equal(
+    await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches),
+    true,
+    "Reduced-motion preference is exposed to the app",
+  );
   await test("Todo en orden");
   await test("Datos de muestra");
   await test("Registrar movimiento");

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{0fe95c0e-48cd-4f43-9af0-44713c5907bb}</savedqueryid>
+    <layoutxml>
+      <grid name="fmg_cashaccessgrants" jump="fmg_name" select="1" icon="1" preview="1">
+        <row name="fmg_cashaccessgrant" id="fmg_cashaccessgrantid">
+          <cell name="fmg_name" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>2</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="fmg_cashaccessgrant">
+          <attribute name="fmg_cashaccessgrantid" />
+          <attribute name="fmg_name" />
+          <attribute name="createdon" />
+          <order attribute="fmg_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Vista asociada de Cash Access Grant" languagecode="3082" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

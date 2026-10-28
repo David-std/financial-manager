@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="RecordId">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_VoidFinancialTransaction.RecordId</name>
+  <type>12</type>
+</customapirequestparameter>

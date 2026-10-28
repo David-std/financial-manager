@@ -1,0 +1,19 @@
+<customapi uniquename="fmg_CashNestedTrustProbe">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Creates two isolated synthetic rows and intentionally rolls them back.">
+    <label description="Creates two isolated synthetic rows and intentionally rolls them back." languagecode="3082" />
+  </description>
+  <displayname default="F5 synthetic nested-write rollback test (dev only)">
+    <label description="F5 synthetic nested-write rollback test (dev only)" languagecode="3082" />
+  </displayname>
+  <executeprivilegename>prvCreatefmg_CashTrustProbe</executeprivilegename>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>fmg_CashNestedTrustProbe</name>
+  <plugintypeid>
+    <plugintypeexportkey>070466D051AA1422BB7D8B345E85F8CB8F3864136BD148995B46BBE11181D9F1</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

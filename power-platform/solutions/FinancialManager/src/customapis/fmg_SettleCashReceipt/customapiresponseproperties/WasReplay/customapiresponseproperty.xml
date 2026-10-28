@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="WasReplay">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_SettleCashReceipt.WasReplay</name>
+  <type>0</type>
+</customapiresponseproperty>

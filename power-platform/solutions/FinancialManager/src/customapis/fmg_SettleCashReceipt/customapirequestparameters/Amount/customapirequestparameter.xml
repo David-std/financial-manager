@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="Amount">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_SettleCashReceipt.Amount</name>
+  <type>8</type>
+</customapirequestparameter>

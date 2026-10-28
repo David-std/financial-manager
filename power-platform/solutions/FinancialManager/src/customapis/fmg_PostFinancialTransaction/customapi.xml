@@ -1,0 +1,19 @@
+<customapi uniquename="fmg_PostFinancialTransaction">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Admin-restricted transactional payment command; FTV007 retained.">
+    <label description="Admin-restricted transactional payment command; FTV007 retained." languagecode="3082" />
+  </description>
+  <displayname default="Financial Manager protected expense fmg_PostFinancialTransaction">
+    <label description="Financial Manager protected expense fmg_PostFinancialTransaction" languagecode="3082" />
+  </displayname>
+  <executeprivilegename>prvWritefmg_financialtransaction</executeprivilegename>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>fmg_PostFinancialTransaction</name>
+  <plugintypeid>
+    <plugintypeexportkey>D3C6F017A0C1D9BF8A39BB5806EECC1F3D80F2254F66976343D74028F26ADCB8</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

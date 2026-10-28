@@ -1,0 +1,7 @@
+<customapirequestparameter uniquename="SourceAccount">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <logicalentityname>fmg_cashaccount</logicalentityname>
+  <name>fmg_PostCashTransfer.SourceAccount</name>
+  <type>5</type>
+</customapirequestparameter>

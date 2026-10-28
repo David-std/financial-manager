@@ -1,0 +1,19 @@
+<customapi uniquename="fmg_SubmitCashGrantRequest">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Cash grant review guarded by dual control; no direct CRUD.">
+    <label description="Cash grant review guarded by dual control; no direct CRUD." languagecode="3082" />
+  </description>
+  <displayname default="Financial Manager protected review fmg_SubmitCashGrantRequest">
+    <label description="Financial Manager protected review fmg_SubmitCashGrantRequest" languagecode="3082" />
+  </displayname>
+  <executeprivilegename>prvCreatefmg_CashGrantRequest</executeprivilegename>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>fmg_SubmitCashGrantRequest</name>
+  <plugintypeid>
+    <plugintypeexportkey>1B00D0AAD738A876F506A457DBBE9C60DF513F74B30BC3859FB7901BBB6B3B2E</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

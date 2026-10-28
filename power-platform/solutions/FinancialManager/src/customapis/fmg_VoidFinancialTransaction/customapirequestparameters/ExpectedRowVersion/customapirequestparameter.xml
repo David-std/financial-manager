@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="ExpectedRowVersion">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_VoidFinancialTransaction.ExpectedRowVersion</name>
+  <type>10</type>
+</customapirequestparameter>

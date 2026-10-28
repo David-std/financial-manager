@@ -1,0 +1,19 @@
+<customapi uniquename="fmg_SettleCashReceipt">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Protected F5 transaction endpoint; direct CRUD guarded.">
+    <label description="Protected F5 transaction endpoint; direct CRUD guarded." languagecode="3082" />
+  </description>
+  <displayname default="Financial Manager guarded fmg_SettleCashReceipt">
+    <label description="Financial Manager guarded fmg_SettleCashReceipt" languagecode="3082" />
+  </displayname>
+  <executeprivilegename>prvCreatefmg_CashReceipt</executeprivilegename>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>fmg_SettleCashReceipt</name>
+  <plugintypeid>
+    <plugintypeexportkey>08E694C697DF77EC3D68711C80BA18E8B0AEEE5CC3742CED460E47F976F186AB</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

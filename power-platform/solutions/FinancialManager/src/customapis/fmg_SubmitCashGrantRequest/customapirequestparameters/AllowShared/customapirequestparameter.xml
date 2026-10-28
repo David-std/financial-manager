@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="AllowShared">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_SubmitCashGrantRequest.AllowShared</name>
+  <type>0</type>
+</customapirequestparameter>

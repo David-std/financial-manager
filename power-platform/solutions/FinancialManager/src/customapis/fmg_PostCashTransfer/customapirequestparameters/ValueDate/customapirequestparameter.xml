@@ -1,0 +1,6 @@
+<customapirequestparameter uniquename="ValueDate">
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>fmg_PostCashTransfer.ValueDate</name>
+  <type>1</type>
+</customapirequestparameter>

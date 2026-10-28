@@ -1,0 +1,5 @@
+<customapiresponseproperty uniquename="CashWritesEnabled">
+  <iscustomizable>1</iscustomizable>
+  <name>fmg_CashTransactionReadiness.CashWritesEnabled</name>
+  <type>0</type>
+</customapiresponseproperty>
