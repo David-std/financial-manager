@@ -83,3 +83,41 @@ Changing a synthetic Draft from branch to shared or back clears both branch and 
 For a future delegated integration, use loadDraftForEdit to retrieve the opaque ETag before editing and conditionalDraftSave to PATCH with If-Match. test:concurrency simulates two separate sessions reading the same ETag and proves the later stale PATCH receives 412 and leaves the first edit intact. This is a deterministic simulation, **not** evidence that two real Dataverse users have completed UAT.
 
 The repository CI now builds the offline React app, runs the simulated two-session ETag contract and launches a headless Chromium acceptance flow (navigation, local Draft Shared/Branch changes, analysis, mobile widths). This browser acceptance is synthetic; it does not certify live Dataverse permissions, audit trails or independent licensed identities.
+
+## F4 delegated identity verification — opt-in, read-only (2026-10-27)
+
+An isolated Microsoft Entra / Dataverse identity **test page** is now available.
+This is **not a connected Workspace**, not an expense repository, not role
+acceptance, and not authorization to post, void or approve anything.
+
+1. Visit [Microsoft Entra App registrations](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade),
+   choose the **same tenant as financial-manager-dev**, and register a
+   single-tenant **Single-page application (SPA)**.
+2. In **Authentication → Add a platform → Single-page application**, add
+   exactly `http://localhost:5178/`. Do **not** select Web, add a client
+   secret, or enable implicit access/ID token flows.
+3. In **API permissions → Add a permission → APIs my organization uses**,
+   find **Dynamics CRM** (Dataverse), and grant the **delegated**
+   `user_impersonation` permission. An administrator must grant consent
+   when tenant policy requires it.
+4. Copy `.env.example` to `.env.local` in this workspace directory.
+   Set `VITE_FM_ENABLE_IDENTITY_CHECK=true`, the new **client ID**,
+   **directory/tenant ID**, and the Dataverse **Organization URL** and
+   **Organization ID**, independently verified using `pac env who`.
+   Do **not** commit `.env.local`, screenshots with tokens, or secrets.
+5. Run `npm ci` then `npm run dev -- --host localhost` and open
+   `http://localhost:5178/?verify=identity`. Click **Iniciar sesión y
+   verificar WhoAmI**. On success, the page confirms the Dataverse user
+   and exact organization, without displaying the token or altering rows.
+
+The existing `http://127.0.0.1:5178/` offline demo is unchanged. The
+test page is inaccessible from the app unless the Vite flag is set and
+the query `verify=identity` is supplied. Localhost is deliberately used
+for the Entra SPA redirect; HTTP `127.0.0.1` can require manual manifest
+editing in Entra and should not be used here.
+
+This page uses the `@azure/msal-browser` authorization-code + PKCE
+flow with an in-memory token cache, reads only Web API `WhoAmI`, and
+checks the returned organization GUID. An ordinary user's successful
+WhoAmI does **not** prove access to finance records, successful CORS in
+every browser, role segregation or readiness of F3/F4 financial commands.
