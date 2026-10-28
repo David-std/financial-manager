@@ -50,6 +50,20 @@ No guardar el ZIP en Git, ni convertir el éxito del empaquetado en un
 resultado de importación. No ejecutar `pac solution import`,
 `publish` o `upgrade` sin autorización de un entorno destino aislado.
 
+## Etiquetas de código fuente, distintas de una publicación
+
+Se permite una etiqueta anotada bajo `checkpoint/` para identificar un
+estado verificable de código y documentación, incluso si
+`F6_MANAGED_RELEASE_READY=false`. Estos checkpoints son **no productivos**:
+no contienen aprobación de importación, artefactos de despliegue ni habilitan
+caja o conciliación. Su mensaje debe enumerar los bloqueos pendientes.
+
+La CI valida el código de cualquier tag, pero reserva el gate
+`python scripts/f6_alm_preflight.py --release` para las etiquetas
+que **no** pertenecen a `checkpoint/`. Una etiqueta de publicación
+ordinaria (incluida `v0.1.0`) continúa bloqueada hasta completar la
+aceptación de dependencias, importación administrada y controles F5/F6.
+
 ## Pendientes para una release administrada
 
 1. En el entorno de destino, confirmar o instalar las dos soluciones

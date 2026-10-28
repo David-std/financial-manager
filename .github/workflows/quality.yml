@@ -26,9 +26,14 @@ jobs:
         run: python scripts/f6_alm_preflight.py
       - name: F6 managed Microsoft and UX project dependency inventory
         run: python scripts/f6_dependencies.py
-      - name: Block release tags from stale solution source
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Block deployable release tags until F6 import is accepted
+        if: startsWith(github.ref, 'refs/tags/') && !startsWith(github.ref, 'refs/tags/checkpoint/')
         run: python scripts/f6_alm_preflight.py --release
+      - name: Validate nondeployable source checkpoint tags
+        if: startsWith(github.ref, 'refs/tags/checkpoint/')
+        run: |
+          python scripts/f6_alm_preflight.py
+          python scripts/f6_dependencies.py
       - name: Check Power Apps navigation and financial UI guardrails
         run: python scripts/check_model_app.py
       - name: Set up Node for source formatting
