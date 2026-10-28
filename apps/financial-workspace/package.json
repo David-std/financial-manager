@@ -20,7 +20,8 @@
     "test:payment": "node payment-command.test.mjs",
     "test:expense-draft": "node expense-draft-rules.test.mjs",
     "test:draft-reopen": "node draft-editor-state.test.mjs",
-    "test:cash-readonly": "node cash-readonly.test.mjs"
+    "test:cash-readonly": "node cash-readonly.test.mjs",
+    "test:form-guidance": "node live-form-guidance.test.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.27.0",

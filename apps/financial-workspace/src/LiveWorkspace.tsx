@@ -139,15 +139,46 @@ export default function LiveWorkspace() {
     "Inicia sesión para consultar las operaciones a las que tienes acceso.",
   );
 
-  const missingDraftFields = selected
-    ? [
-        ...(!amount.trim() || !validDraftPenAmount(amount) ? ["importe positivo en PEN"] : []),
-        ...(!date || !validDraftDate(date) ? ["fecha válida"] : []),
-        ...(!categoryId ? ["categoría activa"] : []),
-        ...(scopeCode === "797280000" && !branchId ? ["sede"] : []),
-        ...(!accountId ? ["cuenta autorizada"] : []),
-      ]
-    : [];
+  // Field-level guidance is displayed inside the opened Draft, never in list cells.
+  // Saving an incomplete Draft is allowed; server-side Post checks remain authoritative.
+  const categoryAvailable = pages.categories.rows.some(
+    (row) =>
+      row.fmg_categoryid === categoryId && row.fmg_isactive === true && row.fmg_isgroup !== true,
+  );
+  const branchAvailable = pages.branches.rows.some(
+    (row) => row.fmg_branchid === branchId && row.fmg_isactive === true,
+  );
+  const accountAvailable = pages.accounts.rows.some(
+    (row) =>
+      row.fmg_cashaccountid === accountId &&
+      row.fmg_isactive === true &&
+      (scopeCode === "797280000"
+        ? Boolean(branchId) &&
+          String(row._fmg_branch_value ?? "").toLowerCase() === branchId.toLowerCase()
+        : !row._fmg_branch_value),
+  );
+  const draftIssues = selected
+    ? {
+        amount: !amount.trim()
+          ? "Falta indicar un importe positivo en PEN."
+          : !validDraftPenAmount(amount)
+            ? "El importe debe ser positivo y tener como máximo dos decimales."
+            : "",
+        date: !date || !validDraftDate(date) ? "Falta seleccionar una fecha válida." : "",
+        category:
+          !categoryId || !categoryAvailable
+            ? "Falta elegir una categoría activa y autorizada."
+            : "",
+        branch:
+          scopeCode === "797280000" && (!branchId || !branchAvailable)
+            ? "Falta elegir una sede activa."
+            : "",
+        account:
+          !accountId || !accountAvailable
+            ? "Falta elegir una cuenta activa compatible con el ámbito y la sede."
+            : "",
+      }
+    : null;
 
   async function fetchAll(source: DelegatedLiveRepository) {
     const results = await Promise.allSettled(
@@ -290,9 +321,7 @@ export default function LiveWorkspace() {
       const missing = missingPostingFields(value.record);
       setMessage(
         missing.length
-          ? "Borrador recuperado de Dataverse; aún faltan campos persistidos para contabilizar: " +
-              missing.join(", ") +
-              ". Completa y guarda los datos."
+          ? "Borrador recuperado de Dataverse. Revisa las indicaciones bajo cada campo."
           : "Borrador recuperado de Dataverse con sus campos y ETag.",
       );
     } catch (err) {
@@ -399,9 +428,7 @@ export default function LiveWorkspace() {
       const missing = missingPostingFields(reloaded.record);
       setMessage(
         missing.length
-          ? "Borrador guardado en Dataverse. Para contabilizar todavía faltan: " +
-              missing.join(", ") +
-              "."
+          ? "Borrador guardado en Dataverse. Revisa las indicaciones bajo los campos antes de contabilizar."
           : "Borrador guardado y releído de Dataverse; los datos requeridos están presentes.",
       );
     } catch (err) {
@@ -584,13 +611,37 @@ export default function LiveWorkspace() {
                       inputMode="decimal"
                       value={amount}
                       placeholder="0.00"
+                      aria-invalid={Boolean(draftIssues?.amount)}
+                      aria-describedby={draftIssues?.amount ? "live-draft-amount-error" : undefined}
                       onChange={(e) => setAmount(e.target.value)}
                       onBlur={() => setAmount((current) => formatPenOnBlur(current))}
                     />
+                    {draftIssues?.amount && (
+                      <small className="live-field-error" id="live-draft-amount-error">
+                        <span aria-hidden="true" className="live-field-question">
+                          ?
+                        </span>
+                        {draftIssues.amount}
+                      </small>
+                    )}
                   </label>
                   <label>
                     Fecha <span aria-label="Obligatorio para contabilizar">*</span>{" "}
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      aria-invalid={Boolean(draftIssues?.date)}
+                      aria-describedby={draftIssues?.date ? "live-draft-date-error" : undefined}
+                    />
+                    {draftIssues?.date && (
+                      <small className="live-field-error" id="live-draft-date-error">
+                        <span aria-hidden="true" className="live-field-question">
+                          ?
+                        </span>
+                        {draftIssues.date}
+                      </small>
+                    )}
                   </label>
                   <label>
                     Descripción{" "}
@@ -629,6 +680,10 @@ export default function LiveWorkspace() {
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
                       disabled={Boolean(issues.categories)}
+                      aria-invalid={Boolean(draftIssues?.category)}
+                      aria-describedby={
+                        draftIssues?.category ? "live-draft-category-error" : undefined
+                      }
                     >
                       <option value="">Sin categoría</option>
                       {categoryId &&
@@ -648,6 +703,14 @@ export default function LiveWorkspace() {
                           </option>
                         ))}
                     </select>
+                    {draftIssues?.category && (
+                      <small className="live-field-error" id="live-draft-category-error">
+                        <span aria-hidden="true" className="live-field-question">
+                          ?
+                        </span>
+                        {draftIssues.category}
+                      </small>
+                    )}
                   </label>
                   {scopeCode === "797280000" && (
                     <label>
@@ -659,6 +722,10 @@ export default function LiveWorkspace() {
                           setAccountId("");
                         }}
                         disabled={Boolean(issues.branches)}
+                        aria-invalid={Boolean(draftIssues?.branch)}
+                        aria-describedby={
+                          draftIssues?.branch ? "live-draft-branch-error" : undefined
+                        }
                       >
                         <option value="">Seleccionar sede</option>
                         {pages.branches.rows
@@ -669,6 +736,14 @@ export default function LiveWorkspace() {
                             </option>
                           ))}
                       </select>
+                      {draftIssues?.branch && (
+                        <small className="live-field-error" id="live-draft-branch-error">
+                          <span aria-hidden="true" className="live-field-question">
+                            ?
+                          </span>
+                          {draftIssues.branch}
+                        </small>
+                      )}
                     </label>
                   )}
                   <label>
@@ -677,6 +752,10 @@ export default function LiveWorkspace() {
                       value={accountId}
                       onChange={(e) => setAccountId(e.target.value)}
                       disabled={Boolean(issues.accounts)}
+                      aria-invalid={Boolean(draftIssues?.account)}
+                      aria-describedby={
+                        draftIssues?.account ? "live-draft-account-error" : undefined
+                      }
                     >
                       <option value="">Sin cuenta</option>
                       {accountId &&
@@ -704,6 +783,14 @@ export default function LiveWorkspace() {
                           </option>
                         ))}
                     </select>
+                    {draftIssues?.account && (
+                      <small className="live-field-error" id="live-draft-account-error">
+                        <span aria-hidden="true" className="live-field-question">
+                          ?
+                        </span>
+                        {draftIssues.account}
+                      </small>
+                    )}
                   </label>
                   <p className="live-field-help">
                     * Obligatorio para contabilizar; puedes guardar un borrador incompleto.
@@ -713,11 +800,9 @@ export default function LiveWorkspace() {
                     al guardar. Cambiar sede o ámbito limpia la cuenta anterior.
                   </p>
                   <p className="live-field-help" role="status" aria-live="polite">
-                    {missingDraftFields.length
-                      ? "Pendiente para contabilizar: " +
-                        missingDraftFields.join(", ") +
-                        ". Guarda el borrador y completa estos datos antes de publicar."
-                      : "Campos de formulario completos. Guarda y relee el borrador; la moneda PEN y los demás controles se verifican en Dataverse."}
+                    {draftIssues && Object.values(draftIssues).some(Boolean)
+                      ? "Completa los campos señalados con ? antes de contabilizar. Puedes seguir guardando este borrador."
+                      : "Campos completos en el formulario. Guarda y relee el borrador para verificar PEN y permisos en Dataverse."}
                   </p>
                   <div className="live-draft-actions">
                     <button type="submit" disabled={busy}>
@@ -802,25 +887,13 @@ export default function LiveWorkspace() {
                           {paymentCommandsEnabled && row.fmg_status === 797280000 && (
                             <button
                               disabled={busy || missingPostingFields(row).length > 0}
-                              title={
-                                missingPostingFields(row).length
-                                  ? "Completar antes de contabilizar: " +
-                                    missingPostingFields(row).join(", ")
-                                  : "Contabilizar borrador válido"
-                              }
+                              title="Abre el borrador para completarlo y guardarlo antes de contabilizar."
                               onClick={() => void command("post", row)}
                             >
                               Contabilizar
                             </button>
                           )}
-                          {paymentCommandsEnabled &&
-                            row.fmg_status === 797280000 &&
-                            missingPostingFields(row).length > 0 && (
-                              <small className="live-post-hint">
-                                Faltan: {missingPostingFields(row).join(", ")}. Abre el borrador
-                                para completarlo.
-                              </small>
-                            )}
+
                           {paymentCommandsEnabled && row.fmg_status === 797280001 && (
                             <button disabled={busy} onClick={() => void command("void", row)}>
                               Anular

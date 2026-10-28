@@ -380,7 +380,9 @@
 }
 
 .live-cash-access {
-  margin: 16px 0 22px;
+  width: 100%;
+  max-width: 1320px;
+  margin: 16px auto 22px;
 }
 .live-cash-access > button {
   border: 1px solid #ccdcd5;
@@ -431,4 +433,33 @@
 }
 .live-cash-readonly .live-field-help {
   font-size: 11px;
+}
+
+/* Draft errors sit below their own controls, not inside the movements table. */
+.live-draft-editor .live-field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: #a62d37;
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 650;
+  max-width: 100%;
+}
+.live-draft-editor .live-field-question {
+  display: inline-flex;
+  flex: 0 0 17px;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid #a62d37;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+.live-draft-editor [aria-invalid="true"] {
+  border-color: #bc4852;
+  box-shadow: 0 0 0 1px #bc485233;
 }
