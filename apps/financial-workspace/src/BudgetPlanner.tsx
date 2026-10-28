@@ -36,6 +36,14 @@ export default function BudgetPlanner({
   const [nextLine, setNextLine] = useState(1);
   const [error, setError] = useState("");
   const plans = state.budgets;
+  const allLines = plans.flatMap((plan) => plan.lines);
+  const planValue = allLines.reduce((sum, line) => sum + line.amount, 0);
+  const plannedMonths = new Set(
+    allLines.filter((line) => line.amount > 0).map((line) => line.month),
+  ).size;
+  const plannedCategories = new Set(
+    allLines.filter((line) => line.amount > 0).map((line) => line.category),
+  ).size;
   const active = plans.find((p) => p.id === selected);
   const shown =
     form ??
@@ -165,6 +173,39 @@ export default function BudgetPlanner({
         <button className="plan-new" onClick={create}>
           <FilePlus2 size={17} /> Nuevo presupuesto
         </button>
+      </div>
+      <div className="plan-pulse" aria-label="Resumen de la planificación">
+        <div className="plan-pulse-lead">
+          <span>PLANIFICACIÓN TOTAL</span>
+          <strong>{compact(planValue)}</strong>
+          <small>Suma de presupuestos en preparación</small>
+        </div>
+        <div>
+          <span>Meses con asignaciones</span>
+          <strong>
+            {plannedMonths} <small>de 12</small>
+          </strong>
+          <div
+            className="plan-pulse-meter"
+            role="meter"
+            aria-valuemin={0}
+            aria-valuemax={12}
+            aria-valuenow={plannedMonths}
+            aria-label="Cobertura mensual"
+          >
+            <span style={{ width: (plannedMonths / 12) * 100 + "%" }} />
+          </div>
+        </div>
+        <div>
+          <span>Categorías planificadas</span>
+          <strong>{plannedCategories}</strong>
+          <small>Con al menos una asignación positiva</small>
+        </div>
+        <div>
+          <span>Asignaciones positivas</span>
+          <strong>{allLines.filter((line) => line.amount > 0).length}</strong>
+          <small>Distribuidas entre ejercicios y meses</small>
+        </div>
       </div>
       <div className="plan-grid">
         <aside className="plan-library">

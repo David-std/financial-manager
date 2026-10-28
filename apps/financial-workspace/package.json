@@ -11,7 +11,9 @@
     "test:analytics": "node analytics-model.test.mjs",
     "test:contracts": "node data-access.test.mjs",
     "test:transport": "node dataverse-transport.test.mjs",
-    "test:concurrency": "node concurrent-draft.test.mjs"
+    "test:concurrency": "node concurrent-draft.test.mjs",
+    "test:live": "node live-dataverse.test.mjs",
+    "test:ui": "node smoke.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.27.0",

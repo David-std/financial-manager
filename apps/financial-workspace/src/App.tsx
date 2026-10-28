@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
+  Database,
   Copy,
   Download,
   LayoutDashboard,
@@ -256,6 +257,29 @@ function App() {
     }));
     return { total, shared, count: filtered.length, monthly, byCategory, byFlow };
   }, [filtered]);
+  const categoryInsights = useMemo(() => {
+    const total = summary.total;
+    const ordered = summary.byCategory;
+    const top = ordered[0];
+    const accounts = new Set(filtered.map((item) => item.account).filter(Boolean)).size;
+    const months = Array.from({ length: 12 }, (_, index) =>
+      filtered
+        .filter((item) => Number(item.date.slice(5, 7)) === index + 1)
+        .reduce((sum, item) => sum + item.amount, 0),
+    );
+    const maxMonth = Math.max(...months, 0);
+    const peakIndex = months.indexOf(maxMonth);
+    return {
+      categories: ordered.length,
+      accounts,
+      top,
+      share: total && top ? (top.amount / total) * 100 : 0,
+      average: filtered.length ? total / filtered.length : 0,
+      months,
+      maxMonth,
+      peakLabel: maxMonth > 0 ? MONTHS[peakIndex] : "Sin movimientos",
+    };
+  }, [filtered, summary]);
   const latest = useMemo(
     () => [...filtered].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)),
     [filtered],
@@ -304,7 +328,7 @@ function App() {
     const href = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = href;
-    a.download = `financial-manager-DEMO-${year}${month ? "-" + month : ""}.csv`;
+    a.download = `financial-manager-movimientos-${year}${month ? "-" + month : ""}.csv`;
     a.click();
     URL.revokeObjectURL(href);
   };
@@ -370,7 +394,7 @@ function App() {
           <span className="avatar">FM</span>
           <span>
             <b>Espacio financiero</b>
-            <small>Entorno local</small>
+            <small>Sesión en este navegador</small>
           </span>
           <span className="profile-circle" />
         </div>
@@ -402,13 +426,22 @@ function App() {
             <b>{NAV.find((n) => n.id === page)?.label}</b>
           </div>
           <div className="top-actions">
-            <span className="status-dot" />{" "}
+            {import.meta.env.VITE_FM_ENABLE_LIVE_READ === "true" && (
+              <a
+                className="workspace-live-link"
+                href="/?mode=live"
+                aria-label="Consultar registros en Dataverse"
+              >
+                <Database size={15} aria-hidden="true" />
+                <span className="workspace-live-label">Consultar Dataverse</span>
+              </a>
+            )}
             <button
-              className="environment-indicator"
+              className="workspace-source-info"
               onClick={() => setHelpOpen(true)}
-              title="Datos de ejemplo y operaciones locales"
+              title="Información sobre la procedencia de los datos"
             >
-              Entorno de ejemplo
+              Datos de muestra
             </button>
             <button
               className="icon-button"
@@ -429,10 +462,10 @@ function App() {
         </header>
         <main className="content">
           {(page === "inicio" || page === "categorias") && (
-            <div className={`hero ${page === "categorias" ? "hero-compact" : ""}`}>
+            <div className={`hero ${page === "categorias" ? "hero-compact hero-category" : ""}`}>
               <div className="hero-copy">
                 <span className="hero-overline">
-                  <span /> FINANZAS MÁS CLARAS, CADA DÍA
+                  {page === "inicio" ? "CONTROL FINANCIERO" : "EXPLORADOR DE CATEGORÍAS"}
                 </span>
                 <h1>
                   {page === "inicio" ? (
@@ -443,24 +476,31 @@ function App() {
                     </>
                   ) : (
                     <>
-                      Cada categoría,
+                      El gasto,
                       <br />
-                      <em>en perspectiva.</em>
+                      <em>bajo la lupa.</em>
                     </>
                   )}
                 </h1>
                 <p>
                   {page === "inicio"
                     ? "Una vista tranquila de lo importante: gastos, movimientos y decisiones."
-                    : "Profundiza por categoría y cuenta: importes, frecuencia y movimientos en su contexto."}
+                    : "Localiza dónde se concentra el presupuesto y abre los movimientos que explican cada cifra."}
                 </p>
               </div>
               <div className="hero-aside">
-                <span className="hero-decoration" aria-hidden="true">
-                  ✳
-                </span>
-                <span className="hero-year">{year}</span>
-                <span className="hero-period">GESTIÓN FINANCIERA</span>
+                {page === "categorias" ? (
+                  <div className="hero-category-fact" aria-label="Resumen del período">
+                    <span>Ejercicio {year}</span>
+                    <strong>{categoryInsights.categories}</strong>
+                    <small>categorías con movimientos</small>
+                  </div>
+                ) : (
+                  <>
+                    <span className="hero-year">{year}</span>
+                    <span className="hero-period">GESTIÓN FINANCIERA</span>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -846,6 +886,56 @@ function App() {
           )}
           {page === "categorias" && (
             <>
+              <section className="category-brief" aria-label="Lectura ejecutiva de categorías">
+                <div className="category-brief-overview">
+                  <span className="eyebrow">CATEGORÍA PRINCIPAL</span>
+                  <h2>{categoryInsights.top?.name ?? "Sin movimientos"}</h2>
+                  <p>
+                    {categoryInsights.top
+                      ? `${compact(categoryInsights.top.amount)} en ${number.format(categoryInsights.top.count)} movimientos. Representa el ${categoryInsights.share.toFixed(1)} % del importe filtrado.`
+                      : "Selecciona otro período para revisar la distribución del gasto."}
+                  </p>
+                  {categoryInsights.top && (
+                    <button
+                      onClick={() => {
+                        setCategory(categoryInsights.top!.name);
+                        navigate("movimientos");
+                      }}
+                    >
+                      Examinar movimientos <ArrowRight size={15} />
+                    </button>
+                  )}
+                </div>
+                <div className="category-brief-stat">
+                  <span>Importe promedio</span>
+                  <strong>{compact(categoryInsights.average)}</strong>
+                  <small>Por movimiento del período</small>
+                </div>
+                <div className="category-brief-stat">
+                  <span>Cuentas involucradas</span>
+                  <strong>{categoryInsights.accounts}</strong>
+                  <small>Con movimientos registrados</small>
+                </div>
+                <div className="category-brief-trend">
+                  <div>
+                    <span>Distribución mensual</span>
+                    <strong>
+                      {categoryInsights.peakLabel} <small>mayor importe</small>
+                    </strong>
+                  </div>
+                  <div className="category-brief-bars" aria-label="Importes mensuales relativos">
+                    {categoryInsights.months.map((amount, index) => (
+                      <span
+                        key={index}
+                        title={`${MONTHS[index]}: ${pen.format(amount)}`}
+                        style={{
+                          height: `${categoryInsights.maxMonth ? Math.max(5, (amount / categoryInsights.maxMonth) * 100) : 5}%`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </section>
               <SectionHead
                 eyebrow="EXPLORACIÓN FINANCIERA"
                 title="Comprende el origen del gasto"
@@ -893,10 +983,8 @@ function App() {
             />
           )}
           <footer className="main-footer">
-            <span>
-              <span className="footer-glyph">✳</span> Financial Manager
-            </span>
-            <span>Control de gastos · PEN</span>
+            <span>Financial Manager</span>
+            <span>Importes expresados en soles peruanos</span>
           </footer>
         </main>
       </div>
@@ -986,17 +1074,17 @@ function App() {
               <X size={19} />
             </button>
             <IconBubble icon={ShieldCheck} tone="mint" />
-            <h2 id="help-heading">Entorno de ejemplo</h2>
+            <h2 id="help-heading">Sobre los datos de esta vista</h2>
             <p>
-              Este prototipo funciona sin autenticación de Microsoft ni conexión a Dataverse.
-              Utiliza exclusivamente los mismos 310 movimientos inventados empleados para probar
-              Power BI.
+              Los gráficos y movimientos de esta vista utilizan datos de muestra para explorar el
+              producto. Las consultas a datos empresariales se realizan en la vista conectada
+              mediante Microsoft Entra y Dataverse.
             </p>
             <p>
-              Los borradores y las asignaciones que edites aquí solo se mantienen durante esta
-              sesión; al recargar desaparecen. No se envían pagos ni presupuestos al servidor. Las
-              operaciones reales se realizarán con identidad Microsoft Entra, autorización Dataverse
-              y reglas financieras verificadas; Fabric no es obligatorio para esa integración.
+              Las anotaciones y los borradores de esta vista permanecen en el navegador y no se
+              envían a Dataverse. Para consultar información real, usa «Consultar Dataverse» e
+              inicia sesión. Las operaciones financieras protegidas requieren autorización adicional
+              del servidor.
             </p>
             <button className="primary-button" onClick={() => setHelpOpen(false)}>
               Entendido <ArrowRight size={16} />

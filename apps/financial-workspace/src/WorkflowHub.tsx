@@ -4,7 +4,6 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
-  CircleDot,
   ClipboardList,
   FilePenLine,
   FolderOpen,
@@ -36,14 +35,14 @@ function EventFeed({ events, limit = 10 }: { events: SessionEvent[]; limit?: num
         events.slice(0, limit).map((e) => (
           <div className="work-event" key={e.sequence}>
             <span className="work-event-marker">
-              <CircleDot size={13} />
+              <History size={13} />
             </span>
             <div>
               <span className="work-event-title">
-                <strong>{e.action}</strong> · {e.object}
+                <strong>{e.action}</strong> de {e.object.toLowerCase()}
               </span>
               <p>
-                {e.summary} · <code>{e.reference}</code>
+                {e.summary}. Referencia: <code>{e.reference}</code>
               </p>
               <time dateTime={e.at}>
                 {new Date(e.at).toLocaleString("es-PE", {
@@ -105,6 +104,12 @@ export default function WorkflowHub({
       [i.title, i.id, i.detail].join(" ").toLowerCase().includes(search.toLowerCase()),
   );
   const attention = items.filter((i) => i.missing.length);
+  const ready = items.length - attention.length;
+  const eventSummary = {
+    created: state.events.filter((event) => event.action === "Creación").length,
+    edited: state.events.filter((event) => event.action === "Edición").length,
+    discarded: state.events.filter((event) => event.action === "Descarte").length,
+  };
   if (view === "auditoria")
     return (
       <section className="audit-workspace">
@@ -119,6 +124,35 @@ export default function WorkflowHub({
               Consulta la secuencia de operaciones realizadas durante esta sesión. Cada evento
               conserva su referencia y momento.
             </p>
+          </div>
+        </div>
+        <div className="audit-metrics" aria-label="Resumen de cambios registrados">
+          <div>
+            <span>Creaciones</span>
+            <strong>{eventSummary.created}</strong>
+            <small>Registros iniciados</small>
+          </div>
+          <div>
+            <span>Ediciones</span>
+            <strong>{eventSummary.edited}</strong>
+            <small>Borradores actualizados</small>
+          </div>
+          <div>
+            <span>Descartes</span>
+            <strong>{eventSummary.discarded}</strong>
+            <small>Elementos retirados</small>
+          </div>
+          <div>
+            <span>Última modificación</span>
+            <strong className="audit-recent">
+              {state.events.length
+                ? new Date(state.events[0].at).toLocaleString("es-PE", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })
+                : "Sin cambios"}
+            </strong>
+            <small>Hora del navegador</small>
           </div>
         </div>
         <div className="audit-layout">
@@ -186,6 +220,29 @@ export default function WorkflowHub({
           <CalendarDays size={19} />
         </div>
       </div>
+      <div className="work-priority" role="status">
+        <div>
+          <span className="eyebrow">ESTADO DE PREPARACIÓN</span>
+          <strong>
+            {ready} de {items.length} borradores con datos básicos completos
+          </strong>
+          <p>
+            {attention.length
+              ? `${attention.length} registros necesitan datos antes de continuar.`
+              : "No hay registros con campos básicos pendientes."}
+          </p>
+        </div>
+        <div
+          className="work-priority-meter"
+          role="meter"
+          aria-valuemin={0}
+          aria-valuemax={Math.max(1, items.length)}
+          aria-valuenow={ready}
+          aria-label="Borradores con datos completos"
+        >
+          <span style={{ width: `${items.length ? (100 * ready) / items.length : 0}%` }} />
+        </div>
+      </div>
       <div className="work-layout">
         <div className="work-main">
           <div className="work-list-toolbar">
@@ -229,7 +286,7 @@ export default function WorkflowHub({
                   <span className="work-record-details">
                     <strong>{item.title}</strong>
                     <small>
-                      {item.id} · {item.detail}
+                      {item.id}: {item.detail}
                     </small>
                     <span className="work-tags">
                       {item.missing.length ? (

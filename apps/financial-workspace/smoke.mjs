@@ -38,7 +38,7 @@ try {
     timeout: 30000,
   });
   await test("Todo en orden");
-  await test("Entorno de ejemplo");
+  await test("Datos de muestra");
   await test("Registrar movimiento");
   assert.equal(
     await page.locator(".month-pills button").nth(11).isDisabled(),
@@ -93,6 +93,12 @@ try {
   // Category hierarchy is powered by confirmed fixture data, not drafts.
   await nav("Categorías");
   await test("Distribución por categorías");
+  await test("CATEGORÍA PRINCIPAL");
+  assert.equal(
+    await page.locator(".hero-category .hero-decoration").count(),
+    0,
+    "No floating illustration over category year",
+  );
   assert.ok((await page.locator(".treemap-tile").count()) >= 5);
   const treemapArea = await page
     .locator(".treemap-tile")
@@ -229,6 +235,19 @@ try {
     if (width <= 760) await page.getByRole("button", { name: "Abrir navegación" }).click();
     await nav("Categorías");
     await noOverflow("Category root overflow at " + width);
+    const heroCollision = await page.locator(".hero-category").evaluate((hero) => {
+      const copy = hero.querySelector(".hero-copy")?.getBoundingClientRect();
+      const aside = hero.querySelector(".hero-aside");
+      if (!copy || !aside || getComputedStyle(aside).display === "none") return false;
+      const fact = aside.getBoundingClientRect();
+      return (
+        copy.left < fact.right &&
+        copy.right > fact.left &&
+        copy.top < fact.bottom &&
+        copy.bottom > fact.top
+      );
+    });
+    assert.equal(heroCollision, false, "Category hero information may not overlap at " + width);
     const labels = await page.locator(".treemap-tile").evaluateAll((tiles) =>
       tiles.map((tile) => ({
         level: tile.dataset.level,
@@ -255,6 +274,28 @@ try {
     await nav("Mi trabajo");
     await noOverflow("Work queue root overflow at " + width);
     await screenshot(`FM-workspace-product-queue-${width}.png`, true);
+  }
+  if (process.env.WORKSPACE_EXPECT_LIVE === "true") {
+    for (const width of [390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 860 });
+      await page.goto("http://127.0.0.1:5178/?mode=live", { waitUntil: "domcontentloaded" });
+      await page
+        .getByRole("heading", { name: "Tu centro financiero" })
+        .waitFor({ state: "visible", timeout: 12000 })
+        .catch(async () => {
+          throw new Error(
+            "Connected route did not mount: " +
+              (await page.locator("body").innerText()).slice(0, 600),
+          );
+        });
+      assert.equal(
+        await page.locator(".live-overview").count(),
+        0,
+        "No records before delegated login",
+      );
+      await noOverflow("Connected workspace shell overflow at " + width);
+      await screenshot(`FM-workspace-live-login-${width}.png`, false);
+    }
   }
   assert.deepEqual(errors, [], "No frontend exceptions");
   console.log("WORKSPACE_PRODUCT_E2E_PASS");

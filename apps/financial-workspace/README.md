@@ -121,3 +121,58 @@ flow with an in-memory token cache, reads only Web API `WhoAmI`, and
 checks the returned organization GUID. An ordinary user's successful
 WhoAmI does **not** prove access to finance records, successful CORS in
 every browser, role segregation or readiness of F3/F4 financial commands.
+
+## F4 connected Workspace and visual acceptance, 2026-10-27
+
+The Workspace now has two **explicitly separated data sources**:
+
+- `/` is the interactive reporting and planning experience using local illustrative
+  records. It identifies their provenance discreetly through **Datos de muestra**
+  and a detailed **Sobre los datos de esta vista** dialog. Its session drafts
+  are not persisted to Dataverse and must never be passed off as live records.
+- `/?mode=live` is the opt-in connected operations screen, enabled only with
+  `VITE_FM_ENABLE_LIVE_READ=true`. It uses the Entra delegated user session,
+  verifies WhoAmI against the expected Dataverse organization and identity
+  on every query, and fetches real authorized rows from seven exact entity
+  sets (`fmg_financialtransactions`, `fmg_budgets`,
+  `fmg_budgetallocations`, `fmg_activityevents`, `fmg_categories`,
+  `fmg_branchs`, and `fmg_cashaccounts`). Each tab is independently
+  paginated, with page-size 25; the loaded count is not a ledger total.
+  A denied query stays denied and never falls back to sample records.
+
+Only direct Draft create/read/conditional update/delete operations are exposed
+to the user on the connected page. Create is explicitly Draft-only; updates
+use the existing ETag `If-Match` contract and server re-read; deletion demands
+confirmation, current Draft state and ETag. The UI provides no Post, Void
+or approval action. The financial permissions, validation plugins and roles
+in Dataverse still determine whether any requested mutation is allowed.
+
+The **visual product pass** retains the successful Inicio and Análisis while
+reworking Categorías (no floating year ornament, category concentration,
+monthly distribution and spend per payment), Presupuestos (plan coverage,
+amounts and assignments), Mi trabajo (readiness and unfinished fields),
+Actividad (actual local event counts), and the connected experience.
+Screen texts and tab metadata avoid recurring prototype jargon without
+misrepresenting the source of financial records.
+
+Metadata was verified in the authenticated DEV organization using
+`workspace-metadata-inspect`; the listed entity sets and expense lookup
+navigation names are read back from the server, not inferred by pluralization.
+No financial records were created or approved during metadata verification.
+
+**Remaining F4 gates:** interactive Entra browser login and row-level access
+with genuine, non-admin identities; full category/branch/account lookup
+selection and conditional persistence, end-to-end 401/403/412 behavior
+against a connected user, cross-branch isolation, real activity permissions,
+and Post/Void/budget approval through server-approved APIs. Do not report F4
+accepted solely because TypeScript, mocked transports or visuals passed.
+
+Verification commands from the repo root: `npm run check:workspace`,
+`python -m unittest discover -s tests -q`; in
+`apps/financial-workspace`: `npm run build`, `npm run test:analytics`,
+`npm run test:contracts`, `npm run test:transport`,
+`npm run test:concurrency`, `npm run test:live` and `npm run test:ui`
+(with a Vite server at `127.0.0.1:5178`). `test:ui` captures desktop
+and mobile screenshots to the Windows temporary directory, and tests
+category hero overlap, horizontal overflow, keyboard navigation, and
+the interactive planning and analytics flows.

@@ -44,7 +44,15 @@ function checkedConfig(): Configuration {
   return { clientId, tenantId, organizationId, organizationUrl: uri.origin + "/" };
 }
 
-export async function verifyDelegatedDataverseIdentity(): Promise<void> {
+export type VerifiedDelegatedSession = Readonly<{
+  principalId: string;
+  organizationId: string;
+  organizationUrl: string;
+  acquireDelegatedToken: () => Promise<string>;
+  close: () => Promise<void>;
+}>;
+
+export async function verifyDelegatedDataverseIdentity(): Promise<VerifiedDelegatedSession> {
   const config = checkedConfig();
   const msal = new PublicClientApplication({
     auth: {
@@ -91,4 +99,24 @@ export async function verifyDelegatedDataverseIdentity(): Promise<void> {
   ) {
     throw new Error("Identidad Dataverse u organización distinta de la configurada.");
   }
+  let closed = false;
+  return Object.freeze({
+    principalId: data.UserId,
+    organizationId: config.organizationId,
+    organizationUrl: config.organizationUrl,
+    acquireDelegatedToken: async () => {
+      if (closed) throw new Error("La sesión está cerrada. Inicia sesión otra vez.");
+      const refreshed = await msal.acquireTokenSilent({ account: signedIn.account, scopes });
+      if (
+        !refreshed.accessToken ||
+        refreshed.account?.homeAccountId !== signedIn.account.homeAccountId
+      )
+        throw new Error("La identidad delegada cambió. Vuelve a iniciar sesión.");
+      return refreshed.accessToken;
+    },
+    close: async () => {
+      closed = true;
+      await msal.logoutPopup({ account: signedIn.account });
+    },
+  });
 }

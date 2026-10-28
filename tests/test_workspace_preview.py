@@ -45,7 +45,7 @@ class WorkspacePreviewTests(unittest.TestCase):
                                "localStorage", "sessionStorage"):
                 self.assertNotIn(prohibited, source, filename)
         self.assertIn("NO browser storage", self.store)
-        self.assertIn("Entorno de ejemplo", self.app)
+        self.assertIn("Datos de muestra", self.app)
         for record in self.records:
             self.assertEqual(record["status"], "Contabilizado")
             self.assertGreater(record["amount"], 0)
@@ -105,7 +105,9 @@ class WorkspacePreviewTests(unittest.TestCase):
 
     def test_accessibility_and_environment_explained_once(self):
         self.assertIn("aria-label={label}", self.app)
-        self.assertIn("environment-indicator", self.app)
+        self.assertIn("workspace-source-info", self.app)
+        self.assertIn("Sobre los datos de esta vista", self.app)
+        self.assertIn("VITE_FM_ENABLE_LIVE_READ", self.app)
         self.assertIn("Sin registros pendientes", self.activity)
         self.assertIn("getByRole", (WEB / "smoke.mjs").read_text(encoding="utf8"))
         doc = (WEB / "README.md").read_text(encoding="utf8").lower()
