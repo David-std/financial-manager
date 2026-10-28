@@ -17,7 +17,8 @@
     "test:auth": "node auth-popup.test.mjs",
     "test:lookups": "node draft-lookups.test.mjs",
     "test:browser-fetch": "node browser-fetch.test.mjs",
-    "test:payment": "node payment-command.test.mjs"
+    "test:payment": "node payment-command.test.mjs",
+    "test:expense-draft": "node expense-draft-rules.test.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.27.0",

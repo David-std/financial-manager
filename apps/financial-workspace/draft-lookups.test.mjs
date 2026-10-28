@@ -15,6 +15,7 @@ const recordId = "12345678-1234-4234-9234-123456789012";
 const category = "aaaaaaaa-1234-4234-9234-aaaaaaaaaaaa";
 const branch = "bbbbbbbb-1234-4234-9234-bbbbbbbbbbbb";
 const account = "cccccccc-1234-4234-9234-cccccccccccc";
+const currency = "eeeeeeee-1234-4234-9234-eeeeeeeeeeee";
 const context = { authenticated: true, principalId: "dddddddd-1234-4234-9234-dddddddddddd" };
 let rev = 1;
 const stored = {
@@ -23,12 +24,14 @@ const stored = {
   _fmg_category_value: null,
   _fmg_branch_value: null,
   _fmg_cashaccount_value: null,
+  _transactioncurrencyid_value: null,
 };
 const patches = [];
 const mapping = {
   "fmg_category@odata.bind": ["_fmg_category_value", "fmg_categories"],
   "fmg_branch@odata.bind": ["_fmg_branch_value", "fmg_branchs"],
   "fmg_cashaccount@odata.bind": ["_fmg_cashaccount_value", "fmg_cashaccounts"],
+  "transactioncurrencyid@odata.bind": ["_transactioncurrencyid_value", "transactioncurrencies"],
 };
 const transport = {
   expenseEntitySet: "fmg_financialtransactions",
@@ -51,10 +54,12 @@ const saved = await conditionalDraftSave(transport, context, version, {
   "fmg_category@odata.bind": `/fmg_categories(${category})`,
   "fmg_branch@odata.bind": `/fmg_branchs(${branch})`,
   "fmg_cashaccount@odata.bind": `/fmg_cashaccounts(${account})`,
+  "transactioncurrencyid@odata.bind": `/transactioncurrencies(${currency})`,
 });
 assert.equal(saved._fmg_category_value, category);
 assert.equal(saved._fmg_branch_value, branch);
 assert.equal(saved._fmg_cashaccount_value, account);
+assert.equal(saved._transactioncurrencyid_value, currency);
 assert.equal(patches.length, 1);
 const after = await conditionalDraftSave(
   transport,

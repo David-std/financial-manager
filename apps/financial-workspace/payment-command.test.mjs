@@ -17,7 +17,8 @@ const id = "33333333-3333-4333-8333-333333333333";
 const base = "https://f4fixture.crm3.dynamics.com/";
 let status = 797280000,
   version = 51,
-  denied = false;
+  denied = false,
+  complete = false;
 const calls = [];
 async function mock(url, req) {
   calls.push({ url, method: req.method, body: req.body });
@@ -29,11 +30,28 @@ async function mock(url, req) {
       }),
       { status: 200 },
     );
+  if (req.method === "GET" && url.includes("transactioncurrencies?"))
+    return new Response(
+      JSON.stringify({
+        value: [
+          { transactioncurrencyid: "cccccccc-1234-4234-9234-cccccccccccc", isocurrencycode: "PEN" },
+        ],
+      }),
+      { status: 200 },
+    );
   if (req.method === "GET" && url.includes("fmg_financialtransactions("))
     return new Response(
       JSON.stringify({
         fmg_status: status,
         versionnumber: version,
+        fmg_amount: complete ? 12 : null,
+        fmg_transactiondate: complete ? "2026-10-28T12:00:00Z" : null,
+        fmg_flowclass: 797280000,
+        fmg_scope: 797280001,
+        _fmg_branch_value: null,
+        _fmg_category_value: complete ? "aaaaaaaa-1234-4234-9234-aaaaaaaaaaaa" : null,
+        _fmg_cashaccount_value: complete ? "bbbbbbbb-1234-4234-9234-bbbbbbbbbbbb" : null,
+        _transactioncurrencyid_value: complete ? "cccccccc-1234-4234-9234-cccccccccccc" : null,
         fmg_voidreason: status === 797280002 ? "Motivo de control de prueba" : null,
       }),
       { status: 200 },
@@ -63,6 +81,10 @@ const repo = new DelegatedLiveRepository(
   },
   mock,
 );
+assert.equal(await repo.resolvePenCurrency(), "cccccccc-1234-4234-9234-cccccccccccc");
+await assert.rejects(repo.executePaymentCommand("post", id, 51), /Completa y guarda/);
+assert.equal(calls.filter((c) => c.method === "POST").length, 0, "Incomplete Draft never posts");
+complete = true;
 await repo.executePaymentCommand("post", id, 51);
 assert.equal(status, 797280001);
 const post = calls.find((call) => call.method === "POST");

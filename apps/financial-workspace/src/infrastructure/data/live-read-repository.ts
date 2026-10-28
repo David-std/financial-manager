@@ -1,4 +1,5 @@
 import type { VerifiedDelegatedSession } from "./identity-check";
+import { missingPostingFields } from "./expense-draft-rules";
 import { FinanceAuthorizationUnavailable } from "./financial-repository";
 import { createDelegatedDataverseTransport } from "./dataverse-transport";
 import {
@@ -23,7 +24,7 @@ const TABLES: Record<LiveCollection, { set: string; select: string; order: strin
   expenses: {
     set: "fmg_financialtransactions",
     select:
-      "fmg_financialtransactionid,fmg_name,fmg_status,fmg_amount,fmg_transactiondate,fmg_scope,fmg_flowclass,fmg_description,_fmg_branch_value,_fmg_cashaccount_value,_fmg_category_value,versionnumber,modifiedon",
+      "fmg_financialtransactionid,fmg_name,fmg_status,fmg_amount,fmg_transactiondate,fmg_scope,fmg_flowclass,fmg_description,_fmg_branch_value,_fmg_cashaccount_value,_fmg_category_value,_transactioncurrencyid_value,versionnumber,modifiedon",
     order: "modifiedon desc,fmg_financialtransactionid asc",
     id: "fmg_financialtransactionid",
   },
@@ -223,6 +224,38 @@ export class DelegatedLiveRepository {
       throw new Error("No se verificó la ausencia del borrador tras eliminarlo.");
   }
 
+  /** Resolve the tenant's sole PEN currency with the delegated user's permissions. */
+  async resolvePenCurrency(): Promise<string> {
+    const base = this.session.organizationUrl + "api/data/v9.2/";
+    const url = new URL("transactioncurrencies", base);
+    url.searchParams.set("$select", "transactioncurrencyid,isocurrencycode");
+    url.searchParams.set("$filter", "isocurrencycode eq 'PEN'");
+    url.searchParams.set("$top", "2");
+    const token = await this.trustedToken();
+    const response = await this.http(url.toString(), {
+      method: "GET",
+      headers: { Authorization: "Bearer " + token, Accept: "application/json" },
+      credentials: "omit",
+      cache: "no-store",
+      redirect: "error",
+    });
+    if (response.status === 401 || response.status === 403)
+      throw new FinanceAuthorizationUnavailable();
+    if (response.status !== 200) throw new Error("No se pudo consultar la moneda PEN autorizada.");
+    const body: unknown = await response.json();
+    if (!body || typeof body !== "object") throw new Error("Respuesta de moneda inválida.");
+    const rows = (body as { value?: unknown }).value;
+    if (
+      !Array.isArray(rows) ||
+      rows.length !== 1 ||
+      rows[0]?.isocurrencycode !== "PEN" ||
+      typeof rows[0]?.transactioncurrencyid !== "string" ||
+      !GUID.test(rows[0].transactioncurrencyid)
+    )
+      throw new Error("Debe existir exactamente una moneda PEN accesible en Dataverse.");
+    return rows[0].transactioncurrencyid as string;
+  }
+
   /** Protected server operation; no direct status PATCH is permitted from React. */
   async executePaymentCommand(
     kind: "post" | "void",
@@ -249,7 +282,7 @@ export class DelegatedLiveRepository {
       base +
       "fmg_financialtransactions(" +
       id +
-      ")?$select=fmg_status,versionnumber,fmg_voidreason";
+      ")?$select=fmg_status,versionnumber,fmg_voidreason,fmg_amount,fmg_transactiondate,fmg_flowclass,fmg_scope,_fmg_branch_value,_fmg_category_value,_fmg_cashaccount_value,_transactioncurrencyid_value";
     const headers = {
       Authorization: "Bearer " + (await this.trustedToken()),
       Accept: "application/json",
@@ -272,6 +305,14 @@ export class DelegatedLiveRepository {
     )
       throw new Error("El gasto cambió de estado o versión. Actualiza antes de continuar.");
 
+    if (kind === "post") {
+      const missing = missingPostingFields(before);
+      if (missing.length)
+        throw new Error(
+          "Completa y guarda el borrador antes de contabilizar: " + missing.join(", ") + ".",
+        );
+    }
+
     const message =
       kind === "post" ? "fmg_PostFinancialTransaction" : "fmg_VoidFinancialTransaction";
     const payload: Record<string, unknown> = { RecordId: id, ExpectedRowVersion: version };
@@ -288,6 +329,30 @@ export class DelegatedLiveRepository {
       throw new FinanceAuthorizationUnavailable();
     if (response.status === 412 || response.status === 409)
       throw new Error("Conflicto de versión. Relee el gasto antes de intentar de nuevo.");
+    if (response.status === 400) {
+      // Never expose raw server traces, correlation details, or request payloads.
+      const details = (await response.text()).slice(0, 12000);
+      const code = details.match(/\b(?:FTV00[0-9]|FPC00[0-9])\b/)?.[0];
+      const messages: Record<string, string> = {
+        FTV001: "Revisa importe, fecha, clase de gasto y moneda PEN.",
+        FTV002: "Selecciona una categoría activa de gasto, no un grupo.",
+        FTV003: "Corrige el ámbito y su sede.",
+        FTV004: "Selecciona una cuenta activa compatible con la sede o el ámbito compartido.",
+        FTV005: "El estado de este gasto no admite la transición solicitada.",
+        FTV006: "Un gasto contabilizado no admite cambios financieros.",
+        FTV007: "La autorización de Post/Void sigue restringida por Dataverse.",
+        FPC002: "La versión del gasto es inválida. Relee el registro.",
+        FPC003: "Anular requiere un motivo válido.",
+        FPC004: "El gasto cambió de versión; recárgalo.",
+        FPC005: "El gasto cambió de estado; recárgalo.",
+        FPC007: "Tu usuario no tiene permiso para esta operación.",
+      };
+      throw new Error(
+        code && messages[code]
+          ? "Dataverse rechazó la operación (" + code + "). " + messages[code]
+          : "Dataverse rechazó los datos o la transición (HTTP 400). Abre el borrador y revisa todos los campos.",
+      );
+    }
     if (response.status !== 200)
       throw new Error(
         "La operación no se confirmó (HTTP " +

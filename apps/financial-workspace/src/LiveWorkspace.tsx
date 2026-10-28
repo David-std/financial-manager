@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Database, RefreshCcw, ShieldCheck } from "lucide-react";
 import "./live-workspace.css";
+import { formatPenOnBlur, missingPostingFields } from "./infrastructure/data/expense-draft-rules";
 import type { DraftVersion } from "./infrastructure/data/conditional-draft";
 import {
   verifyDelegatedDataverseIdentity,
@@ -251,7 +252,7 @@ export default function LiveWorkspace() {
       setAmount(
         value.record.fmg_amount === null || value.record.fmg_amount === undefined
           ? ""
-          : String(value.record.fmg_amount),
+          : formatPenOnBlur(String(value.record.fmg_amount)),
       );
       setDate(
         typeof value.record.fmg_transactiondate === "string"
@@ -302,7 +303,9 @@ export default function LiveWorkspace() {
       setCategoryId("");
       setBranchId("");
       setAccountId("");
-      setMessage("Borrador creado y recuperado correctamente.");
+      setMessage(
+        "Borrador creado. Ahora completa el importe, fecha, categoría, sede y cuenta; pulsa Guardar con If-Match para persistirlos.",
+      );
     } catch (err) {
       setMessage(
         (err instanceof Error ? err.message : "No se confirmó el Draft.") +
@@ -358,6 +361,7 @@ export default function LiveWorkspace() {
     }
     setBusy(true);
     try {
+      const penId = await repo.resolvePenCurrency();
       await repo.saveDraft(selected, {
         fmg_amount: amount.trim() ? Number(amount) : null,
         fmg_transactiondate: date ? date + "T12:00:00.000Z" : null,
@@ -369,10 +373,16 @@ export default function LiveWorkspace() {
         "fmg_branch@odata.bind":
           scopeCode === "797280000" && branchId ? `/fmg_branchs(${branchId})` : null,
         "fmg_cashaccount@odata.bind": accountId ? `/fmg_cashaccounts(${accountId})` : null,
+        "transactioncurrencyid@odata.bind": `/transactioncurrencies(${penId})`,
       });
       setMessage("Guardado condicional confirmado. Releyendo la versión...");
       const reloaded = await repo.loadDraft(selected.id);
       setSelected(reloaded.version);
+      setAmount(
+        reloaded.record.fmg_amount == null
+          ? ""
+          : formatPenOnBlur(String(reloaded.record.fmg_amount)),
+      );
       setCategoryId(String(reloaded.record._fmg_category_value ?? ""));
       setBranchId(String(reloaded.record._fmg_branch_value ?? ""));
       setAccountId(String(reloaded.record._fmg_cashaccount_value ?? ""));
@@ -506,8 +516,8 @@ export default function LiveWorkspace() {
               <span className="live-kicker">GESTIÓN DE GASTOS</span>
               <h2>Preparar movimiento</h2>
               <p>
-                Completa tu registro antes de enviarlo a la siguiente etapa. Esta sección solo
-                administra borradores.
+                Primero crea el borrador con un nombre. Después completa sus datos y pulsa Guardar
+                con If-Match. Crear Draft por sí solo no guarda el importe ni los catálogos.
               </p>
               <form
                 onSubmit={(e) => {
@@ -517,7 +527,7 @@ export default function LiveWorkspace() {
                 className="live-draft-create"
               >
                 <label>
-                  Nombre del nuevo Draft{" "}
+                  Paso 1 · Nombre del nuevo borrador{" "}
                   <input
                     value={newName}
                     maxLength={100}
@@ -546,7 +556,9 @@ export default function LiveWorkspace() {
                     <input
                       inputMode="decimal"
                       value={amount}
+                      placeholder="0.00"
                       onChange={(e) => setAmount(e.target.value)}
+                      onBlur={() => setAmount((current) => formatPenOnBlur(current))}
                     />
                   </label>
                   <label>
@@ -655,8 +667,8 @@ export default function LiveWorkspace() {
                     </select>
                   </label>
                   <p className="live-field-help">
-                    Los selectores muestran los catálogos autorizados que se han cargado. Cambiar
-                    sede o ámbito limpia la cuenta anterior.
+                    Paso 2 · Elige importe, fecha, categoría, sede y cuenta. La moneda PEN se asocia
+                    al guardar. Cambiar sede o ámbito limpia la cuenta anterior.
                   </p>
                   <div className="live-draft-actions">
                     <button type="submit" disabled={busy}>
@@ -739,7 +751,16 @@ export default function LiveWorkspace() {
                               </button>
                             )}
                           {paymentCommandsEnabled && row.fmg_status === 797280000 && (
-                            <button disabled={busy} onClick={() => void command("post", row)}>
+                            <button
+                              disabled={busy || missingPostingFields(row).length > 0}
+                              title={
+                                missingPostingFields(row).length
+                                  ? "Completar antes de contabilizar: " +
+                                    missingPostingFields(row).join(", ")
+                                  : "Contabilizar borrador válido"
+                              }
+                              onClick={() => void command("post", row)}
+                            >
                               Contabilizar
                             </button>
                           )}

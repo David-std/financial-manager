@@ -133,6 +133,10 @@ export async function conditionalDraftSave(
     "fmg_category@odata.bind": { set: "fmg_categories", lookup: "_fmg_category_value" },
     "fmg_branch@odata.bind": { set: "fmg_branchs", lookup: "_fmg_branch_value" },
     "fmg_cashaccount@odata.bind": { set: "fmg_cashaccounts", lookup: "_fmg_cashaccount_value" },
+    "transactioncurrencyid@odata.bind": {
+      set: "transactioncurrencies",
+      lookup: "_transactioncurrencyid_value",
+    },
   };
   const allowedFields = new Set([
     "fmg_transactiondate",
@@ -144,6 +148,7 @@ export async function conditionalDraftSave(
     "fmg_category@odata.bind",
     "fmg_branch@odata.bind",
     "fmg_cashaccount@odata.bind",
+    "transactioncurrencyid@odata.bind",
   ]);
   const fields = Object.entries(changes);
   if (!fields.length || fields.some(([name]) => !allowedFields.has(name))) {
