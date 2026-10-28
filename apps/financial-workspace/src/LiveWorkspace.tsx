@@ -8,7 +8,11 @@ import {
   validDraftPenAmount,
   validDraftDate,
 } from "./infrastructure/data/expense-draft-rules";
-import type { DraftVersion } from "./infrastructure/data/conditional-draft";
+import type { DataverseDraftResult, DraftVersion } from "./infrastructure/data/conditional-draft";
+import {
+  hydrateDraftFields,
+  loadCompleteReferenceCatalog,
+} from "./infrastructure/data/draft-editor-state";
 import {
   verifyDelegatedDataverseIdentity,
   prepareDelegatedDataverseIdentity,
@@ -133,8 +137,20 @@ export default function LiveWorkspace() {
     "Inicia sesión para consultar las operaciones a las que tienes acceso.",
   );
 
+  const missingDraftFields = selected
+    ? [
+        ...(!amount.trim() || !validDraftPenAmount(amount) ? ["importe positivo en PEN"] : []),
+        ...(!date || !validDraftDate(date) ? ["fecha válida"] : []),
+        ...(!categoryId ? ["categoría activa"] : []),
+        ...(scopeCode === "797280000" && !branchId ? ["sede"] : []),
+        ...(!accountId ? ["cuenta autorizada"] : []),
+      ]
+    : [];
+
   async function fetchAll(source: DelegatedLiveRepository) {
-    const results = await Promise.allSettled(sections.map(({ key }) => source.readPage(key)));
+    const results = await Promise.allSettled(
+      sections.map(({ key }) => loadCompleteReferenceCatalog(key, source)),
+    );
     const nextPages = { ...empty };
     const nextIssues: Partial<Record<LiveCollection, string>> = {};
     results.forEach((result, index) => {
@@ -247,6 +263,19 @@ export default function LiveWorkspace() {
     }
   }
 
+  function applyHydratedDraft(record: DataverseDraftResult) {
+    const fields = hydrateDraftFields(record);
+    setAmount(fields.amount);
+    setDate(fields.date);
+    setDescription(fields.description);
+    setReference(fields.reference);
+    setScopeCode(fields.scopeCode);
+    setFlowCode(fields.flowCode);
+    setCategoryId(fields.categoryId);
+    setBranchId(fields.branchId);
+    setAccountId(fields.accountId);
+  }
+
   async function openDraft(id: string) {
     if (!repo || busy) return;
     setBusy(true);
@@ -255,30 +284,15 @@ export default function LiveWorkspace() {
       const value = await repo.loadDraft(id);
       setSelected(value.version);
       setDraftId(id);
-      setAmount(
-        value.record.fmg_amount === null || value.record.fmg_amount === undefined
-          ? ""
-          : formatPenOnBlur(String(value.record.fmg_amount)),
+      applyHydratedDraft(value.record);
+      const missing = missingPostingFields(value.record);
+      setMessage(
+        missing.length
+          ? "Borrador recuperado de Dataverse; aún faltan campos persistidos para contabilizar: " +
+              missing.join(", ") +
+              ". Completa y guarda los datos."
+          : "Borrador recuperado de Dataverse con sus campos y ETag.",
       );
-      setDate(
-        typeof value.record.fmg_transactiondate === "string"
-          ? value.record.fmg_transactiondate.slice(0, 10)
-          : "",
-      );
-      setDescription(
-        typeof value.record.fmg_description === "string" ? value.record.fmg_description : "",
-      );
-      setReference(
-        typeof value.record.fmg_documentreference === "string"
-          ? value.record.fmg_documentreference
-          : "",
-      );
-      setScopeCode(String(value.record.fmg_scope ?? 797280000));
-      setFlowCode(String(value.record.fmg_flowclass ?? 797280000));
-      setCategoryId(String(value.record._fmg_category_value ?? ""));
-      setBranchId(String(value.record._fmg_branch_value ?? ""));
-      setAccountId(String(value.record._fmg_cashaccount_value ?? ""));
-      setMessage("Borrador cargado y ETag comprobado.");
     } catch (err) {
       setSelected(null);
       setMessage(err instanceof Error ? err.message : "No se pudo abrir el borrador.");
@@ -378,16 +392,16 @@ export default function LiveWorkspace() {
       setMessage("Guardado condicional confirmado. Releyendo la versión...");
       const reloaded = await repo.loadDraft(selected.id);
       setSelected(reloaded.version);
-      setAmount(
-        reloaded.record.fmg_amount == null
-          ? ""
-          : formatPenOnBlur(String(reloaded.record.fmg_amount)),
-      );
-      setCategoryId(String(reloaded.record._fmg_category_value ?? ""));
-      setBranchId(String(reloaded.record._fmg_branch_value ?? ""));
-      setAccountId(String(reloaded.record._fmg_cashaccount_value ?? ""));
+      applyHydratedDraft(reloaded.record);
       await fetchAll(repo);
-      setMessage("Borrador guardado en Dataverse con control de concurrencia.");
+      const missing = missingPostingFields(reloaded.record);
+      setMessage(
+        missing.length
+          ? "Borrador guardado en Dataverse. Para contabilizar todavía faltan: " +
+              missing.join(", ") +
+              "."
+          : "Borrador guardado y releído de Dataverse; los datos requeridos están presentes.",
+      );
     } catch (err) {
       setMessage(
         err instanceof Error
@@ -552,7 +566,7 @@ export default function LiveWorkspace() {
                   className="live-draft-form"
                 >
                   <label>
-                    Importe PEN{" "}
+                    Importe PEN <span aria-label="Obligatorio para contabilizar">*</span>{" "}
                     <input
                       inputMode="decimal"
                       value={amount}
@@ -562,7 +576,7 @@ export default function LiveWorkspace() {
                     />
                   </label>
                   <label>
-                    Fecha{" "}
+                    Fecha <span aria-label="Obligatorio para contabilizar">*</span>{" "}
                     <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
                   </label>
                   <label>
@@ -597,13 +611,19 @@ export default function LiveWorkspace() {
                     </select>
                   </label>
                   <label>
-                    Categoría
+                    Categoría *
                     <select
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
                       disabled={Boolean(issues.categories)}
                     >
                       <option value="">Sin categoría</option>
+                      {categoryId &&
+                        !pages.categories.rows.some((row) => row.fmg_categoryid === categoryId) && (
+                          <option value={categoryId}>
+                            Categoría anterior no disponible en tus catálogos
+                          </option>
+                        )}
                       {pages.categories.rows
                         .filter((row) => row.fmg_isactive === true && row.fmg_isgroup !== true)
                         .map((row) => (
@@ -618,7 +638,7 @@ export default function LiveWorkspace() {
                   </label>
                   {scopeCode === "797280000" && (
                     <label>
-                      Sede
+                      Sede *
                       <select
                         value={branchId}
                         onChange={(e) => {
@@ -639,13 +659,19 @@ export default function LiveWorkspace() {
                     </label>
                   )}
                   <label>
-                    Cuenta autorizada
+                    Cuenta autorizada *
                     <select
                       value={accountId}
                       onChange={(e) => setAccountId(e.target.value)}
                       disabled={Boolean(issues.accounts)}
                     >
                       <option value="">Sin cuenta</option>
+                      {accountId &&
+                        !pages.accounts.rows.some((row) => row.fmg_cashaccountid === accountId) && (
+                          <option value={accountId}>
+                            Cuenta anterior no disponible en tus catálogos
+                          </option>
+                        )}
                       {pages.accounts.rows
                         .filter(
                           (row) =>
@@ -667,8 +693,18 @@ export default function LiveWorkspace() {
                     </select>
                   </label>
                   <p className="live-field-help">
+                    * Obligatorio para contabilizar; puedes guardar un borrador incompleto.
+                  </p>
+                  <p className="live-field-help">
                     Paso 2 · Elige importe, fecha, categoría, sede y cuenta. La moneda PEN se asocia
                     al guardar. Cambiar sede o ámbito limpia la cuenta anterior.
+                  </p>
+                  <p className="live-field-help" role="status" aria-live="polite">
+                    {missingDraftFields.length
+                      ? "Pendiente para contabilizar: " +
+                        missingDraftFields.join(", ") +
+                        ". Guarda el borrador y completa estos datos antes de publicar."
+                      : "Campos de formulario completos. Guarda y relee el borrador; la moneda PEN y los demás controles se verifican en Dataverse."}
                   </p>
                   <div className="live-draft-actions">
                     <button type="submit" disabled={busy}>
@@ -764,6 +800,14 @@ export default function LiveWorkspace() {
                               Contabilizar
                             </button>
                           )}
+                          {paymentCommandsEnabled &&
+                            row.fmg_status === 797280000 &&
+                            missingPostingFields(row).length > 0 && (
+                              <small className="live-post-hint">
+                                Faltan: {missingPostingFields(row).join(", ")}. Abre el borrador
+                                para completarlo.
+                              </small>
+                            )}
                           {paymentCommandsEnabled && row.fmg_status === 797280001 && (
                             <button disabled={busy} onClick={() => void command("void", row)}>
                               Anular
