@@ -4,16 +4,18 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
+    "dev": "vite --host localhost",
     "build": "tsc -b && vite build",
-    "preview": "vite preview --host 127.0.0.1",
+    "preview": "vite preview --host localhost",
     "check": "tsc --noEmit",
     "test:analytics": "node analytics-model.test.mjs",
     "test:contracts": "node data-access.test.mjs",
     "test:transport": "node dataverse-transport.test.mjs",
     "test:concurrency": "node concurrent-draft.test.mjs",
     "test:live": "node live-dataverse.test.mjs",
-    "test:ui": "node smoke.mjs"
+    "test:ui": "node smoke.mjs",
+    "test:auth": "node auth-popup.test.mjs",
+    "test:lookups": "node draft-lookups.test.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.27.0",

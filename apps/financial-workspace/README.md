@@ -176,3 +176,49 @@ Verification commands from the repo root: `npm run check:workspace`,
 and mobile screenshots to the Windows temporary directory, and tests
 category hero overlap, horizontal overflow, keyboard navigation, and
 the interactive planning and analytics flows.
+
+## F4 sign-in repair and connected Draft bindings
+
+**Microsoft Entra SPA configuration (one-time, mandatory):** The registration
+`FinancialManager-Workspace-DEV` must retain `http://localhost:5178/` and
+add **`http://localhost:5178/redirect.html`** as a second **SPA** redirect URI,
+under Authentication. Do not register this as Web or create a client secret.
+MSAL Browser v5 uses a dedicated `redirect.html` bridge: it is built as a
+second Vite entry point and must not load the React shell or remove the OAuth
+response hash. Do not add a COOP header to the bridge. Once added, confirm
+delegated **Dataverse / Dynamics CRM `user_impersonation`** is present.
+`AADSTS50011` indicates the bridge address has not been registered exactly.
+
+`npm run dev` now uses the registered hostname `localhost:5178` consistently.
+Start at `http://localhost:5178/?mode=live` or
+`http://localhost:5178/?verify=identity`. The Entra client initializes before
+the sign-in button is enabled, then `loginPopup` opens synchronously from
+the click. Tokens remain in memory; WhoAmI must validate the expected user and
+organization. `.env.local` was corrected locally against `pac env who`, with
+six valid `KEY=value` entries, and remains ignored by Git.
+
+Connected expense Draft editing now supports `fmg_category@odata.bind`,
+`fmg_branch@odata.bind`, and `fmg_cashaccount@odata.bind` using **exact**
+Dataverse navigation/EntitySet names verified from the DEV metadata inspector.
+The code permits only GUID relationships from the user-visible active catalog,
+requires branch-compatible accounts, clears incompatible selections when
+switching scope/branch, uses ETag If-Match, then re-reads lookup GUIDs and
+all changed fields. Its bind allowlist rejects arbitrary entity sets, invalid
+GUIDs and status escalation. Null binds disassociate old relationships
+atomically under the same PATCH. Listing/catalogs are paginated, so account
+selection includes only loaded rows; further live-user permission tests are
+required before accepting financial usage.
+
+New tests: `npm run test:auth` opens the real Entra popup in headless Edge,
+intercepts the authorization request **before any account credentials**, and
+checks PKCE, response_type=code and the exact bridge URI. It is not a
+successful user login. `npm run test:lookups` checks OData binds,
+disassociation, ETag and read-after-write, invalid GUID and status escalation.
+`npm run test:ui` covers mobile and dashboard; `npm run build` builds the
+separate `dist/redirect.html`.
+
+**Remaining acceptance:** The user must add the new redirect URI in Entra and
+perform an interactive sign-in/WhoAmI test. A real, authorized user must then
+verify visibility across site/role, Draft creation/edit/deletion and conflict
+412 with two sessions. Final server-protected Post/Void and budget approval
+remain unexposed until their guards and approver separation are accepted.

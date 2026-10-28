@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autenticación Microsoft</title>
+  </head>
+  <body>
+    <p>Finalizando el acceso seguro a Financial Manager…</p>
+    <script type="module">
+      import { broadcastResponseToMainFrame } from "@azure/msal-browser/redirect-bridge";
+      broadcastResponseToMainFrame().catch(() => {
+        document.body.textContent =
+          "No se pudo completar el acceso. Cierra esta ventana y vuelve a intentarlo.";
+      });
+    </script>
+  </body>
+</html>

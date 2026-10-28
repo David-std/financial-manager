@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { verifyDelegatedDataverseIdentity } from "./infrastructure/data/identity-check";
+import { useEffect, useState } from "react";
+import {
+  verifyDelegatedDataverseIdentity,
+  prepareDelegatedDataverseIdentity,
+  explainDelegatedAuthError,
+} from "./infrastructure/data/identity-check";
 
 /** UI is entirely separate from the synthetic financial workspace. */
 export default function DataverseIdentityCheck() {
@@ -8,8 +12,24 @@ export default function DataverseIdentityCheck() {
   );
   const [busy, setBusy] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    prepareDelegatedDataverseIdentity().then(
+      () => {
+        if (active) setAuthReady(true);
+      },
+      (e: unknown) => {
+        if (active) setStatus(e instanceof Error ? e.message : "Error de configuración Entra.");
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function verify() {
+    if (busy || !authReady) return;
     setBusy(true);
     setVerified(false);
     setStatus("Autenticando mediante Microsoft Entra...");
@@ -21,7 +41,7 @@ export default function DataverseIdentityCheck() {
       );
       setVerified(true);
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : "No se pudo verificar la identidad.");
+      setStatus(explainDelegatedAuthError(e));
     } finally {
       setBusy(false);
     }
@@ -34,8 +54,12 @@ export default function DataverseIdentityCheck() {
         Esta pantalla es independiente del Workspace DEMO y únicamente prueba Microsoft Entra y la
         lectura de WhoAmI. No habilita Post, Void ni aprobaciones.
       </p>
-      <button type="button" onClick={verify} disabled={busy}>
-        {busy ? "Verificando..." : "Iniciar sesión y verificar WhoAmI"}
+      <button type="button" onClick={verify} disabled={busy || !authReady}>
+        {busy
+          ? "Verificando..."
+          : authReady
+            ? "Iniciar sesión y verificar WhoAmI"
+            : "Preparando Microsoft Entra…"}
       </button>
       <p role="status" aria-live="polite" style={{ marginTop: "1rem" }}>
         {verified ? "✓ " : ""}

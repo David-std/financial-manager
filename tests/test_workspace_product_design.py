@@ -32,6 +32,12 @@ class WorkspaceProductDesignTests(unittest.TestCase):
         self.assertIn("state.events.filter", workflow)
         self.assertIn("items.length - attention.length", workflow)
 
+    def test_home_context_is_filtered_and_reference_based(self):
+        app = (SRC / "App.tsx").read_text(encoding="utf-8")
+        for marker in ("const homeContext = useMemo", "DISTRIBUCIÓN POR SEDE", "homeContext.delta", "homeContext.pending", "branchTotals", "previousYear"):
+            self.assertIn(marker, app)
+        self.assertIn("home-brief-card", app)
+
     def test_provenance_remains_visible_without_old_prototype_badge(self):
         app = (SRC / "App.tsx").read_text(encoding="utf-8")
         self.assertIn("Datos de muestra", app)

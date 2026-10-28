@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Database, RefreshCcw, ShieldCheck } from "lucide-react";
 import "./live-workspace.css";
 import type { DraftVersion } from "./infrastructure/data/conditional-draft";
 import {
   verifyDelegatedDataverseIdentity,
+  prepareDelegatedDataverseIdentity,
+  explainDelegatedAuthError,
   type VerifiedDelegatedSession,
 } from "./infrastructure/data/identity-check";
 import {
@@ -89,6 +91,24 @@ export default function LiveWorkspace() {
   const [pages, setPages] = useState<Record<LiveCollection, LivePage>>(empty);
   const [issues, setIssues] = useState<Partial<Record<LiveCollection, string>>>({});
   const [busy, setBusy] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    prepareDelegatedDataverseIdentity().then(
+      () => {
+        if (active) setAuthReady(true);
+      },
+      (error: unknown) => {
+        if (active)
+          setMessage(
+            error instanceof Error ? error.message : "No se pudo preparar Microsoft Entra.",
+          );
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
   const [newName, setNewName] = useState("");
   const [selected, setSelected] = useState<DraftVersion | null>(null);
   const [draftId, setDraftId] = useState("");
@@ -96,6 +116,11 @@ export default function LiveWorkspace() {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [reference, setReference] = useState("");
+  const [scopeCode, setScopeCode] = useState("797280000");
+  const [flowCode, setFlowCode] = useState("797280000");
+  const [categoryId, setCategoryId] = useState("");
+  const [branchId, setBranchId] = useState("");
+  const [accountId, setAccountId] = useState("");
   const [message, setMessage] = useState(
     "Inicia sesión para consultar las operaciones a las que tienes acceso.",
   );
@@ -116,9 +141,9 @@ export default function LiveWorkspace() {
   }
 
   async function signIn() {
-    if (busy) return;
+    if (busy || !authReady) return;
     setBusy(true);
-    setMessage("Iniciando sesión y verificando WhoAmI...");
+    setMessage("Abriendo Microsoft Entra y verificando WhoAmI...");
     try {
       const identity = await verifyDelegatedDataverseIdentity();
       const connected = new DelegatedLiveRepository(identity);
@@ -131,7 +156,7 @@ export default function LiveWorkspace() {
     } catch (error) {
       setSession(null);
       setRepo(null);
-      setMessage(error instanceof Error ? error.message : "No fue posible validar la sesión.");
+      setMessage(explainDelegatedAuthError(error));
     } finally {
       setBusy(false);
     }
@@ -193,6 +218,11 @@ export default function LiveWorkspace() {
           ? value.record.fmg_documentreference
           : "",
       );
+      setScopeCode(String(value.record.fmg_scope ?? 797280000));
+      setFlowCode(String(value.record.fmg_flowclass ?? 797280000));
+      setCategoryId(String(value.record._fmg_category_value ?? ""));
+      setBranchId(String(value.record._fmg_branch_value ?? ""));
+      setAccountId(String(value.record._fmg_cashaccount_value ?? ""));
       setMessage("Borrador cargado y ETag comprobado.");
     } catch (err) {
       setSelected(null);
@@ -219,7 +249,12 @@ export default function LiveWorkspace() {
       setDate("");
       setDescription("");
       setReference("");
-      setMessage("Borrador real creado y recuperado. No es un gasto contabilizado.");
+      setScopeCode("797280000");
+      setFlowCode("797280000");
+      setCategoryId("");
+      setBranchId("");
+      setAccountId("");
+      setMessage("Borrador creado y recuperado correctamente.");
     } catch (err) {
       setMessage(
         (err instanceof Error ? err.message : "No se confirmó el Draft.") +
@@ -246,6 +281,33 @@ export default function LiveWorkspace() {
       setMessage("Introduce una fecha válida.");
       return;
     }
+    const category = pages.categories.rows.find((row) => row.fmg_categoryid === categoryId);
+    const branch = pages.branches.rows.find((row) => row.fmg_branchid === branchId);
+    const account = pages.accounts.rows.find((row) => row.fmg_cashaccountid === accountId);
+    if (
+      (categoryId &&
+        (!category || category.fmg_isactive !== true || category.fmg_isgroup === true)) ||
+      (branchId && (!branch || branch.fmg_isactive !== true)) ||
+      (accountId && (!account || account.fmg_isactive !== true))
+    ) {
+      setMessage(
+        "Selecciona únicamente categorías, sedes y cuentas activas que tengas autorizadas en Dataverse.",
+      );
+      return;
+    }
+    if (
+      scopeCode === "797280000" &&
+      accountId &&
+      (!branchId ||
+        String(account?._fmg_branch_value ?? "").toLowerCase() !== branchId.toLowerCase())
+    ) {
+      setMessage("Para gastos por sede, la cuenta debe pertenecer a la sede seleccionada.");
+      return;
+    }
+    if (scopeCode === "797280001" && (branchId || (accountId && account?._fmg_branch_value))) {
+      setMessage("Para gastos compartidos, selecciona únicamente una cuenta corporativa sin sede.");
+      return;
+    }
     setBusy(true);
     try {
       await repo.saveDraft(selected, {
@@ -253,10 +315,19 @@ export default function LiveWorkspace() {
         fmg_transactiondate: date ? date + "T12:00:00.000Z" : null,
         fmg_description: description,
         fmg_documentreference: reference,
+        fmg_scope: Number(scopeCode),
+        fmg_flowclass: Number(flowCode),
+        "fmg_category@odata.bind": categoryId ? `/fmg_categories(${categoryId})` : null,
+        "fmg_branch@odata.bind":
+          scopeCode === "797280000" && branchId ? `/fmg_branchs(${branchId})` : null,
+        "fmg_cashaccount@odata.bind": accountId ? `/fmg_cashaccounts(${accountId})` : null,
       });
       setMessage("Guardado condicional confirmado. Releyendo la versión...");
       const reloaded = await repo.loadDraft(selected.id);
       setSelected(reloaded.version);
+      setCategoryId(String(reloaded.record._fmg_category_value ?? ""));
+      setBranchId(String(reloaded.record._fmg_branch_value ?? ""));
+      setAccountId(String(reloaded.record._fmg_cashaccount_value ?? ""));
       await fetchAll(repo);
       setMessage("Borrador guardado en Dataverse con control de concurrencia.");
     } catch (err) {
@@ -324,8 +395,8 @@ export default function LiveWorkspace() {
         </div>
         <div className="live-header-actions">
           {!session && (
-            <button disabled={busy} onClick={() => void signIn()}>
-              Iniciar sesión Entra
+            <button disabled={busy || !authReady} onClick={() => void signIn()}>
+              {authReady ? "Iniciar sesión Entra" : "Preparando acceso seguro…"}
             </button>
           )}
           {session && (
@@ -442,6 +513,103 @@ export default function LiveWorkspace() {
                     Referencia documental{" "}
                     <input value={reference} onChange={(e) => setReference(e.target.value)} />
                   </label>
+                  <label>
+                    Clase de gasto
+                    <select value={flowCode} onChange={(e) => setFlowCode(e.target.value)}>
+                      <option value="797280000">Operativo</option>
+                      <option value="797280001">Capital</option>
+                      <option value="797280002">Impuestos</option>
+                      <option value="797280003">Otros</option>
+                    </select>
+                  </label>
+                  <label>
+                    Ámbito
+                    <select
+                      value={scopeCode}
+                      onChange={(e) => {
+                        setScopeCode(e.target.value);
+                        setBranchId("");
+                        setAccountId("");
+                      }}
+                    >
+                      <option value="797280000">Por sede</option>
+                      <option value="797280001">Compartido</option>
+                    </select>
+                  </label>
+                  <label>
+                    Categoría
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      disabled={Boolean(issues.categories)}
+                    >
+                      <option value="">Sin categoría</option>
+                      {pages.categories.rows
+                        .filter((row) => row.fmg_isactive === true && row.fmg_isgroup !== true)
+                        .map((row) => (
+                          <option
+                            key={String(row.fmg_categoryid)}
+                            value={String(row.fmg_categoryid)}
+                          >
+                            {String(row.fmg_name)}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  {scopeCode === "797280000" && (
+                    <label>
+                      Sede
+                      <select
+                        value={branchId}
+                        onChange={(e) => {
+                          setBranchId(e.target.value);
+                          setAccountId("");
+                        }}
+                        disabled={Boolean(issues.branches)}
+                      >
+                        <option value="">Seleccionar sede</option>
+                        {pages.branches.rows
+                          .filter((row) => row.fmg_isactive === true)
+                          .map((row) => (
+                            <option key={String(row.fmg_branchid)} value={String(row.fmg_branchid)}>
+                              {String(row.fmg_name)}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                  )}
+                  <label>
+                    Cuenta autorizada
+                    <select
+                      value={accountId}
+                      onChange={(e) => setAccountId(e.target.value)}
+                      disabled={Boolean(issues.accounts)}
+                    >
+                      <option value="">Sin cuenta</option>
+                      {pages.accounts.rows
+                        .filter(
+                          (row) =>
+                            row.fmg_isactive === true &&
+                            (scopeCode === "797280000"
+                              ? Boolean(branchId) &&
+                                String(row._fmg_branch_value ?? "").toLowerCase() ===
+                                  branchId.toLowerCase()
+                              : !row._fmg_branch_value),
+                        )
+                        .map((row) => (
+                          <option
+                            key={String(row.fmg_cashaccountid)}
+                            value={String(row.fmg_cashaccountid)}
+                          >
+                            {String(row.fmg_name)}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  <p className="live-field-help">
+                    Los selectores muestran los catálogos autorizados que se han cargado. Cambiar
+                    sede o ámbito limpia la cuenta anterior.
+                  </p>
                   <div className="live-draft-actions">
                     <button type="submit" disabled={busy}>
                       Guardar con If-Match

@@ -257,6 +257,56 @@ function App() {
     }));
     return { total, shared, count: filtered.length, monthly, byCategory, byFlow };
   }, [filtered]);
+  const homeContext = useMemo(() => {
+    const previousYear = month === 1 || !month ? year - 1 : year;
+    const previousMonth = month === 1 ? 12 : month ? month - 1 : 0;
+    const throughMonth = DATA_MONTH_LIMIT.get(year) ?? 12;
+    const baseline = transactions.filter(
+      (t) =>
+        Number(t.date.slice(0, 4)) === previousYear &&
+        (previousMonth
+          ? Number(t.date.slice(5, 7)) === previousMonth
+          : Number(t.date.slice(5, 7)) <= throughMonth) &&
+        (scope === "Todos" || t.scope === scope) &&
+        (category === "Todas" || t.category === category) &&
+        (!search ||
+          [t.id, t.category, t.account, t.branch]
+            .join(" ")
+            .toLowerCase()
+            .includes(search.toLowerCase())),
+    );
+    const prior = baseline.reduce((sum, t) => sum + t.amount, 0);
+    const branchTotals = new Map<string, { amount: number; count: number }>();
+    for (const t of filtered) {
+      const name = t.scope === "Compartido" ? "Compartido" : t.branch || "Sin sede";
+      const before = branchTotals.get(name) ?? { amount: 0, count: 0 };
+      branchTotals.set(name, { amount: before.amount + t.amount, count: before.count + 1 });
+    }
+    const branches = [...branchTotals]
+      .map(([name, values]) => ({ name, ...values }))
+      .sort((a, b) => b.amount - a.amount || a.name.localeCompare(b.name, "es"));
+    return {
+      prior,
+      delta: prior > 0 ? ((summary.total - prior) / prior) * 100 : null,
+      priorLabel: previousMonth
+        ? `${MONTHS[previousMonth - 1]} de ${previousYear}`
+        : `${previousYear}, hasta ${MONTHS[Math.max(throughMonth, 1) - 1]}`,
+      branches,
+      pending: work.expenses.length + work.budgets.length,
+      categories: summary.byCategory.length,
+    };
+  }, [
+    filtered,
+    year,
+    month,
+    scope,
+    category,
+    search,
+    summary.total,
+    summary.byCategory,
+    work.expenses.length,
+    work.budgets.length,
+  ]);
   const categoryInsights = useMemo(() => {
     const total = summary.total;
     const ordered = summary.byCategory;
@@ -655,6 +705,70 @@ function App() {
                     </small>
                   </div>
                 </div>
+              </section>
+              <section className="home-brief" aria-label="Contexto del período">
+                <article className="home-brief-card">
+                  <span className="eyebrow">COMPARATIVO</span>
+                  <strong className="home-brief-heading">
+                    {homeContext.delta === null
+                      ? "Sin base comparable"
+                      : `${homeContext.delta > 0 ? "+" : ""}${homeContext.delta.toLocaleString("es-PE", { maximumFractionDigits: 1 })} %`}
+                  </strong>
+                  <p>
+                    {homeContext.delta === null
+                      ? "No hay movimientos en el período de referencia."
+                      : `${homeContext.delta > 0 ? "Mayor" : homeContext.delta < 0 ? "Menor" : "Igual"} importe frente a ${homeContext.priorLabel}.`}
+                  </p>
+                  <div className="home-brief-sub">
+                    <span>Período anterior</span>
+                    <b>{compact(homeContext.prior)}</b>
+                  </div>
+                </article>
+                <article className="home-brief-card">
+                  <div className="home-brief-top">
+                    <span className="eyebrow">DISTRIBUCIÓN POR SEDE</span>
+                    <button onClick={() => navigate("categorias")}>
+                      Explorar <ArrowRight size={14} />
+                    </button>
+                  </div>
+                  <div className="home-brief-branches">
+                    {homeContext.branches.slice(0, 4).map((branch) => (
+                      <div key={branch.name}>
+                        <div className="home-brief-branch-label">
+                          <span>{branch.name}</span>
+                          <b>
+                            {summary.total
+                              ? ((100 * branch.amount) / summary.total).toFixed(1)
+                              : "0"}{" "}
+                            %
+                          </b>
+                        </div>
+                        <div className="home-brief-meter">
+                          <span
+                            style={{
+                              width: `${summary.total ? (100 * branch.amount) / summary.total : 0}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    {!homeContext.branches.length && <p>Sin movimientos para esta selección.</p>}
+                  </div>
+                </article>
+                <article className="home-brief-card home-brief-next">
+                  <span className="eyebrow">EN PREPARACIÓN</span>
+                  <strong className="home-brief-heading">
+                    {number.format(homeContext.pending)}
+                  </strong>
+                  <p>Borradores iniciados en esta sesión que puedes continuar.</p>
+                  <div className="home-brief-sub">
+                    <span>Categorías con gasto</span>
+                    <b>{homeContext.categories}</b>
+                  </div>
+                  <button onClick={() => navigate("bandeja")}>
+                    Continuar registros <ArrowRight size={15} />
+                  </button>
+                </article>
               </section>
               <SectionHead
                 eyebrow="TU PULSO FINANCIERO"

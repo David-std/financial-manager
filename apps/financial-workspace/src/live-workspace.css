@@ -355,3 +355,26 @@
     transition: none;
   }
 }
+
+.live-draft-editor select {
+  border: 1px solid #cedbd5;
+  background: #fff;
+  color: #244753;
+  border-radius: 9px;
+  padding: 9px 12px;
+  min-height: 39px;
+  width: 100%;
+  min-width: 0;
+  font-size: 13px;
+}
+.live-draft-editor select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.live-draft-editor .live-field-help {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #5c757b;
+  line-height: 1.55;
+  margin: 0;
+}

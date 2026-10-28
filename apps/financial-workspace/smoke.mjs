@@ -33,13 +33,20 @@ const noOverflow = async (label) =>
     label,
   );
 try {
-  await page.goto(process.env.WORKSPACE_URL ?? "http://127.0.0.1:5178/", {
+  await page.goto(process.env.WORKSPACE_URL ?? "http://localhost:5178/", {
     waitUntil: "domcontentloaded",
     timeout: 30000,
   });
   await test("Todo en orden");
   await test("Datos de muestra");
   await test("Registrar movimiento");
+  await test("COMPARATIVO");
+  await test("DISTRIBUCIÓN POR SEDE");
+  assert.equal(
+    await page.locator(".home-brief-card").count(),
+    3,
+    "Home shows comparative, branch and work context",
+  );
   assert.equal(
     await page.locator(".month-pills button").nth(11).isDisabled(),
     true,
@@ -278,7 +285,7 @@ try {
   if (process.env.WORKSPACE_EXPECT_LIVE === "true") {
     for (const width of [390, 768, 1440]) {
       await page.setViewportSize({ width, height: 860 });
-      await page.goto("http://127.0.0.1:5178/?mode=live", { waitUntil: "domcontentloaded" });
+      await page.goto("http://localhost:5178/?mode=live", { waitUntil: "domcontentloaded" });
       await page
         .getByRole("heading", { name: "Tu centro financiero" })
         .waitFor({ state: "visible", timeout: 12000 })

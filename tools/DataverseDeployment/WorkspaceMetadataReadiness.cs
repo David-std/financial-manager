@@ -40,6 +40,9 @@ internal static class WorkspaceMetadataReadiness
                 "fmg_activityevent" => new[] { "fmg_activityeventid",
                     "fmg_name", "fmg_eventtype", "fmg_eventtime",
                     "fmg_recordtype", "fmg_recordid", "fmg_summary", "fmg_actor" },
+                "fmg_category" => new[] { "fmg_categoryid", "fmg_name", "fmg_code", "fmg_isactive", "fmg_isgroup", "fmg_parentcategory" },
+                "fmg_branch" => new[] { "fmg_branchid", "fmg_name", "fmg_isactive" },
+                "fmg_cashaccount" => new[] { "fmg_cashaccountid", "fmg_name", "fmg_isactive", "fmg_branch" },
                 _ => new[] { logical + "id", "fmg_name" }
             };
             if (logical == "fmg_financialtransaction")

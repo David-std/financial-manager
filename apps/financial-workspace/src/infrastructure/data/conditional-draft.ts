@@ -129,6 +129,11 @@ export async function conditionalDraftSave(
       "No existe una versión válida del borrador para aplicar una escritura condicional.",
     );
   }
+  const bindColumns: Record<string, { set: string; lookup: string }> = {
+    "fmg_category@odata.bind": { set: "fmg_categories", lookup: "_fmg_category_value" },
+    "fmg_branch@odata.bind": { set: "fmg_branchs", lookup: "_fmg_branch_value" },
+    "fmg_cashaccount@odata.bind": { set: "fmg_cashaccounts", lookup: "_fmg_cashaccount_value" },
+  };
   const allowedFields = new Set([
     "fmg_transactiondate",
     "fmg_amount",
@@ -136,14 +141,29 @@ export async function conditionalDraftSave(
     "fmg_scope",
     "fmg_description",
     "fmg_documentreference",
-    // Lookup relationship updates need verified OData navigation properties;
-    // deliberately excluded until actual metadata and binding are available.
+    "fmg_category@odata.bind",
+    "fmg_branch@odata.bind",
+    "fmg_cashaccount@odata.bind",
   ]);
   const fields = Object.entries(changes);
   if (!fields.length || fields.some(([name]) => !allowedFields.has(name))) {
     throw new Error(
       "Solo se admiten modificaciones de campos de un borrador mediante este contrato.",
     );
+  }
+  for (const [field, value] of fields) {
+    const bind = bindColumns[field];
+    if (
+      bind &&
+      value !== null &&
+      (typeof value !== "string" ||
+        !new RegExp("^/" + bind.set + "\\([a-f\\d-]{36}\\)$", "i").test(value) ||
+        !validGuid(value.slice(bind.set.length + 2, -1)))
+    ) {
+      throw new Error(
+        "La relación de " + field + " no corresponde a un catálogo Dataverse autorizado.",
+      );
+    }
   }
   if (!/^fmg_[a-z0-9_]+$/.test(transport.expenseEntitySet)) {
     throw new Error("No se verificó el conjunto de entidades Dataverse.");
@@ -185,7 +205,18 @@ export async function conditionalDraftSave(
     throw new Error("No se confirmó el estado Draft después de guardar.");
   }
   const mismatched = fields
-    .filter(([field, expected]) => !persistedEquals(field, expected, read.data?.[field]))
+    .filter(([field, expected]) => {
+      const bind = bindColumns[field];
+      if (!bind) return !persistedEquals(field, expected, read.data?.[field]);
+      const actual = read.data?.[bind.lookup];
+      return expected === null
+        ? actual !== null && actual !== undefined
+        : typeof actual !== "string" ||
+            actual.toLowerCase() !==
+              String(expected)
+                .slice(bind.set.length + 2, -1)
+                .toLowerCase();
+    })
     .map(([field]) => field);
   if (mismatched.length) {
     throw new Error(
