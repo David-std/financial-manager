@@ -271,10 +271,16 @@ class NativeShortcutTests(unittest.TestCase):
         self.assertIn("A successful Mail", guide)
         self.assertIn("Power Automate", guide)
         root_guide = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("docs/images/fm11-shortcut-install.webp", root_guide)
-        image = ROOT / "docs/images/fm11-shortcut-install.webp"
-        self.assertTrue(image.is_file())
-        self.assertTrue(image.read_bytes().startswith(b"RIFF"))
+        for name in ("fm11-shortcut-install", "fm11-shortcut-created",
+                     "fm11-expenses-overview"):
+            self.assertIn(f"docs/images/{name}.png", root_guide)
+        ios_guide = (BASE / "README.md").read_text(encoding="utf-8")
+        self.assertIn("../../docs/images/fm11-shortcut-confirm.png", ios_guide)
+        for name in ("fm11-shortcut-install", "fm11-shortcut-confirm",
+                     "fm11-shortcut-created", "fm11-expenses-overview"):
+            image = ROOT / "docs/images" / f"{name}.png"
+            self.assertTrue(image.is_file())
+            self.assertTrue(image.read_bytes().startswith(bytes.fromhex("89504e470d0a1a0a")))
         for p in (BASE / "README.md", ROOT / "README.md", BASE / "build_shortcut.py"):
             self.assertNotIn("\ufffd", p.read_text(encoding="utf-8"))
         for bad in ("gateway.mjs", "web-msal.mjs", "Caddyfile.example",

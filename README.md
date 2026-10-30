@@ -45,7 +45,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 
 [Registrar gasto](integrations/ios-shortcuts/README.md) provides native expense entry. The Mail variant stages requests for review; **Registrar gasto (Microsoft)** uses delegated Entra sign-in and creates a Dataverse `Draft`. The direct Draft flow was accepted on macOS in DEV; iPhone acceptance remains separate.
 
-<p align="center"><img src="docs/images/fm11-shortcut-install.webp" alt="Registrar gasto Shortcut import preview on macOS" width="280"></p>
+<p align="center"><img src="docs/images/fm11-shortcut-install.png" alt="Registrar gasto Shortcut import preview on macOS" width="280"></p>
 
 ## Shortcut to Draft
 
@@ -55,8 +55,8 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
     <th width="40%" align="center">Authenticated Draft result</th>
   </tr>
   <tr>
-    <td align="center"><img src="docs/images/fm11-expenses-overview.webp" alt="Power Apps expense overview with a Draft record" width="100%"></td>
-    <td align="center"><img src="docs/images/fm11-shortcut-created.webp" alt="Microsoft-authenticated Shortcut confirms Draft creation in Dataverse" width="100%"></td>
+    <td align="center"><img src="docs/images/fm11-expenses-overview.png" alt="Power Apps expense overview with a Draft record" width="100%"></td>
+    <td align="center"><img src="docs/images/fm11-shortcut-created.png" alt="Microsoft-authenticated Shortcut confirms Draft creation in Dataverse" width="100%"></td>
   </tr>
 </table>
 
@@ -76,7 +76,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 | Roles and audit requirements | [Security](docs/security.md) |
 | Acceptance and reconciliation tests | [Verification](docs/verification.md) |
 | Environment and repository workflow | [Development](docs/development.md) |
-| Optional integrations | [AI](ia/README.md) · [Fabric](integrations/fabric/README.md) |
+| Optional integrations | [AI](integrations/ia/README.md) · [Fabric](integrations/fabric/README.md) |
 | Architecture decisions | [ADRs](docs/decisions/) |
 
 ## Repository
@@ -87,7 +87,7 @@ Financial Manager is a Microsoft Power Platform project for internal cash-orient
 | `power-platform/` | Real solution source after exporting from Dataverse |
 | `power-bi/` | Real PBIP source after saving in Power BI Desktop |
 | `integrations/` | Optional iOS and conversational reporting specifications |
-| `ia/` | Optional AI integration scope; not deployed |
+| `integrations/ia/` | Optional AI integration scope; not deployed |
 | `scripts/` | Repository checks |
 | `tests/` | Automated repository validation |
 | `apps/financial-workspace/` | Responsive React workspace with isolated DEMO data and delegated Dataverse LIVE operations; not a Fabric app |

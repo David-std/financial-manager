@@ -12,8 +12,8 @@ A confirmation dialog appears before transmission.
     <th width="55%" align="center">Draft saved to Dataverse</th>
   </tr>
   <tr>
-    <td align="center"><img src="../../docs/images/fm11-shortcut-confirm.webp" alt="Native Shortcuts confirmation dialog showing expense fields" width="100%"></td>
-    <td align="center"><img src="../../docs/images/fm11-shortcut-created.webp" alt="Safari confirms successful Draft creation without approving or posting" width="100%"></td>
+    <td align="center"><img src="../../docs/images/fm11-shortcut-confirm.png" alt="Native Shortcuts confirmation dialog showing expense fields" width="100%"></td>
+    <td align="center"><img src="../../docs/images/fm11-shortcut-created.png" alt="Safari confirms successful Draft creation without approving or posting" width="100%"></td>
   </tr>
 </table>
 
